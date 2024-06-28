@@ -869,5 +869,8 @@ RSpec.describe Projects::MergeRequestsController do
   it_behaves_like DescriptionDiffActions do
     let_it_be(:project)  { create(:project, :repository, :public) }
     let_it_be(:issuable) { create(:merge_request, source_project: project) }
+    let_it_be(:version_1) { create(:description_version, issuable.base_class_name.underscore.to_sym => issuable) }
+    let_it_be(:version_2) { create(:description_version, issuable.base_class_name.underscore.to_sym => issuable) }
+    let_it_be(:version_3) { create(:description_version, issuable.base_class_name.underscore.to_sym => issuable) }
   end
 end

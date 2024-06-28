@@ -28,7 +28,7 @@ module WorkItems
       return true unless epic
       return true unless epic.group.work_item_sync_to_epic_enabled?
 
-      epic.assign_attributes(update_params(work_item))
+      epic.assign_attributes(update_params(work_item).merge(skip_description_version: true))
       epic.save!(touch: false)
     rescue StandardError => error
       handle_error!(:update, error, work_item)

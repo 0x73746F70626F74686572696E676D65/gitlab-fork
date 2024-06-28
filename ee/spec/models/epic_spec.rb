@@ -1723,40 +1723,81 @@ RSpec.describe Epic, feature_category: :portfolio_management do
     end
   end
 
-  context 'with labels' do
-    let_it_be(:label1) { create(:group_label, group: group, title: 'epic-label-1') }
-    let_it_be(:label2) { create(:group_label, group: group, title: 'epic-label-2') }
-    let_it_be(:epic) { create(:epic, group: group, labels: [label1]) }
-    let_it_be(:work_item) { epic.work_item }
+  context 'with unified associations' do
+    context 'with labels' do
+      let_it_be(:label1) { create(:group_label, group: group, title: 'epic-label-1') }
+      let_it_be(:label2) { create(:group_label, group: group, title: 'epic-label-2') }
+      let_it_be(:epic) { create(:epic, group: group, labels: [label1]) }
+      let_it_be(:work_item) { epic.work_item }
 
-    before do
-      work_item.labels << label2
+      before do
+        work_item.labels << label2
+      end
+
+      context 'when labels are fetched just from the epic itself' do
+        before do
+          stub_feature_flags(epic_and_work_item_labels_unification: false)
+        end
+
+        it 'returns only epic labels' do
+          expect(epic.reload.labels).to match_array([label1])
+          expect(work_item.reload.labels).to match_array([label2])
+        end
+      end
+
+      context 'when labels are fetched from the epic and epic work item' do
+        before do
+          stub_feature_flags(epic_and_work_item_labels_unification: true)
+        end
+
+        it 'returns epic and epic work item labels' do
+          expect(epic.reload.labels).to match_array([label1, label2])
+          expect(work_item.reload.labels).to match_array([label1, label2])
+        end
+
+        it 'returns epic and epic work item labels queried by id' do
+          expect(epic.reload.labels.find(label1.id)).to eq(label1)
+          expect(work_item.reload.labels.find(label1.id)).to eq(label1)
+        end
+      end
     end
 
-    context 'when labels are fetched just from the epic itself' do
-      before do
-        stub_feature_flags(epic_and_work_item_labels_unification: false)
+    context 'with description versions' do
+      let_it_be(:epic) { create(:epic, group: group) }
+      let_it_be(:work_item) { epic.work_item }
+      let(:version1) { create(:description_version, epic: epic) }
+      let(:version2) { create(:description_version, issue: work_item) }
+
+      context 'when description versions are fetched just from the epic itself' do
+        before do
+          stub_feature_flags(epic_and_work_item_notes_unification: false)
+        end
+
+        it 'returns only epic notes' do
+          expect(epic.reload.description_versions).to match_array([version1])
+          expect(work_item.reload.description_versions).to match_array([version2])
+          expect(epic.reload.own_description_versions).to match_array([version1])
+          expect(work_item.reload.own_description_versions).to match_array([version2])
+        end
       end
 
-      it 'returns only epic labels' do
-        expect(epic.reload.labels).to match_array([label1])
-        expect(work_item.reload.labels).to match_array([label2])
-      end
-    end
+      context 'when notes are fetched from the epic and epic work item' do
+        before do
+          stub_feature_flags(epic_and_work_item_notes_unification: true)
+        end
 
-    context 'when labels are fetched from the epic and epic work item' do
-      before do
-        stub_feature_flags(epic_and_work_item_labels_unification: true)
-      end
+        it 'returns epic and epic work item notes' do
+          expect(epic.reload.description_versions).to match_array([version1, version2])
+          expect(work_item.reload.description_versions).to match_array([version1, version2])
 
-      it 'returns only epic labels' do
-        expect(epic.reload.labels).to match_array([label1, label2])
-        expect(work_item.reload.labels).to match_array([label1, label2])
-      end
+          expect(epic.reload.own_description_versions).to match_array([version1])
+          expect(work_item.reload.own_description_versions).to match_array([version2])
+        end
 
-      it 'returns only epic labels queried by id' do
-        expect(epic.reload.labels.find(label1.id)).to eq(label1)
-        expect(work_item.reload.labels.find(label1.id)).to eq(label1)
+        it 'returns epic and epic work item notes queried by id' do
+          expect(epic.reload.description_versions.find(version1.id)).to eq(version1)
+          expect(work_item.reload.description_versions.find(version1.id)).to eq(version1)
+        end
       end
     end
   end

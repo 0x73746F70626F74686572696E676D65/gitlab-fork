@@ -60,11 +60,6 @@ module EE
       (::WorkItems::Progress.where(work_item: children).sum(:progress).to_i / child_count).to_i
     end
 
-    override :skip_description_version?
-    def skip_description_version?
-      super || epic_work_item?
-    end
-
     override :skip_metrics?
     def skip_metrics?
       super || epic_work_item?

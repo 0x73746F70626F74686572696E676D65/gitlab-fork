@@ -37,6 +37,7 @@ class EpicPolicy < BasePolicy
     enable :read_epic_iid
     enable :read_note
     enable :read_issuable_participables
+    enable :read_issuable
   end
 
   rule { can?(:read_epic) & ~anonymous }.policy do

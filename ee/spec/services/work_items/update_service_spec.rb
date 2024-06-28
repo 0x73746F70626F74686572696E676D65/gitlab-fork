@@ -379,6 +379,20 @@ RSpec.describe WorkItems::UpdateService, feature_category: :team_planning do
         end
 
         it_behaves_like 'syncs all data from a work_item to an epic'
+
+        context 'and description version created for work item only' do
+          before do
+            work_item.update_columns(description: "some older description")
+            work_item.sync_object.update_columns(description: "some older description")
+          end
+
+          it 'creates description version on epic work item only' do
+            subject
+
+            expect(work_item.reload.own_description_versions.count).to eq(2)
+            expect(work_item.sync_object.reload.own_description_versions.count).to eq(0)
+          end
+        end
       end
 
       it 'syncs the data to the epic', :aggregate_failures do

@@ -4,10 +4,6 @@ RSpec.shared_examples DescriptionDiffActions do
   let(:base_params) { { namespace_id: project.namespace, project_id: project, id: issuable } }
 
   describe do
-    let_it_be(:version_1) { create(:description_version, issuable.base_class_name.underscore.to_sym => issuable) }
-    let_it_be(:version_2) { create(:description_version, issuable.base_class_name.underscore.to_sym => issuable) }
-    let_it_be(:version_3) { create(:description_version, issuable.base_class_name.underscore.to_sym => issuable) }
-
     def get_description_diff(extra_params = {})
       get :description_diff, params: base_params.merge(extra_params)
     end

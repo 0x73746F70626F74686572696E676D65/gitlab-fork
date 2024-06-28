@@ -56,7 +56,9 @@ module Epics
         .intersection(ALLOWED_PARAMS + %i[title_html description_html])
         .index_with { |attr| epic[attr] }
 
-      filtered_attributes.merge({ updated_by: epic.updated_by, updated_at: epic.updated_at })
+      filtered_attributes.merge(
+        { updated_by: epic.updated_by, updated_at: epic.updated_at, skip_description_version: true }
+      )
     end
 
     def sync_color(epic, work_item)

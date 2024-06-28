@@ -415,12 +415,18 @@ RSpec.describe Projects::IssuesController, feature_category: :team_planning do
     context 'when issuable is an issue type issue' do
       it_behaves_like DescriptionDiffActions do
         let_it_be(:issuable) { create(:issue, project: project) }
+        let_it_be(:version_1) { create(:description_version, issuable.base_class_name.underscore.to_sym => issuable) }
+        let_it_be(:version_2) { create(:description_version, issuable.base_class_name.underscore.to_sym => issuable) }
+        let_it_be(:version_3) { create(:description_version, issuable.base_class_name.underscore.to_sym => issuable) }
       end
     end
 
     context 'when issuable is a task/work_item' do
       it_behaves_like DescriptionDiffActions do
         let_it_be(:issuable) { create(:issue, :task, project: project) }
+        let_it_be(:version_1) { create(:description_version, issuable.base_class_name.underscore.to_sym => issuable) }
+        let_it_be(:version_2) { create(:description_version, issuable.base_class_name.underscore.to_sym => issuable) }
+        let_it_be(:version_3) { create(:description_version, issuable.base_class_name.underscore.to_sym => issuable) }
       end
     end
   end

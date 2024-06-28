@@ -107,9 +107,16 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
 
         update_epic(description: 'updated description')
       end
+
+      it 'creates description version for epic only' do
+        update_epic(description: 'New description')
+
+        expect(epic.reload.own_description_versions.count).to eq(2)
+        expect(epic.sync_object.reload.own_description_versions.count).to eq(0)
+      end
     end
 
-    context 'when decription is not changed' do
+    context 'when description is not changed' do
       it 'does not trigger GraphQL description updated subscription' do
         expect(GraphqlTriggers).not_to receive(:issuable_description_updated)
 
