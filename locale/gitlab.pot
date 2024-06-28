@@ -24193,7 +24193,7 @@ msgstr ""
 msgid "GlobalSearch|Command palette"
 msgstr ""
 
-msgid "GlobalSearch|Commands %{link1Start}⌘%{link1End} %{link2Start}k%{link2End}"
+msgid "GlobalSearch|Commands %{superKey} %{link2Start}k%{link2End}"
 msgstr ""
 
 msgid "GlobalSearch|Explore"
