@@ -2,7 +2,7 @@
 
 module Groups
   class HookLogsController < Groups::ApplicationController
-    before_action :authorize_admin_group!
+    before_action :authorize_admin_hook!
 
     include ::WebHooks::HookLogActions
 
@@ -16,6 +16,10 @@ module Groups
 
     def after_retry_redirect_path
       edit_group_hook_path(@group, hook)
+    end
+
+    def authorize_admin_hook!
+      render_404 unless can?(current_user, :admin_web_hook, group)
     end
   end
 end
