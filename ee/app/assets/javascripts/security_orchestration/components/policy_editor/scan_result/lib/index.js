@@ -74,8 +74,29 @@ actions:
   .concat(DEFAULT_SETTINGS)
   .concat(FALLBACK);
 
+export const DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE_WITH_BOT_MESSAGE = `type: approval_policy
+name: ''
+description: ''
+enabled: true
+policy_scope:
+  projects:
+    excluding: []
+rules:
+  - type: ''
+actions:
+  - type: require_approval
+    approvals_required: 1
+  - type: send_bot_message
+    enabled: true
+`
+  .concat(DEFAULT_SETTINGS)
+  .concat(FALLBACK);
+
 export const getPolicyYaml = ({ includeBotComment, isGroup }) => {
   if (isGroup) {
+    if (includeBotComment) {
+      return DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE_WITH_BOT_MESSAGE;
+    }
     return DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE;
   }
 

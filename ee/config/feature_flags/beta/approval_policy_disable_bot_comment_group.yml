@@ -1,0 +1,9 @@
+---
+name: approval_policy_disable_bot_comment_group
+feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/438269
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/157716
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/469449
+milestone: '17.2'
+group: group::security policies
+type: beta
+default_enabled: false
