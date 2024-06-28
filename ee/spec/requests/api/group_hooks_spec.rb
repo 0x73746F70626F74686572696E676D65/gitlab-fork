@@ -78,7 +78,8 @@ RSpec.describe API::GroupHooks, :aggregate_failures, feature_category: :webhooks
       it_behaves_like 'test web-hook endpoint'
     end
 
-    it_behaves_like 'web-hook API endpoints with branch-filter', '/projects/:id'
+    it_behaves_like 'POST webhook API endpoints with a branch filter', '/projects/:id'
+    it_behaves_like 'PUT webhook API endpoints with a branch filter', '/projects/:id'
   end
 
   describe 'with admin_web_hook custom role' do
