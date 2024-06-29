@@ -29,6 +29,8 @@ module EE
         mount_mutation ::Mutations::Geo::Registries::Update, alpha: { milestone: '16.1' }
         mount_mutation ::Mutations::Geo::Registries::BulkUpdate, alpha: { milestone: '16.4' }
         mount_mutation ::Mutations::GitlabSubscriptions::Activate
+        mount_mutation ::Mutations::GitlabSubscriptions::MemberManagement::ProcessUserBillablePromotionRequest,
+          alpha: { milestone: '17.2' }
         mount_mutation ::Mutations::GitlabSubscriptions::UserAddOnAssignments::Create
         mount_mutation ::Mutations::GitlabSubscriptions::UserAddOnAssignments::Remove
         mount_mutation ::Mutations::GitlabSubscriptions::UserAddOnAssignments::BulkCreate
