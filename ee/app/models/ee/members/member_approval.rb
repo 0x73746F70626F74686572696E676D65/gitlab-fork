@@ -17,6 +17,11 @@ module EE
           where(status: statuses[:pending]).select('DISTINCT ON (user_id) *')
                         .order(:user_id, new_access_level: :desc, created_at: :asc)
         end
+
+        scope :pending_member_approvals_for_user, ->(user_id) do
+          where(status: statuses[:pending]).where(user_id: user_id)
+                                           .order(id: :asc)
+        end
       end
 
       class_methods do

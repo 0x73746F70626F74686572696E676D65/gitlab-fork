@@ -198,4 +198,44 @@ RSpec.describe Members::MemberApproval, feature_category: :groups_and_projects d
       )
     end
   end
+
+  describe '#pending_member_approvals_for_user' do
+    let_it_be(:user) { create(:user) }
+    let_it_be(:another_user) { create(:user) }
+
+    let_it_be(:group_approval) { create(:member_approval, :for_group_member, user: user) }
+    let_it_be(:project_approval) { create(:member_approval, :for_project_member, user: user) }
+
+    before do
+      create(:member_approval, :for_group_member, user: user, status: :denied)
+      create(:member_approval, user: another_user, status: :pending)
+    end
+
+    it 'returns pending approvals for the given user' do
+      approvals = described_class.pending_member_approvals_for_user(user.id)
+
+      expect(approvals.count).to eq(2)
+      expect(approvals.first.user).to eq(user)
+      expect(approvals.first.status).to eq('pending')
+    end
+
+    it 'does not return non-pending approvals for the given user' do
+      approvals = described_class.pending_member_approvals_for_user(user.id)
+
+      expect(approvals.count).to eq(2)
+      expect(approvals.map(&:status).uniq).to eq(['pending'])
+    end
+
+    it 'does not return approvals for other users' do
+      approvals = described_class.pending_member_approvals_for_user(user.id)
+
+      expect(approvals.map(&:user)).not_to include(another_user)
+    end
+
+    it 'orders the approvals by id in ascending order' do
+      approvals = described_class.pending_member_approvals_for_user(user.id)
+
+      expect(approvals.map(&:id)).to eq([group_approval.id, project_approval.id])
+    end
+  end
 end
