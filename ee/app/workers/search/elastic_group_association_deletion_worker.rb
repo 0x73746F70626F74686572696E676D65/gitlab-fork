@@ -15,16 +15,24 @@ module Search
     idempotent!
 
     def perform(group_id, ancestor_id, options = {})
-      return unless ::Epic.elasticsearch_available?
-
-      return remove_epics(group_id, ancestor_id) unless options[:include_descendants]
-
-      # We have the return condition here because we still want to remove the deleted group epics in the above call
       group = Group.find_by_id(group_id)
+      remove_epics = index_epics?(group)
+      remove_work_items = work_item_index_available?
+      return unless remove_work_items || remove_epics
+
+      options = options.with_indifferent_access
+      unless options[:include_descendants]
+        return process_removal(group_id, ancestor_id, remove_epics: remove_epics, remove_work_items: remove_work_items)
+      end
+
+      # We have the return condition here because we still want to remove the deleted items in the above call
       return if group.nil?
 
       # rubocop: disable CodeReuse/ActiveRecord -- We need only the ids of self_and_descendants groups
-      group.self_and_descendants.each_batch { |groups| remove_epics(groups.pluck(:id), ancestor_id) }
+      group.self_and_descendants.each_batch do |groups|
+        process_removal(groups.pluck(:id), ancestor_id, remove_epics: remove_epics,
+          remove_work_items: remove_work_items)
+      end
       # rubocop: enable CodeReuse/ActiveRecord
     end
 
@@ -34,17 +42,43 @@ module Search
       @client ||= ::Gitlab::Search::Client.new
     end
 
-    def remove_epics(group_ids, ancestor_id)
+    def work_item_index_available?
+      ::Feature.enabled?(:elastic_index_work_items) && # rubocop:disable Gitlab/FeatureFlagWithoutActor -- We do not need an actor here
+        ::Elastic::DataMigrationService.migration_has_finished?(:create_work_items_index)
+    end
+
+    def index_epics?(group)
+      return false unless ::Epic.elasticsearch_available?
+
+      return false if group.present? && !group.licensed_feature_available?(:epics)
+
+      true
+    end
+
+    def process_removal(group_id, ancestor_id, remove_epics:, remove_work_items:)
+      if remove_work_items
+        remove_items(group_id, ancestor_id, index_name: ::Search::Elastic::Types::WorkItem.index_name,
+          group_id_field: :namespace_id)
+      end
+
+      return unless remove_epics
+
+      remove_items(group_id, ancestor_id, index_name: ::Elastic::Latest::EpicConfig.index_name,
+        group_id_field: :group_id)
+    end
+
+    def remove_items(group_ids, ancestor_id, index_name:, group_id_field:)
+      terms_hash = Hash[group_id_field, Array.wrap(group_ids)].deep_symbolize_keys
       client.delete_by_query(
         {
-          index: ::Elastic::Latest::EpicConfig.index_name,
+          index: index_name,
           routing: "group_#{ancestor_id}",
           conflicts: 'proceed',
-          timeout: "10m",
+          timeout: '10m',
           body: {
             query: {
               bool: {
-                filter: { terms: { group_id: Array.wrap(group_ids) } }
+                filter: { terms: terms_hash }
               }
             }
           }
