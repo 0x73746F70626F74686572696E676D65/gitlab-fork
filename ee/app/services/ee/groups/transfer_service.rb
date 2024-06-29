@@ -61,7 +61,7 @@ module EE
 
         process_wikis(group)
 
-        process_epics(old_root_ancestor_id, group)
+        process_group_associations(old_root_ancestor_id, group) # Epics and WorkItems
       end
 
       def update_project_settings(updated_project_ids)
@@ -87,19 +87,18 @@ module EE
         ::Elastic::ProcessInitialBookkeepingService.backfill_projects!(project) if project.maintaining_elasticsearch?
       end
 
-      def process_epics(old_root_ancestor_id, group)
-        return unless group.use_elasticsearch? && ::Epic.elasticsearch_available?
+      def process_group_associations(old_root_ancestor_id, group)
+        return unless group.use_elasticsearch?
 
-        epics_found = false
-        group.self_and_descendants.each_batch do |group_batch|
-          ::Epic.in_selected_groups(group_batch).each_batch do |epics|
-            epics_found ||= true
-            ::Elastic::ProcessInitialBookkeepingService.track!(*epics)
+        if ::Epic.elasticsearch_available? && group.licensed_feature_available?(:epics)
+          group.self_and_descendants.each_batch do |group_batch|
+            ::Epic.in_selected_groups(group_batch).each_batch do |epics|
+              ::Elastic::ProcessInitialBookkeepingService.track!(*epics)
+            end
           end
         end
 
-        return unless epics_found
-        return if old_root_ancestor_id == group.root_ancestor.id && group.licensed_feature_available?(:epics)
+        return if old_root_ancestor_id == group.root_ancestor.id
 
         ::Search::ElasticGroupAssociationDeletionWorker.perform_async(group.id, old_root_ancestor_id,
           { include_descendants: true })

@@ -242,6 +242,11 @@ RSpec.describe 'Epic index', feature_category: :global_search do
     end
 
     context 'when the parent of the group is changed', :sidekiq_inline do
+      before do
+        allow(Epic).to receive(:elasticsearch_available?).and_return(true)
+        stub_licensed_features(epics: true)
+      end
+
       it 'tracks the epic via Elastic::NamespaceUpdateWorker if the new parent has indexing enabled' do
         expect(Elastic::NamespaceUpdateWorker).to receive(:perform_async).with(group.id).and_call_original
         expect(ElasticAssociationIndexerWorker).to receive(:perform_async)
@@ -254,6 +259,11 @@ RSpec.describe 'Epic index', feature_category: :global_search do
     end
 
     context 'when the group is transferred', :sidekiq_inline do
+      before do
+        allow(Epic).to receive(:elasticsearch_available?).and_return(true)
+        stub_licensed_features(epics: true)
+      end
+
       it 'tracks the epic via Elastic::NamespaceUpdateWorker' do
         allow(ElasticWikiIndexerWorker).to receive(:perform_in)
         expect(Elastic::NamespaceUpdateWorker).to receive(:perform_async).with(group.id).and_call_original
@@ -349,6 +359,11 @@ RSpec.describe 'Epic index', feature_category: :global_search do
       it_behaves_like 'epics get tracked in Elasticsearch'
 
       context 'if the parent group is removed from the list' do
+        before do
+          allow(Epic).to receive(:elasticsearch_available?).and_return(true)
+          stub_licensed_features(epics: true)
+        end
+
         it 'deletes the epic from elasticsearch', :elastic_clean, :sidekiq_inline do
           # parent group and sub group
           allow(Search::Wiki::ElasticDeleteGroupWikiWorker).to receive(:perform_in).twice
