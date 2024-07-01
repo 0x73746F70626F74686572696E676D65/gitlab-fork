@@ -18,6 +18,11 @@ import MetricTable from 'ee/analytics/dashboards/ai_impact/components/metric_tab
 import MetricTableCell from 'ee/analytics/dashboards/components/metric_table_cell.vue';
 import TrendIndicator from 'ee/analytics/dashboards/components/trend_indicator.vue';
 import { setLanguage } from 'jest/__helpers__/locale_helper';
+import { useMockInternalEventsTracking } from 'helpers/tracking_internal_events_helper';
+import {
+  AI_IMPACT_TABLE_TRACKING_PROPERTY,
+  EVENT_LABEL_CLICK_METRIC_IN_DASHBOARD_TABLE,
+} from 'ee/analytics/analytics_dashboards/constants';
 import {
   mockDoraMetricsResponse,
   mockFlowMetricsResponse,
@@ -131,6 +136,36 @@ describe('Metric table', () => {
       expect(findMetricTableCell(testId).props()).toEqual(
         expect.objectContaining({ identifier, requestPath, isProject }),
       );
+    });
+
+    describe('metric drill-down clicked', () => {
+      const { bindInternalEventDocument } = useMockInternalEventsTracking();
+
+      beforeEach(() => {
+        findMetricTableCell(testId).vm.$emit('drill-down-clicked');
+      });
+
+      if (requestPath) {
+        it(`should trigger tracking event`, () => {
+          const { trackEventSpy } = bindInternalEventDocument(wrapper.element);
+
+          expect(trackEventSpy).toHaveBeenCalledTimes(1);
+          expect(trackEventSpy).toHaveBeenCalledWith(
+            EVENT_LABEL_CLICK_METRIC_IN_DASHBOARD_TABLE,
+            {
+              label: identifier,
+              property: AI_IMPACT_TABLE_TRACKING_PROPERTY,
+            },
+            undefined,
+          );
+        });
+      } else {
+        it('should not trigger tracking event', () => {
+          const { trackEventSpy } = bindInternalEventDocument(wrapper.element);
+
+          expect(trackEventSpy).not.toHaveBeenCalled();
+        });
+      }
     });
   });
 
