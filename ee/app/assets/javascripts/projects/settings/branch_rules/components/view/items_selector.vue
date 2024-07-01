@@ -29,7 +29,7 @@ export default {
       required: false,
       default: null,
     },
-    isProjectOnlyNamespace: {
+    disableNamespaceDropdown: {
       type: Boolean,
       required: false,
       default: false,
@@ -66,7 +66,7 @@ export default {
       :group-id="groupId"
       :selected-items="selectedItems"
       :users-query-options="usersOptions"
-      :is-project-only-namespace="isProjectOnlyNamespace"
+      :disable-namespace-dropdown="disableNamespaceDropdown"
       @select="handleSelect"
       @delete="handleDelete"
     />
