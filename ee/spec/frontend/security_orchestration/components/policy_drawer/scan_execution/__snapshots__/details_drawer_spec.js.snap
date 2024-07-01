@@ -202,7 +202,11 @@ exports[`DetailsDrawer component policy with tags and CI variables renders the c
             <span
               class="badge badge-info badge-pill gl-badge"
             >
-              default
+              <span
+                class="gl-badge-content"
+              >
+                default
+              </span>
             </span>
           </div>
         </li>
