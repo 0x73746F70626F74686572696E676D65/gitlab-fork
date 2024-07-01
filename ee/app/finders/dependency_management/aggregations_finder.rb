@@ -18,13 +18,22 @@ module DependencyManagement
     def execute
       group_columns = distinct_columns.map { |column| column_expression(column, 'outer_occurrences') }
 
+      # JSONB_AGG also aggregates nulls, which we want to avoid.
+      # The FILTER statement prevents nulls from being concatenated into the array,
+      # and the COALESCE function gives us an empty array instead of NULL when there are no items.
+      licenses_select = <<~SQL
+        COALESCE(
+          JSONB_AGG(outer_occurrences.licenses->0) FILTER (WHERE outer_occurrences.licenses->0 IS NOT NULL),
+        '[]') AS licenses
+      SQL
+
       Sbom::Occurrence.with(namespaces_cte.to_arel)
         .select(
           *group_columns,
           'MIN(outer_occurrences.id)::bigint AS id',
           'MIN(outer_occurrences.package_manager) AS package_manager',
           'MIN(outer_occurrences.input_file_path) AS input_file_path',
-          'JSONB_AGG(outer_occurrences.licenses->0) AS licenses',
+          licenses_select,
           'SUM(counts.occurrence_count)::integer AS occurrence_count',
           'SUM(counts.vulnerability_count)::integer AS vulnerability_count',
           'SUM(counts.project_count)::integer AS project_count'
