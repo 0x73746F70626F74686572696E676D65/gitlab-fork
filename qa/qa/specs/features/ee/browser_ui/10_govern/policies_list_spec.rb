@@ -15,15 +15,6 @@ module QA
         end
       end
 
-      after do
-        if Runtime::Env.personal_access_tokens_disabled?
-          project.visit!
-          project.remove_via_browser_ui!
-        else
-          project.remove_via_api!
-        end
-      end
-
       before do
         Flow::Login.sign_in
         project.visit!
