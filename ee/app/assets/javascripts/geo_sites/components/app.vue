@@ -4,7 +4,8 @@ import { GlButton, GlLoadingIcon, GlModal } from '@gitlab/ui';
 import { mapActions, mapState, mapGetters } from 'vuex';
 import PageHeading from '~/vue_shared/components/page_heading.vue';
 import { s__, __ } from '~/locale';
-import { REMOVE_SITE_MODAL_ID } from '../constants';
+import { InternalEvents } from '~/tracking';
+import { REMOVE_SITE_MODAL_ID, VIEW_ADMIN_GEO_SITES_PAGELOAD } from '../constants';
 import GeoSitesFilters from './geo_sites_filters.vue';
 import GeoSites from './geo_sites.vue';
 import GeoSitesEmptyState from './geo_sites_empty_state.vue';
@@ -39,6 +40,7 @@ export default {
     GeoSitesEmptyState,
     GlModal,
   },
+  mixins: [InternalEvents.mixin()],
   props: {
     newSiteUrl: {
       type: String,
@@ -84,6 +86,9 @@ export default {
   },
   created() {
     this.fetchSites();
+  },
+  mounted() {
+    this.trackEvent(VIEW_ADMIN_GEO_SITES_PAGELOAD);
   },
   methods: {
     ...mapActions(['fetchSites', 'cancelSiteRemoval', 'removeSite']),
