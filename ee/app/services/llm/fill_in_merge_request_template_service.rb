@@ -1,14 +1,13 @@
 # frozen_string_literal: true
 
+# rubocop:disable Gitlab/BoundedContexts -- TODO file to be removed
 module Llm
   class FillInMergeRequestTemplateService < BaseService
     extend ::Gitlab::Utils::Override
 
     override :valid
     def valid?
-      super &&
-        resource.is_a?(Project) &&
-        Ability.allowed?(user, :fill_in_merge_request_template, resource)
+      false
     end
 
     private
@@ -22,3 +21,4 @@ module Llm
     end
   end
 end
+# rubocop:enable Gitlab/BoundedContexts

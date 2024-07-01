@@ -3286,49 +3286,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     end
   end
 
-  describe 'fill_in_merge_request_template policy' do
-    let_it_be(:namespace) { group }
-    let_it_be(:project) { private_project }
-    let_it_be(:current_user) { maintainer }
-
-    let(:authorizer) { instance_double(::Gitlab::Llm::FeatureAuthorizer) }
-
-    before do
-      allow(::Gitlab::Llm::FeatureAuthorizer).to receive(:new).and_return(authorizer)
-      allow(project).to receive(:namespace).and_return(namespace)
-    end
-
-    context "when feature is authorized" do
-      before do
-        allow(authorizer).to receive(:allowed?).and_return(true)
-      end
-
-      it { is_expected.to be_allowed(:fill_in_merge_request_template) }
-
-      context 'when fill_in_mr_template feature flag is disabled' do
-        before do
-          stub_feature_flags(fill_in_mr_template: false)
-        end
-
-        it { is_expected.to be_disallowed(:fill_in_merge_request_template) }
-      end
-
-      context 'when user cannot create_merge_request_in' do
-        let(:current_user) { guest }
-
-        it { is_expected.to be_disallowed(:fill_in_merge_request_template) }
-      end
-    end
-
-    context "when feature is not authorized" do
-      before do
-        allow(authorizer).to receive(:allowed?).and_return(false)
-      end
-
-      it { is_expected.to be_disallowed(:fill_in_merge_request_template) }
-    end
-  end
-
   describe 'summarize_new_merge_request policy' do
     let_it_be(:namespace) { group }
     let_it_be(:project) { private_project }

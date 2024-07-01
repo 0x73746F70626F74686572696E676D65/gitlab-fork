@@ -15,12 +15,6 @@ module EE
           push_frontend_feature_flag(:merge_trains_viz, @project)
         end
 
-        before_action only: [:edit] do
-          if can?(current_user, :fill_in_merge_request_template, project)
-            push_frontend_feature_flag(:fill_in_mr_template, project)
-          end
-        end
-
         before_action :authorize_read_pipeline!, only: [:metrics_reports]
         before_action :authorize_read_security_resource!, only: [
           :container_scanning_reports, :dependency_scanning_reports,

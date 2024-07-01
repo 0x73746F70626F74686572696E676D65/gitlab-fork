@@ -225,15 +225,6 @@ module EE
       end
 
       with_scope :subject
-      condition(:fill_in_merge_request_template_enabled) do
-        ::Feature.enabled?(:fill_in_mr_template, subject) &&
-          ::Gitlab::Llm::FeatureAuthorizer.new(
-            container: subject,
-            feature_name: :fill_in_merge_request_template
-          ).allowed?
-      end
-
-      with_scope :subject
       condition(:summarize_new_merge_request_enabled) do
         ::Feature.enabled?(:add_ai_summary_for_new_mr, subject) &&
           ::Gitlab::Llm::FeatureAuthorizer.new(
@@ -826,10 +817,6 @@ module EE
         enable :create_bot_pipeline
         enable :build_download_code
       end
-
-      rule do
-        fill_in_merge_request_template_enabled & can?(:create_merge_request_in)
-      end.enable :fill_in_merge_request_template
 
       rule do
         summarize_new_merge_request_enabled & can?(:create_merge_request_in)

@@ -50,7 +50,6 @@ services: # Cloud connector features (i.e. code_suggestions, duo_chat...)
           - duo_chat
           - explain_code
           - explain_vulnerability
-          - fill_in_merge_request_template
           - generate_commit_message
           - generate_cube_query
           - resolve_vulnerability
