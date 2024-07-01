@@ -285,6 +285,7 @@ module Gitlab
         blobs_found_with_tree_entries = Set.new
 
         commits = changes_access.commits.map { |commit| commit.id.match(/[a-f0-9]{40}([a-f0-9]{24})?/).to_s }
+
         # Scanning had found secrets, let's try to look up their file path and commit id. This can be done
         # by using `GetTreeEntries()` RPC, and cross examining blobs with ones where secrets where found.
         commits.each do |revision|
@@ -324,6 +325,7 @@ module Gitlab
             findings_by_commits.merge!(new_entry) do |_commit_sha, existing_findings, new_findings|
               existing_findings.merge!(new_findings)
             end
+
             # Mark as found with tree entry already.
             blobs_found_with_tree_entries << entry.id
           end
