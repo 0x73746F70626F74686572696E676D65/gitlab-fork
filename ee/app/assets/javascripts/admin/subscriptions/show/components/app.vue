@@ -3,6 +3,7 @@ import { GlAlert, GlButton, GlSprintf } from '@gitlab/ui';
 import { isInFuture } from '~/lib/utils/datetime/date_calculation_utility';
 import PageHeading from '~/vue_shared/components/page_heading.vue';
 import { sprintf } from '~/locale';
+import { InternalEvents } from '~/tracking';
 import {
   subscriptionActivationNotificationText,
   subscriptionActivationFutureDatedNotificationTitle,
@@ -16,6 +17,7 @@ import {
   exportLicenseUsageBtnText,
   customersPortalBtnText,
   SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT,
+  VIEW_ADMIN_SUBSCRIPTION_PAGELOAD,
 } from '../constants';
 import getCurrentLicense from '../graphql/queries/get_current_license.query.graphql';
 import getPastLicenseHistory from '../graphql/queries/get_past_license_history.query.graphql';
@@ -33,6 +35,7 @@ export default {
     SubscriptionBreakdown,
     NoActiveSubscription,
   },
+  mixins: [InternalEvents.mixin()],
   inject: ['customersPortalUrl'],
   i18n: {
     exportLicenseUsageBtnText,
@@ -105,6 +108,9 @@ export default {
         [SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT]: this.displayActivationNotification,
       };
     },
+  },
+  mounted() {
+    this.trackEvent(VIEW_ADMIN_SUBSCRIPTION_PAGELOAD);
   },
   methods: {
     displayActivationNotification(license) {
