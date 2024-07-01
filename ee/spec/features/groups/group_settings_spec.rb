@@ -209,6 +209,7 @@ RSpec.describe 'Edit group settings', :js, feature_category: :groups_and_project
 
     before do
       stub_licensed_features(adjourned_deletion_for_projects_and_groups: true)
+      allow(Search::ElasticGroupAssociationDeletionWorker).to receive(:perform_async)
     end
 
     describe 'immediately deleting a project marked for deletion', :js do

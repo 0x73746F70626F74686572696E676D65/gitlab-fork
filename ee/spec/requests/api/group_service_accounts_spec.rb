@@ -39,6 +39,7 @@ RSpec.describe API::GroupServiceAccounts, :aggregate_failures, feature_category:
         let!(:another_group) { create(:group, owners: service_account_user) }
 
         it "marks user for deletion and group is deleted", :sidekiq_inline do
+          expect(Search::ElasticGroupAssociationDeletionWorker).to receive(:perform_async).twice
           perform_enqueued_jobs do
             delete api("/groups/#{group_id}/service_accounts/#{service_account_user.id}?hard_delete=true", admin,
               admin_mode: true)
@@ -60,6 +61,7 @@ RSpec.describe API::GroupServiceAccounts, :aggregate_failures, feature_category:
           end
 
           it "marks only user for deletion and group is not deleted", :sidekiq_inline do
+            expect(Search::ElasticGroupAssociationDeletionWorker).to receive(:perform_async).twice
             perform_enqueued_jobs do
               delete api("/groups/#{group_id}/service_accounts/#{service_account_user.id}?hard_delete=true", admin,
                 admin_mode: true)

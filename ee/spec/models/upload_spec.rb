@@ -130,6 +130,10 @@ RSpec.describe Upload do
   end
 
   describe '#destroy' do
+    before do
+      allow(Search::ElasticGroupAssociationDeletionWorker).to receive(:perform_async)
+    end
+
     subject { create(:upload, :namespace_upload, checksum: '8710d2c16809c79fee211a9693b64038a8aae99561bc86ce98a9b46b45677fe4') }
 
     context 'when running in a Geo primary node' do
