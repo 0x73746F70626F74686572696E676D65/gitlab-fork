@@ -70,3 +70,5 @@ export const STATUS_DELAY_THRESHOLD_MS = 600000;
 export const REMOVE_SITE_MODAL_ID = 'remove-site-modal';
 
 export const STATUS_FILTER_QUERY_PARAM = 'status';
+
+export const VIEW_ADMIN_GEO_SITES_PAGELOAD = 'view_admin_geo_sites_pageload';
