@@ -238,7 +238,7 @@ describe('Dependencies actions', () => {
     });
 
     describe('on success', () => {
-      describe('given no params', () => {
+      describe('given only page param', () => {
         beforeEach(() => {
           state.pageInfo = { ...pageInfo };
 
@@ -257,7 +257,7 @@ describe('Dependencies actions', () => {
         it('uses default sorting params from state', () =>
           testAction(
             actions.fetchDependencies,
-            undefined,
+            { page: state.pageInfo.page },
             state,
             [],
             [
@@ -298,7 +298,7 @@ describe('Dependencies actions', () => {
         it('fetches the results for the current cursor', () => {
           testAction(
             actions.fetchDependencies,
-            {},
+            { cursor: state.pageInfo.currentCursor },
             state,
             [],
             [

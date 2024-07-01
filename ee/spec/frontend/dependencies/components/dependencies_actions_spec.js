@@ -8,6 +8,7 @@ import {
   SORT_FIELDS_GROUP,
   SORT_FIELDS_PROJECT,
 } from 'ee/dependencies/store/modules/list/constants';
+import * as urlUtility from '~/lib/utils/url_utility';
 import { TEST_HOST } from 'helpers/test_constants';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
@@ -43,6 +44,7 @@ describe('DependenciesActions component', () => {
       propsData: { namespace },
     });
     store.state[namespace].endpoint = `${TEST_HOST}/dependencies.json`;
+    jest.spyOn(urlUtility, 'updateHistory');
     await nextTick();
   });
 
@@ -78,6 +80,10 @@ describe('DependenciesActions component', () => {
           Object.keys(SORT_FIELDS_GROUP).map((field) => [`${namespace}/setSortField`, field]),
         ),
       );
+      expect(urlUtility.updateHistory).toHaveBeenCalledTimes(4);
+      expect(urlUtility.updateHistory).toHaveBeenCalledWith({
+        url: `${TEST_HOST}/`,
+      });
     });
 
     it('renders a filtered-search input', () => {
@@ -114,5 +120,9 @@ describe('DependenciesActions component', () => {
   it('dispatches the toggleSortOrder action on clicking the sort order button', () => {
     findSorting().vm.$emit('sortDirectionChange');
     expect(store.dispatch).toHaveBeenCalledWith(`${namespace}/toggleSortOrder`);
+    expect(urlUtility.updateHistory).toHaveBeenCalledTimes(1);
+    expect(urlUtility.updateHistory).toHaveBeenCalledWith({
+      url: `${TEST_HOST}/`,
+    });
   });
 });
