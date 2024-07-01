@@ -181,7 +181,7 @@ module Groups
     end
 
     def using_new_query?
-      ::Feature.enabled?(:rewrite_sbom_occurrences_query, group)
+      ::Feature.enabled?(:rewrite_sbom_occurrences_query, group) && params[:project_ids].blank?
     end
     strong_memoize_attr :using_new_query?
   end
