@@ -23,9 +23,6 @@ module QA
       after do
         group.remove_via_api!
 
-        page.visit Runtime::Scenario.gitlab_address
-        Page::Main::Menu.perform(&:sign_out_if_signed_in)
-
         Flow::Saml.remove_saml_idp_service(saml_idp_service)
 
         user.remove_via_api! if user

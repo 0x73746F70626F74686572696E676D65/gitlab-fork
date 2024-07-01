@@ -31,9 +31,6 @@ module QA
 
       after do
         sandbox_group.remove_via_api!
-
-        page.visit Runtime::Scenario.gitlab_address
-        Page::Main::Menu.perform(&:sign_out_if_signed_in)
       end
 
       context 'when restricted by another ip address' do

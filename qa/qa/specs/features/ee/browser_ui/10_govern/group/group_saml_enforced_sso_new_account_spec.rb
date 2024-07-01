@@ -83,7 +83,6 @@ module QA
         remove_user
 
         page.visit Runtime::Scenario.gitlab_address
-        Page::Main::Menu.perform(&:sign_out_if_signed_in)
       end
 
       context 'with Snowplow tracking enabled',
