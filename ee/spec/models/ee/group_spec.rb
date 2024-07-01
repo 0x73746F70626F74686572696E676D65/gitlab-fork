@@ -2586,7 +2586,6 @@ RSpec.describe Group, feature_category: :groups_and_projects do
 
     before do
       WebMock.stub_request(:post, parent_group_hook.url)
-      allow(Search::ElasticGroupAssociationDeletionWorker).to receive(:perform_async)
     end
 
     context 'when a subgroup is added to the parent group' do

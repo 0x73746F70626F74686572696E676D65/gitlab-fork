@@ -15,6 +15,8 @@ module Search
     idempotent!
 
     def perform(group_id, ancestor_id, options = {})
+      return unless Gitlab::CurrentSettings.elasticsearch_indexing?
+
       group = Group.find_by_id(group_id)
       remove_epics = index_epics?(group)
       remove_work_items = work_item_index_available?

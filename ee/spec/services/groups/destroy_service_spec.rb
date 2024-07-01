@@ -140,8 +140,6 @@ RSpec.describe Groups::DestroyService, feature_category: :groups_and_projects do
     let!(:provisioned_user) { create(:user, provisioned_by_group: group) }
 
     it 'deletes group serviced accounts and user bots', :sidekiq_inline do
-      expect(Search::ElasticGroupAssociationDeletionWorker).to receive(:perform_async).with(group.id, anything)
-
       subject.execute
 
       expect(
