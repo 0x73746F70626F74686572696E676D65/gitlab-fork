@@ -11,6 +11,7 @@ import groupBoardQuery from '~/boards/graphql/group_board.query.graphql';
 import { mockList, mockGroupProjects, mockGroupBoardResponse } from 'jest/boards/mock_data';
 import {
   mockGroupBoardCurrentIterationResponse,
+  mockGroupBoardNoIterationResponse,
   currentIterationQueryResponse,
 } from '../mock_data';
 
@@ -20,6 +21,9 @@ const groupBoardQueryHandlerSuccess = jest.fn().mockResolvedValue(mockGroupBoard
 const currentIterationBoardQueryHandlerSuccess = jest
   .fn()
   .mockResolvedValue(mockGroupBoardCurrentIterationResponse);
+const noIterationBoardQueryHandlerSuccess = jest
+  .fn()
+  .mockResolvedValue(mockGroupBoardNoIterationResponse);
 const currentIterationQueryHandlerSuccess = jest
   .fn()
   .mockResolvedValue(currentIterationQueryResponse);
@@ -85,6 +89,25 @@ describe('Issue boards new issue form', () => {
         expect.objectContaining({
           iterationCadenceId: 'gid://gitlab/Iterations::Cadence/1',
           iterationWildcardId: 'CURRENT',
+        }),
+      ],
+    ]);
+  });
+
+  it('excludes iteration when board is scoped to No iteration', async () => {
+    wrapper = createComponent({ boardQueryHandler: noIterationBoardQueryHandlerSuccess });
+
+    await waitForPromises();
+    findBoardNewItem().vm.$emit('form-submit', { title: 'Foo' });
+
+    await waitForPromises();
+
+    expect(wrapper.emitted('addNewIssue')).toEqual([
+      [
+        expect.not.objectContaining({
+          iterationWildcardId: null,
+          iterationId: null,
+          iterationCadenceId: null,
         }),
       ],
     ]);
