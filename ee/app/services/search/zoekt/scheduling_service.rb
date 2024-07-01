@@ -97,7 +97,7 @@ module Search
           sorted.each do |namespace_id, repository_size|
             node.used_bytes -= repository_size
 
-            break if (node.used_bytes / node.total_bytes.to_f) < WATERMARK_LIMIT_HIGH
+            break if (node.used_bytes / node.total_bytes.to_f) < WATERMARK_LIMIT_LOW
 
             namespaces_to_move << namespace_id
             total_repository_size += repository_size
