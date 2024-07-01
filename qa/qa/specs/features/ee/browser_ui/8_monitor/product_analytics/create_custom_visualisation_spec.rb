@@ -54,13 +54,11 @@ module QA
         EE::Page::Project::Analyze::VisualizationSetup.perform do |visualization|
           visualization.set_visualization_title(custom_visualization_title)
           visualization.select_visualization_type(custom_visualization_type)
-          visualization.choose_events
-          visualization.choose_all_events_compared
+          visualization.choose_measure_all_events
           visualization.click_save_your_visualization
         end
 
         Page::Project::Menu.perform(&:go_to_analytics_dashboards)
-        page.driver.browser.switch_to.alert.accept
 
         EE::Page::Project::Analyze::AnalyticsDashboards::Home.perform(&:click_new_dashboard_button)
 
@@ -75,7 +73,7 @@ module QA
         Page::Project::Menu.perform(&:go_to_analytics_dashboards)
 
         EE::Page::Project::Analyze::AnalyticsDashboards::Home.perform do |analytics_dashboards|
-          analytics_dashboards.dashboards_list[2].click
+          analytics_dashboards.click_dashboard_list_item(custom_dashboard_title)
         end
 
         EE::Page::Project::Analyze::AnalyticsDashboards::Dashboard.perform do |dashboard|

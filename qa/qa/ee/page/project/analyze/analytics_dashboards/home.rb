@@ -49,6 +49,10 @@ module QA
                 click_element('new-dashboard-button')
               end
 
+              def click_dashboard_list_item(name)
+                click_link(name)
+              end
+
               def list_item_has_errors_badge?(list_item_index:, wait: 1)
                 within_element_by_index('dashboard-list-item', list_item_index) do
                   has_element?('dashboard-errors-badge', wait: wait)
