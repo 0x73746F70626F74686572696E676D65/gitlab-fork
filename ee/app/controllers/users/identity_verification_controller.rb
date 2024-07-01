@@ -5,6 +5,8 @@ module Users
     before_action :require_unverified_user!, except: [:success]
 
     def show
+      return if request.referer && URI.parse(request.referer).path == identity_verification_path
+
       session[:identity_verification_referer] = request.referer
     end
 
