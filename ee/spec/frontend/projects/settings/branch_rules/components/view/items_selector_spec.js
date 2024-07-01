@@ -27,13 +27,13 @@ describe('Items selector component', () => {
   it('passes the correct props to the list selector component', () => {
     createComponent({
       usersOptions: { active: true },
-      isProjectOnlyNamespace: true,
+      disableNamespaceDropdown: true,
     });
 
     expect(findListSelector().props('type')).toBe('user');
     expect(findListSelector().props('selectedItems')).toEqual(items);
     expect(findListSelector().props('usersQueryOptions')).toEqual({ active: true });
-    expect(findListSelector().props('isProjectOnlyNamespace')).toBe(true);
+    expect(findListSelector().props('disableNamespaceDropdown')).toBe(true);
   });
 
   it('emits the change event with the updated selectedItems when an item is selected', async () => {
