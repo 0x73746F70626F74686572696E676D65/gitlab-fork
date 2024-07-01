@@ -3419,6 +3419,58 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     end
   end
 
+  describe 'write_tracing policy' do
+    let(:current_user) { developer }
+
+    before do
+      stub_licensed_features(tracing: true)
+    end
+
+    describe 'when feature flag is disabled' do
+      before do
+        stub_feature_flags(observability_tracing: false)
+      end
+
+      it { is_expected.to be_disallowed(:write_tracing) }
+    end
+
+    describe 'when feature flag is enabled for project' do
+      before do
+        stub_feature_flags(observability_tracing: false)
+        stub_feature_flags(observability_tracing: project)
+      end
+
+      it { is_expected.to be_allowed(:write_tracing) }
+    end
+
+    describe 'when feature flag is enabled for root namespace' do
+      before do
+        stub_feature_flags(observability_tracing: false)
+        stub_feature_flags(observability_tracing: project.root_namespace)
+      end
+
+      it { is_expected.to be_allowed(:write_tracing) }
+    end
+
+    describe 'when the project does not have the correct license' do
+      before do
+        stub_licensed_features(tracing: false)
+      end
+
+      it { is_expected.to be_disallowed(:write_tracing) }
+    end
+
+    describe 'when the user does not have permission' do
+      let(:current_user) { reporter }
+
+      it { is_expected.to be_disallowed(:write_tracing) }
+    end
+
+    describe 'when the user has permission' do
+      it { is_expected.to be_allowed(:write_tracing) }
+    end
+  end
+
   describe "#admin_vulnerability" do
     before do
       stub_licensed_features(security_dashboard: true)
@@ -3498,6 +3550,49 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     end
   end
 
+  describe 'write_observability_metrics policy' do
+    let(:current_user) { developer }
+
+    before do
+      stub_licensed_features(metrics_observability: true)
+    end
+
+    describe 'when feature flag is disabled' do
+      before do
+        stub_feature_flags(observability_metrics: false)
+      end
+
+      it { is_expected.to be_disallowed(:write_observability_metrics) }
+    end
+
+    describe 'when feature flag is enabled for root namespace' do
+      before do
+        stub_feature_flags(observability_metrics: false)
+        stub_feature_flags(observability_metrics: project.root_namespace)
+      end
+
+      it { is_expected.to be_allowed(:write_observability_metrics) }
+    end
+
+    describe 'when the project does not have the correct license' do
+      before do
+        stub_licensed_features(metrics_observability: false)
+      end
+
+      it { is_expected.to be_disallowed(:write_observability_metrics) }
+    end
+
+    describe 'when the user does not have permission' do
+      let(:current_user) { reporter }
+
+      it { is_expected.to be_disallowed(:write_observability_metrics) }
+    end
+
+    describe 'when the user has permission' do
+      it { is_expected.to be_allowed(:write_observability_metrics) }
+    end
+  end
+
   describe 'read_observability_logs policy' do
     let(:current_user) { reporter }
 
@@ -3538,6 +3633,49 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
 
     describe 'when the user has permission' do
       it { is_expected.to be_allowed(:read_observability_logs) }
+    end
+  end
+
+  describe 'write_observability_logs policy' do
+    let(:current_user) { developer }
+
+    before do
+      stub_licensed_features(logs_observability: true)
+    end
+
+    describe 'when feature flag is disabled' do
+      before do
+        stub_feature_flags(observability_logs: false)
+      end
+
+      it { is_expected.to be_disallowed(:write_observability_logs) }
+    end
+
+    describe 'when feature flag is enabled for root namespace' do
+      before do
+        stub_feature_flags(observability_logs: false)
+        stub_feature_flags(observability_logs: project.root_namespace)
+      end
+
+      it { is_expected.to be_allowed(:write_observability_logs) }
+    end
+
+    describe 'when the project does not have the correct license' do
+      before do
+        stub_licensed_features(logs_observability: false)
+      end
+
+      it { is_expected.to be_disallowed(:write_observability_logs) }
+    end
+
+    describe 'when the user does not have permission' do
+      let(:current_user) { reporter }
+
+      it { is_expected.to be_disallowed(:write_observability_logs) }
+    end
+
+    describe 'when the user has permission' do
+      it { is_expected.to be_allowed(:write_observability_logs) }
     end
   end
 
