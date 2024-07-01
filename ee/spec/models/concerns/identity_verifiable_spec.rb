@@ -165,12 +165,8 @@ RSpec.describe IdentityVerifiable, :saas, feature_category: :instance_resiliency
     end
 
     context 'when the user is a bot' do
-      let_it_be(:user) { create(:user, :project_bot) }
       let_it_be(:human_user) { build_stubbed(:user, :with_sign_ins, :identity_verification_eligible) }
-
-      before do
-        allow(user).to receive(:created_by).and_return(human_user)
-      end
+      let_it_be(:user) { create(:user, :project_bot, created_by: human_user) }
 
       it 'verifies the identity of the bot creator', :aggregate_failures do
         expect(human_user).to receive(:identity_verified?).and_call_original
@@ -201,13 +197,9 @@ RSpec.describe IdentityVerifiable, :saas, feature_category: :instance_resiliency
       end
 
       context 'when the bot creator is nil' do
-        before do
-          allow(user).to receive(:created_by).and_return(nil)
-        end
+        let_it_be(:user) { build_stubbed(:user, :project_bot) }
 
         context 'when the bot was created after the feature release date' do
-          let(:created_after_release_day) { true }
-
           it 'does not verify the user', :aggregate_failures do
             expect(user).to receive(:created_after_require_identity_verification_release_day?).and_return(true)
             expect(identity_verified?).to eq(false)
@@ -215,8 +207,6 @@ RSpec.describe IdentityVerifiable, :saas, feature_category: :instance_resiliency
         end
 
         context 'when the bot was created before the feature release date' do
-          let(:created_after_release_day) { false }
-
           it 'verifies the user' do
             expect(user).to receive(:created_after_require_identity_verification_release_day?).and_return(false)
             expect(identity_verified?).to eq(true)
