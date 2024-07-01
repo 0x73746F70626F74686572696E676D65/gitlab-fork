@@ -13,7 +13,7 @@ RSpec.describe 'EE > Projects > Settings > User manages issue template', feature
 
   it 'saves issue template' do
     fill_in 'project_issues_template', with: "This issue should contain the following."
-    page.within '.issues-feature' do
+    within_testid 'issue-template-settings-content' do
       click_button 'Save changes'
     end
 

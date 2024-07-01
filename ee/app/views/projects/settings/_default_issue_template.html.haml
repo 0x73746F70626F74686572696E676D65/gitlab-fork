@@ -1,14 +1,13 @@
 - if @project.feature_available?(:issuable_default_templates)
-  - expanded = expanded_by_default?
-  %section.settings.issues-feature.no-animate#js-issue-settings{ class: [('expanded' if expanded), ('hidden' if @project.project_feature.send(:issues_access_level) == 0)], data: { testid: 'issue-template-settings-content' } }
-    .settings-header
-      %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only= _('Default description template for issues')
-      = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
-        = expanded ? _('Collapse') : _('Expand')
+  = render ::Layouts::SettingsBlockComponent.new(_('Default description template for issues'),
+    id: 'js-issue-settings',
+    css_class: ('hidden' if @project.project_feature.send(:issues_access_level) == 0),
+    testid: 'issue-template-settings-content',
+    expanded: expanded_by_default?) do |c|
+    - c.with_description do
       - link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: help_page_path('user/project/description_templates', anchor: 'set-a-default-template-for-merge-requests-and-issues') }
-      %p.gl-text-secondary#issue-settings-default-template-label= _('Set a default description template to be used for new issues. %{link_start}What are description templates?%{link_end}').html_safe % { link_start: link_start, link_end: '</a>'.html_safe }
-
-    .settings-content
+      = _('Set a default description template to be used for new issues. %{link_start}What are description templates?%{link_end}').html_safe % { link_start: link_start, link_end: '</a>'.html_safe }
+    - c.with_body do
       = gitlab_ui_form_for @project, html: { multipart: true, class: "issue-settings-form" }, authenticity_token: true do |f|
         %input{ type: 'hidden', name: 'update_section', value: 'js-issue-settings' }
         .row
