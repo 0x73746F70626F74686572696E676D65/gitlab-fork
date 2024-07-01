@@ -16,10 +16,12 @@ import {
   futureSubscriptionsEntryName,
   subscriptionMainTitle,
   SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT,
+  VIEW_ADMIN_SUBSCRIPTION_PAGELOAD,
 } from 'ee/admin/subscriptions/show/constants';
 import getCurrentLicense from 'ee/admin/subscriptions/show/graphql/queries/get_current_license.query.graphql';
 import getPastLicenseHistory from 'ee/admin/subscriptions/show/graphql/queries/get_past_license_history.query.graphql';
 import getFutureLicenseHistory from 'ee/admin/subscriptions/show/graphql/queries/get_future_license_history.query.graphql';
+import { useMockInternalEventsTracking } from 'helpers/tracking_internal_events_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { useFakeDate } from 'helpers/fake_date';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -104,16 +106,24 @@ describe('SubscriptionManagementApp', () => {
     );
   };
 
-  describe('when subscription fetch is successful', () => {
+  const { bindInternalEventDocument } = useMockInternalEventsTracking();
+
+  describe('default', () => {
+    currentSubscriptionResolver = jest.fn().mockResolvedValue(currentResponseWithData);
+    pastSubscriptionsResolver = jest.fn().mockResolvedValue(pastResponseWithData);
+    futureSubscriptionsResolver = jest.fn().mockResolvedValue(futureResponseEmpty);
+
     beforeEach(() => {
-      currentSubscriptionResolver = jest.fn().mockResolvedValue(currentResponseWithData);
-      pastSubscriptionsResolver = jest.fn().mockResolvedValue(pastResponseWithData);
-      futureSubscriptionsResolver = jest.fn().mockResolvedValue(futureResponseEmpty);
       createComponent({}, [
         currentSubscriptionResolver,
         pastSubscriptionsResolver,
         futureSubscriptionsResolver,
       ]);
+    });
+
+    it(`tracks ${VIEW_ADMIN_SUBSCRIPTION_PAGELOAD} event`, () => {
+      const { trackEventSpy } = bindInternalEventDocument(wrapper.element);
+      expect(trackEventSpy).toHaveBeenCalledWith(VIEW_ADMIN_SUBSCRIPTION_PAGELOAD, {}, undefined);
     });
 
     it('shows the main title', () => {

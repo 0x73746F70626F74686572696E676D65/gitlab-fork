@@ -138,3 +138,5 @@ export const syncButtonTexts = Object.freeze({
     'SuperSonics|You can sync your subscription data to ensure your details are up to date.',
   ),
 });
+
+export const VIEW_ADMIN_SUBSCRIPTION_PAGELOAD = 'view_admin_subscription_pageload';
