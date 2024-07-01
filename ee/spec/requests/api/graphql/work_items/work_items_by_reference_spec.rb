@@ -13,18 +13,38 @@ RSpec.describe 'Query.workItemsByReference (EE)', feature_category: :portfolio_m
   let_it_be(:work_item_epic1) { create(:work_item, :epic, namespace: public_group) }
   let_it_be(:work_item_epic2) { create(:work_item, :epic, namespace: public_group) }
   let_it_be(:private_work_item_epic) { create(:work_item, :epic, namespace: private_group) }
+  let_it_be(:legacy_epic1) { create(:epic, group: public_group) }
+  let_it_be(:legacy_epic2) { create(:epic, group: public_group) }
+  let_it_be(:legacy_issue1) { create(:issue, project: public_project) }
+  let_it_be(:legacy_issue2) { create(:issue, project: public_project) }
 
   let(:references) do
     [
       task.to_reference(full: true),
       work_item_epic1.to_reference(full: true),
       Gitlab::UrlBuilder.build(work_item_epic2),
-      private_work_item_epic.to_reference(full: true)
+      private_work_item_epic.to_reference(full: true),
+      Gitlab::UrlBuilder.build(legacy_epic1),
+      legacy_epic2.to_reference(full: true),
+      Gitlab::UrlBuilder.build(legacy_issue1),
+      legacy_issue2.to_reference(full: true)
     ]
   end
 
+  before do
+    stub_licensed_features(epics: true)
+  end
+
   shared_examples 'response with accessible work items' do
-    let(:items) { [work_item_epic2, work_item_epic1, task] }
+    let(:issue_work_item1) { WorkItem.find(legacy_issue1.id) }
+    let(:issue_work_item2) { WorkItem.find(legacy_issue2.id) }
+
+    let(:items) do
+      [
+        issue_work_item2, issue_work_item1, legacy_epic2.work_item, legacy_epic1.work_item,
+        work_item_epic2, work_item_epic1, task
+      ]
+    end
 
     it_behaves_like 'a working graphql query that returns data' do
       before do
@@ -42,22 +62,30 @@ RSpec.describe 'Query.workItemsByReference (EE)', feature_category: :portfolio_m
     it 'avoids N+1 queries', :use_sql_query_cache do
       post_graphql(query, current_user: current_user) # warm up
 
+      references1 = [task, work_item_epic1, work_item_epic2].map { |item| item.to_reference(full: true) }
       control_count = ActiveRecord::QueryRecorder.new(skip_cached: false) do
-        post_graphql(query, current_user: current_user)
+        post_graphql(query(refs: references1), current_user: current_user)
       end
+
       expect(graphql_data_at('workItemsByReference', 'nodes').size).to eq(3)
 
       extra_work_items = create_list(:work_item, 3, :epic, namespace: public_group)
-      refs = references + extra_work_items.map { |item| item.to_reference(full: true) }
+      references2 = references1 + extra_work_items.map { |item| item.to_reference(full: true) }
 
       expect do
-        post_graphql(query(refs: refs), current_user: current_user)
+        post_graphql(query(refs: references2), current_user: current_user)
       end.not_to exceed_all_query_limit(control_count)
+
       expect(graphql_data_at('workItemsByReference', 'nodes').size).to eq(6)
     end
 
     context 'with access to private group' do
-      let(:items) { [private_work_item_epic, work_item_epic2, work_item_epic1, task] }
+      let(:items) do
+        [
+          issue_work_item2, issue_work_item1, legacy_epic2.work_item, legacy_epic1.work_item,
+          private_work_item_epic, work_item_epic2, work_item_epic1, task
+        ]
+      end
 
       before_all do
         private_group.add_guest(current_user)
