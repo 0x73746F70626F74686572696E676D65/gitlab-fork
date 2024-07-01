@@ -425,8 +425,14 @@ RSpec.shared_examples 'scan detected secrets' do
 
     let(:changes) do
       [
-        { oldrev: initial_commit, newrev: new_commit, ref: 'refs/heads/master' },
         { oldrev: initial_commit, newrev: commit_with_same_blob, ref: 'refs/heads/master' }
+      ]
+    end
+
+    let(:commits) do
+      [
+        Gitlab::Git::Commit.find(repository, new_commit),
+        Gitlab::Git::Commit.find(repository, commit_with_same_blob)
       ]
     end
 
@@ -450,6 +456,12 @@ RSpec.shared_examples 'scan detected secrets' do
           )
         ]
       )
+    end
+
+    before do
+      allow(repository).to receive(:new_commits)
+        .with([commit_with_same_blob])
+        .and_return(commits)
     end
 
     it 'displays the findings with their corresponding commit sha/file path' do
