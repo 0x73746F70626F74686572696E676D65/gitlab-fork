@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ComplianceManagement::PendingStatusCheckWorker, feature_category: :compliance_management do
+RSpec.describe ComplianceManagement::PendingStatusCheckWorker, feature_category: :security_policy_management do
   describe "#perform" do
     let_it_be(:worker) { described_class.new }
     let_it_be(:project) { create(:project) }

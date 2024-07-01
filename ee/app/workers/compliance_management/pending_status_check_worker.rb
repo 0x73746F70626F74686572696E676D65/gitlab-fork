@@ -5,7 +5,7 @@ module ComplianceManagement
     include ApplicationWorker
 
     version 1
-    feature_category :compliance_management
+    feature_category :security_policy_management
     data_consistency :delayed
     urgency :high
     idempotent!

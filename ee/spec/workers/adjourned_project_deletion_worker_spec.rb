@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe AdjournedProjectDeletionWorker, feature_category: :compliance_management do
+RSpec.describe AdjournedProjectDeletionWorker, feature_category: :groups_and_projects do
   describe "#perform" do
     subject(:worker) { described_class.new }
 

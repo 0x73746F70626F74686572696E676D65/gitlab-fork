@@ -32,7 +32,7 @@
   :tags: []
 - :name: cronjob:adjourned_group_deletion
   :worker_name: AdjournedGroupDeletionWorker
-  :feature_category: :compliance_management
+  :feature_category: :groups_and_projects
   :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
@@ -986,7 +986,7 @@
   :tags: []
 - :name: adjourned_project_deletion
   :worker_name: AdjournedProjectDeletionWorker
-  :feature_category: :compliance_management
+  :feature_category: :groups_and_projects
   :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
@@ -1166,7 +1166,7 @@
   :tags: []
 - :name: compliance_management_pending_status_check
   :worker_name: ComplianceManagement::PendingStatusCheckWorker
-  :feature_category: :compliance_management
+  :feature_category: :security_policy_management
   :has_external_dependencies: false
   :urgency: :high
   :resource_boundary: :unknown

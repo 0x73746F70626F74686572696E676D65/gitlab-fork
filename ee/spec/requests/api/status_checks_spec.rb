@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::StatusChecks, feature_category: :compliance_management do
+RSpec.describe API::StatusChecks, feature_category: :security_policy_management do
   include AccessMatchersForRequest
   using RSpec::Parameterized::TableSyntax
 

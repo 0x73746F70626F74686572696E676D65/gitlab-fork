@@ -4,7 +4,7 @@ module API
   class StatusChecks < ::API::Base
     include PaginationParams
 
-    feature_category :compliance_management
+    feature_category :security_policy_management
 
     before do
       authenticate!
