@@ -7,7 +7,7 @@ module Gitlab
 
       feature_category :vulnerability_management
       data_consistency :delayed
-      deduplicate :until_executing
+      deduplicate :until_executed
       idempotent!
 
       def perform(global_id)

@@ -30,7 +30,7 @@ RSpec.describe Gitlab::SegmentedExport::SegmentExporterService, feature_category
       subject(:export_segment) { service_object.execute }
 
       before do
-        allow(Gitlab::Export::SegmentedExportFinalisationWorker).to receive(:perform_in)
+        allow(Gitlab::Export::SegmentedExportFinalisationWorker).to receive(:perform_async)
       end
 
       it 'generates the partial exports for each part' do
@@ -47,8 +47,7 @@ RSpec.describe Gitlab::SegmentedExport::SegmentExporterService, feature_category
       it 'enqueues the export finalisation' do
         export_segment
 
-        expect(Gitlab::Export::SegmentedExportFinalisationWorker).to have_received(:perform_in).with(
-          10.seconds,
+        expect(Gitlab::Export::SegmentedExportFinalisationWorker).to have_received(:perform_async).with(
           vulnerability_export.to_global_id
         )
       end
