@@ -21,7 +21,7 @@ module QA
       end
 
       it(
-        'finds merge request that matches description',
+        'finds merge request that matches description', :blocking,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347633'
       ) do
         QA::Support::Retrier.retry_on_exception(
