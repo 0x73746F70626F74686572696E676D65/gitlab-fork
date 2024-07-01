@@ -1,0 +1,9 @@
+---
+name: fix_sso_enforcement_for_web_activity
+feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/467267
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/156934
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/468906
+milestone: '17.2'
+group: group::authentication
+type: gitlab_com_derisk
+default_enabled: false

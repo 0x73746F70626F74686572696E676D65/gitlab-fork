@@ -697,9 +697,13 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
 
         let_it_be(:saml_provider) { create(:saml_provider, group: group, enforced_sso: true) }
 
-        context 'when the session has been set globally' do
+        context 'when in context of the user web activity' do
           around do |example|
-            Gitlab::Session.with_session({}) do
+            session = {}
+
+            session['warden.user.user.key'] = [[current_user.id], current_user.authenticatable_salt]
+
+            Gitlab::Session.with_session(session) do
               example.run
             end
           end
@@ -735,9 +739,13 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
 
         let_it_be(:saml_provider) { create(:saml_provider, group: group, enforced_sso: false) }
 
-        context 'when the session has been set globally' do
+        context 'when in context of the user web activity' do
           around do |example|
-            Gitlab::Session.with_session({}) do
+            session = {}
+
+            session['warden.user.user.key'] = [[current_user.id], current_user.authenticatable_salt]
+
+            Gitlab::Session.with_session(session) do
               example.run
             end
           end
@@ -924,7 +932,11 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
         with_them do
           context "when 'Enforce SSO-only authentication for web activity for this group' option is #{params[:enforced_sso?] ? 'enabled' : 'not enabled'}" do
             around do |example|
-              Gitlab::Session.with_session({}) do
+              session = {}
+
+              session['warden.user.user.key'] = [[user.id], user.authenticatable_salt] if user.is_a?(User)
+
+              Gitlab::Session.with_session(session) do
                 example.run
               end
             end

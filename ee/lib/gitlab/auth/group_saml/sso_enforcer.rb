@@ -90,9 +90,19 @@ module Gitlab
 
         def user_authorized?
           return false unless user
+
+          if Feature.enabled?(:fix_sso_enforcement_for_web_activity, user) && !in_context_of_user_web_activity?
+            return true
+          end
+
           return true if user.can_read_all_resources?
 
           false
+        end
+
+        def in_context_of_user_web_activity?
+          Gitlab::Session.current &&
+            Gitlab::Session.current.dig('warden.user.user.key', 0, 0) == user.id
         end
 
         def group

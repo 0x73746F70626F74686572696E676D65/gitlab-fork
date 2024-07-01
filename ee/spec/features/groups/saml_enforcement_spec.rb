@@ -92,7 +92,10 @@ RSpec.describe 'SAML access enforcement', feature_category: :system_access do
   context 'with active SAML login from session' do
     shared_examples 'resource access' do
       before do
-        dummy_session = { active_group_sso_sign_ins: { saml_provider.id => DateTime.now } }
+        dummy_session = {
+          'warden.user.user.key' => [[user.id], user.authenticatable_salt],
+          active_group_sso_sign_ins: { saml_provider.id => DateTime.now }
+        }
         allow(Gitlab::Session).to receive(:current).and_return(dummy_session)
 
         visit resource_path
@@ -151,7 +154,10 @@ RSpec.describe 'SAML access enforcement', feature_category: :system_access do
     context 'with an existing SAML session' do
       before do
         # Create a dummy SAML session
-        dummy_session = { active_group_sso_sign_ins: { saml_provider.id => DateTime.now } }
+        dummy_session = {
+          'warden.user.user.key' => [[user.id], user.authenticatable_salt],
+          active_group_sso_sign_ins: { saml_provider.id => DateTime.now }
+        }
         allow(Gitlab::Session).to receive(:current).and_return(dummy_session)
         # Or a real SAML session by visiting the resource_path
         # visit resource_path
