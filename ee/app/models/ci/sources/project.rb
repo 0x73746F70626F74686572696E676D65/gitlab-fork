@@ -5,6 +5,9 @@ module Ci
     class Project < Ci::ApplicationRecord
       include Ci::NamespacedModelName
       include Ci::Partitionable
+      include SafelyChangeColumnDefault
+
+      columns_changing_default :partition_id
 
       self.table_name = "ci_sources_projects"
 
