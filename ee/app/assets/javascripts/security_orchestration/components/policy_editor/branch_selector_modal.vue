@@ -221,7 +221,7 @@ export default {
     <p
       v-if="hasAsyncValidationError"
       data-testid="async-validation-error"
-      class="gl-my-2 gl-text-red-500 gl-white-space-pre-line"
+      class="gl-my-2 gl-text-red-500 gl-whitespace-pre-line"
     >
       <gl-sprintf :message="asyncValidationErrors">
         <template #bold="{ content }">
