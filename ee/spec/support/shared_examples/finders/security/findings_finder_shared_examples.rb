@@ -107,7 +107,7 @@ RSpec.shared_examples 'security findings finder' do
         end
 
         context 'when the uuid is provided' do
-          let(:uuid) { Security::Finding.pick(:uuid) }
+          let(:uuid) { Security::Finding.first[:uuid] }
           let(:params) do
             {
               uuid: uuid
