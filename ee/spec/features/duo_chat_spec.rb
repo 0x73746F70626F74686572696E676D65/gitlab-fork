@@ -34,13 +34,8 @@ RSpec.describe 'Duo Chat', :js, :saas, :clean_gitlab_redis_cache, feature_catego
     let(:chat_response) { "Final Answer: #{answer}" }
 
     before do
-      # TODO: Switch to AI Gateway
-      # See https://gitlab.com/gitlab-org/gitlab/-/issues/431563
-      stub_request(:post, "https://api.anthropic.com/v1/complete")
-        .to_return(
-          status: 200, body: { completion: "question_category" }.to_json,
-          headers: { 'Content-Type' => 'application/json' }
-        )
+      # TODO: remove with https://gitlab.com/gitlab-org/gitlab/-/issues/456258
+      stub_feature_flags(v2_chat_agent_integration: false)
 
       stub_request(:post, "#{Gitlab::AiGateway.url}/v1/chat/agent")
         .with(body: hash_including({ "stream" => true }))

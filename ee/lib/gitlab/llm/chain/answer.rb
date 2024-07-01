@@ -9,8 +9,8 @@ module Gitlab
         attr_accessor :status, :content, :context, :tool, :suggestions, :is_final, :extras, :error_code
         alias_method :is_final?, :is_final
 
-        def self.from_response(response_body:, tools:, context:)
-          parser = Parsers::ChainOfThoughtParser.new(output: response_body)
+        def self.from_response(response_body:, tools:, context:, parser_klass: Parsers::ChainOfThoughtParser)
+          parser = parser_klass.new(output: response_body)
           parser.parse
 
           return final_answer(context: context, content: parser.final_answer) if parser.final_answer

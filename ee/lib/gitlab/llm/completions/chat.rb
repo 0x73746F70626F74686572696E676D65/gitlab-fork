@@ -23,6 +23,9 @@ module Gitlab
           ::Gitlab::Llm::Chain::Tools::ExplainVulnerability
         ].freeze
 
+        # @param [Gitlab::Llm::AiMessage] prompt_message - user question
+        # @param [NilClass] ai_prompt_class - not used for chat
+        # @param [Hash] options - additional context
         def initialize(prompt_message, ai_prompt_class, options = {})
           super
 
@@ -112,13 +115,23 @@ module Gitlab
         end
 
         def execute_with_tool_chosen_by_ai(response_handler, stream_response_handler)
-          Gitlab::Llm::Chain::Agents::ZeroShot::Executor.new(
-            user_input: prompt_message.content,
-            tools: tools,
-            context: context,
-            response_handler: response_handler,
-            stream_response_handler: stream_response_handler
-          ).execute
+          if Feature.enabled?(:v2_chat_agent_integration, user)
+            Gitlab::Llm::Chain::Agents::SingleActionExecutor.new(
+              user_input: prompt_message.content,
+              tools: tools,
+              context: context,
+              response_handler: response_handler,
+              stream_response_handler: stream_response_handler
+            ).execute
+          else
+            Gitlab::Llm::Chain::Agents::ZeroShot::Executor.new(
+              user_input: prompt_message.content,
+              tools: tools,
+              context: context,
+              response_handler: response_handler,
+              stream_response_handler: stream_response_handler
+            ).execute
+          end
         end
 
         def execute_with_slash_command_tool(stream_response_handler)

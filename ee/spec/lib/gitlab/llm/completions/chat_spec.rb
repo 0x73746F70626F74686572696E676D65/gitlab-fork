@@ -71,7 +71,7 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
   subject { described_class.new(prompt_message, nil, **options).execute }
 
   shared_examples 'success' do
-    xit 'calls the ZeroShot Agent with the right parameters', :snowplow do
+    xit 'calls the SingleAction Agent with the right parameters', :snowplow do
       expected_params = [
         user_input: content,
         tools: match_array(tools),
@@ -80,7 +80,7 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
         stream_response_handler: stream_response_handler
       ]
 
-      expect_next_instance_of(::Gitlab::Llm::Chain::Agents::ZeroShot::Executor, *expected_params) do |instance|
+      expect_next_instance_of(::Gitlab::Llm::Chain::Agents::SingleActionExecutor, *expected_params) do |instance|
         expect(instance).to receive(:execute).and_return(answer)
       end
 
@@ -126,7 +126,7 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
           stream_response_handler: stream_response_handler
         ]
 
-        expect_next_instance_of(::Gitlab::Llm::Chain::Agents::ZeroShot::Executor, *expected_params) do |instance|
+        expect_next_instance_of(::Gitlab::Llm::Chain::Agents::SingleActionExecutor, *expected_params) do |instance|
           expect(instance).to receive(:execute).and_return(answer)
         end
 
@@ -157,7 +157,7 @@ client_subscription_id: 'someid' }
       end
 
       xit 'sends process_gitlab_duo_question snowplow event with value eql 0' do
-        allow_next_instance_of(::Gitlab::Llm::Chain::Agents::ZeroShot::Executor) do |instance|
+        allow_next_instance_of(::Gitlab::Llm::Chain::Agents::SingleActionExecutor) do |instance|
           expect(instance).to receive(:execute).and_return(answer)
         end
 
@@ -218,7 +218,7 @@ client_subscription_id: 'someid' }
           stream_response_handler: stream_response_handler
         ]
 
-        expect_next_instance_of(::Gitlab::Llm::Chain::Agents::ZeroShot::Executor, *expected_params) do |instance|
+        expect_next_instance_of(::Gitlab::Llm::Chain::Agents::SingleActionExecutor, *expected_params) do |instance|
           expect(instance).to receive(:execute).and_return(answer)
         end
         expect(response_handler).to receive(:execute)
@@ -254,7 +254,7 @@ client_subscription_id: 'someid' }
             command: an_instance_of(::Gitlab::Llm::Chain::SlashCommand)
           }
 
-          expect(::Gitlab::Llm::Chain::Agents::ZeroShot::Executor).not_to receive(:new)
+          expect(::Gitlab::Llm::Chain::Agents::SingleActionExecutor).not_to receive(:new)
           expect(expected_tool)
             .to receive(:new).with(expected_params).and_return(executor)
 
@@ -308,7 +308,7 @@ client_subscription_id: 'someid' }
         let(:command) { '/explain2' }
 
         it 'process the message with zero shot agent' do
-          expect_next_instance_of(::Gitlab::Llm::Chain::Agents::ZeroShot::Executor) do |instance|
+          expect_next_instance_of(::Gitlab::Llm::Chain::Agents::SingleActionExecutor) do |instance|
             expect(instance).to receive(:execute).and_return(answer)
           end
           expect(::Gitlab::Llm::Chain::Tools::ExplainCode::Executor).not_to receive(:new)
@@ -332,7 +332,7 @@ client_subscription_id: 'someid' }
           stream_response_handler: stream_response_handler
         ]
 
-        allow_next_instance_of(::Gitlab::Llm::Chain::Agents::ZeroShot::Executor, *expected_params) do |instance|
+        allow_next_instance_of(::Gitlab::Llm::Chain::Agents::SingleActionExecutor, *expected_params) do |instance|
           allow(instance).to receive(:execute).and_return(answer)
         end
 
@@ -348,6 +348,51 @@ client_subscription_id: 'someid' }
         expect(categorize_service).not_to receive(:execute)
 
         subject
+      end
+    end
+
+    context 'with disabled v2_chat_agent_integration flag' do
+      before do
+        stub_feature_flags(v2_chat_agent_integration: false)
+      end
+
+      xit 'calls the ZeroShot Agent with the right parameters', :snowplow do
+        expected_params = [
+          user_input: content,
+          tools: match_array(tools),
+          context: context,
+          response_handler: response_handler,
+          stream_response_handler: stream_response_handler
+        ]
+
+        expect_next_instance_of(::Gitlab::Llm::Chain::Agents::ZeroShot::Executor, *expected_params) do |instance|
+          expect(instance).to receive(:execute).and_return(answer)
+        end
+
+        expect(response_handler).to receive(:execute)
+        expect(::Gitlab::Llm::ResponseService).to receive(:new).with(context, { request_id: 'uuid', ai_action: :chat })
+          .and_return(response_handler)
+        expect(::Gitlab::Llm::Chain::GitlabContext).to receive(:new)
+          .with(current_user: user, container: expected_container, resource: resource, ai_request: ai_request,
+            extra_resource: extra_resource, request_id: 'uuid', current_file: current_file,
+            agent_version: agent_version)
+          .and_return(context)
+        expect(categorize_service).to receive(:execute)
+        expect(::Llm::ExecuteMethodService).to receive(:new)
+          .with(user, user, :categorize_question, categorize_service_params)
+          .and_return(categorize_service)
+
+        subject
+
+        expect_snowplow_event(
+          category: described_class.to_s,
+          label: "IssueReader",
+          action: 'process_gitlab_duo_question',
+          property: 'uuid',
+          namespace: container,
+          user: user,
+          value: 1
+        )
       end
     end
   end

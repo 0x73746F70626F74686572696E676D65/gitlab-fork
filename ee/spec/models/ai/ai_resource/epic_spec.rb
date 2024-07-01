@@ -36,4 +36,10 @@ RSpec.describe Ai::AiResource::Epic, feature_category: :duo_chat do
         .not_to include("utilize it instead of using the 'EpicReader' tool")
     end
   end
+
+  describe '#current_page_type' do
+    it 'returns type' do
+      expect(wrapped_epic.current_page_type).to eq('epic')
+    end
+  end
 end

@@ -34,7 +34,8 @@ module Gitlab
 
               if chunk
                 stream_response_handler.execute(
-                  response: Gitlab::Llm::Chain::StreamedResponseModifier.new(content, chunk_id: chunk[:id]),
+                  response: Gitlab::Llm::Chain::StreamedResponseModifier
+                              .new(streamed_content(content, chunk), chunk_id: chunk[:id]),
                   options: { chunk_id: chunk[:id] }
                 )
               end
@@ -55,6 +56,11 @@ module Gitlab
 
           def unit_primitive
             nil
+          end
+
+          # This method is modified in SingleActionExecutor for Duo Chat
+          def streamed_content(content, _chunk)
+            content
           end
         end
       end

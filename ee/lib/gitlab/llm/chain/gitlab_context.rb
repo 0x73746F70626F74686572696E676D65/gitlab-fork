@@ -7,6 +7,9 @@ module Gitlab
         attr_accessor :current_user, :container, :resource, :ai_request, :tools_used, :extra_resource, :request_id,
           :current_file, :agent_version
 
+        delegate :current_page_type, :current_page_sentence, :current_page_short_description,
+          to: :authorized_resource, allow_nil: true
+
         def initialize(
           current_user:, container:, resource:, ai_request:, extra_resource: {}, request_id: nil,
           current_file: {}, agent_version: nil
@@ -20,14 +23,6 @@ module Gitlab
           @request_id = request_id
           @current_file = (current_file || {}).with_indifferent_access
           @agent_version = agent_version
-        end
-
-        def current_page_sentence
-          authorized_resource&.current_page_sentence
-        end
-
-        def current_page_short_description
-          authorized_resource&.current_page_short_description
         end
 
         def resource_serialized(content_limit:)
