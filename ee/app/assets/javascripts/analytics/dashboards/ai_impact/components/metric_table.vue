@@ -5,6 +5,11 @@ import { AI_METRICS } from '~/analytics/shared/constants';
 import { dasherize } from '~/lib/utils/text_utility';
 import { formatNumber, s__ } from '~/locale';
 import glAbilitiesMixin from '~/vue_shared/mixins/gl_abilities_mixin';
+import { InternalEvents } from '~/tracking';
+import {
+  AI_IMPACT_TABLE_TRACKING_PROPERTY,
+  EVENT_LABEL_CLICK_METRIC_IN_DASHBOARD_TABLE,
+} from 'ee/analytics/analytics_dashboards/constants';
 import { BUCKETING_INTERVAL_ALL } from '../../graphql/constants';
 import VulnerabilitiesQuery from '../graphql/vulnerabilities.query.graphql';
 import FlowMetricsQuery from '../graphql/flow_metrics.query.graphql';
@@ -52,7 +57,7 @@ export default {
     MetricTableCell,
     TrendIndicator,
   },
-  mixins: [glAbilitiesMixin()],
+  mixins: [glAbilitiesMixin(), InternalEvents.mixin()],
   props: {
     namespace: {
       type: String,
@@ -112,6 +117,15 @@ export default {
 
     requestPath(identifier) {
       return HIDE_METRIC_DRILL_DOWN.includes(identifier) ? '' : this.namespace;
+    },
+
+    handleMetricDrillDownClick(identifier) {
+      if (!this.requestPath(identifier)) return;
+
+      this.trackEvent(EVENT_LABEL_CLICK_METRIC_IN_DASHBOARD_TABLE, {
+        label: identifier,
+        property: AI_IMPACT_TABLE_TRACKING_PROPERTY,
+      });
     },
 
     async resolveQueries() {
@@ -244,6 +258,7 @@ export default {
         :identifier="identifier"
         :request-path="requestPath(identifier)"
         :is-project="isProject"
+        @drill-down-clicked="handleMetricDrillDownClick(identifier)"
       />
     </template>
 

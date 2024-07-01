@@ -225,6 +225,10 @@ export const VISUALIZATION_DESIGNER_GITLAB_DUO_CORRELATION_PROPERTY = 'correlati
 
 export const EVENT_LABEL_EXCLUDE_ANONYMISED_USERS = 'exclude_anonymised_users';
 
+export const EVENT_LABEL_CLICK_METRIC_IN_DASHBOARD_TABLE = 'click_metric_in_dashboard_table';
+export const AI_IMPACT_TABLE_TRACKING_PROPERTY = 'ai_impact_table';
+export const VSD_COMPARISON_TABLE_TRACKING_PROPERTY = 'vsd_comparison_table';
+
 export const PANEL_TROUBLESHOOTING_URL = helpPagePath(
   '/user/analytics/analytics_dashboards#troubleshooting',
 );
