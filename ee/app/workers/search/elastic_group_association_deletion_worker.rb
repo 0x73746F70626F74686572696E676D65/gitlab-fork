@@ -48,7 +48,9 @@ module Search
     end
 
     def index_epics?(group)
-      group.present? && group.licensed_feature_available?(:epics)
+      return true unless group.present?
+
+      group.licensed_feature_available?(:epics)
     end
 
     def process_removal(group_id, ancestor_id, remove_epics:, remove_work_items:)
