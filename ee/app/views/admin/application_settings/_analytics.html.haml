@@ -1,14 +1,11 @@
 - expanded = integration_expanded?('use_clickhouse_')
 
-%section.settings.no-animate#js-analytics-settings{ class: ('expanded' if expanded) }
-  .settings-header
-    %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only
-      = _('Analytics')
-    = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
-      = expanded ? _('Collapse') : _('Expand')
-    %p.gl-text-secondary
-      = s_('Analytics|Configure analytics reports.')
-  .settings-content
+= render ::Layouts::SettingsBlockComponent.new(_('Analytics'),
+  id: 'js-analytics-settings',
+  expanded: expanded) do |c|
+  - c.with_description do
+    = s_('Analytics|Configure analytics reports.')
+  - c.with_body do
     = gitlab_ui_form_for @application_setting, url: general_admin_application_settings_path(anchor: 'js-analytics-settings'), html: { class: 'fieldset-form', id: 'analytics-settings' } do |f|
       = form_errors(@application_setting)
       .form-group
