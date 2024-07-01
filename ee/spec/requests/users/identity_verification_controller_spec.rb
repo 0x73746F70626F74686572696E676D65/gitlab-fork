@@ -52,7 +52,9 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
   end
 
   describe 'GET show' do
-    subject(:do_request) { get identity_verification_path, params: {}, headers: { referer: '/referer/path' } }
+    let(:referer) { '/referer/path' }
+
+    subject(:do_request) { get identity_verification_path, params: {}, headers: { referer: referer } }
 
     it_behaves_like 'it requires a signed in user'
     it_behaves_like 'it redirects to root_path when user is already verified'
@@ -67,6 +69,34 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
       do_request
 
       expect(session[:identity_verification_referer]).to eq '/referer/path'
+    end
+
+    context 'when the referer is the identity verification path' do
+      let(:referer) { identity_verification_path }
+
+      before do
+        stub_session(session_data: { identity_verification_referer: '/expected/redirect/path' })
+      end
+
+      it 'does not set session[:identity_verification_referer]' do
+        do_request
+
+        expect(session[:identity_verification_referer]).to eq '/expected/redirect/path'
+      end
+    end
+
+    context 'when the referer is nil' do
+      let(:referer) { nil }
+
+      before do
+        stub_session(session_data: { identity_verification_referer: '/expected/redirect/path' })
+      end
+
+      it 'sets session[:identity_verification_referer]' do
+        do_request
+
+        expect(session[:identity_verification_referer]).to eq nil
+      end
     end
   end
 
