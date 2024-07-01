@@ -224,4 +224,52 @@ RSpec.describe ::Search::Elastic::Queries, feature_category: :global_search do
       end
     end
   end
+
+  describe '#by_knn' do
+    let_it_be(:user) { create(:user) }
+    let(:query_hash) { { query: { bool: { filter: filter } } } }
+    let(:filter) { { foo: 'bar' } }
+    let(:hybrid_similarity) { 0.5 }
+    let(:options) { { current_user: user, hybrid_similarity: hybrid_similarity } }
+    let(:embedding_service) { instance_double(Gitlab::Llm::VertexAi::Embeddings::Text) }
+    let(:mock_embedding) { [1, 2, 3] }
+
+    subject(:by_knn) { described_class.by_knn(query_hash: query_hash, query: 'test', options: options) }
+
+    before do
+      allow(Gitlab::Llm::VertexAi::Embeddings::Text).to receive(:new).and_return(embedding_service)
+      allow(embedding_service).to receive(:execute).and_return(mock_embedding)
+    end
+
+    it 'returns the expected query hash' do
+      expect(by_knn).to have_key(:knn)
+      expect(by_knn[:knn][:query_vector]).to eq(mock_embedding)
+      expect(by_knn[:knn][:similarity]).to eq(hybrid_similarity)
+      expect(by_knn[:knn][:filter]).to eq(filter)
+    end
+
+    context 'if the embedding endpoint is throttled' do
+      before do
+        allow(::Gitlab::ApplicationRateLimiter).to receive(:throttled?).and_return(true)
+      end
+
+      it 'tracks the error and does not include the knn query' do
+        expect(Gitlab::ErrorTracking).to receive(:track_exception)
+
+        expect(by_knn).not_to have_key(:knn)
+      end
+    end
+
+    context 'if an error is raised' do
+      before do
+        allow(embedding_service).to receive(:execute).and_raise(StandardError, 'error')
+      end
+
+      it 'tracks the error and does not include the knn query' do
+        expect(Gitlab::ErrorTracking).to receive(:track_exception)
+
+        expect(by_knn).not_to have_key(:knn)
+      end
+    end
+  end
 end

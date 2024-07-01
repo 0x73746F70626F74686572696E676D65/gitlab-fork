@@ -31,6 +31,10 @@ module Search
         query_hash = ::Search::Elastic::Filters.by_label_ids(query_hash: query_hash, options: options)
         query_hash = ::Search::Elastic::Filters.by_archived(query_hash: query_hash, options: options)
 
+        if hybrid_issue_search?
+          query_hash = ::Search::Elastic::Queries.by_knn(query_hash: query_hash, query: query, options: options)
+        end
+
         return ::Search::Elastic::Aggregations.by_label_ids(query_hash: query_hash) if options[:aggregation]
 
         query_hash = ::Search::Elastic::Formats.source_fields(query_hash: query_hash, options: options)
@@ -50,6 +54,24 @@ module Search
           authorization_use_traversal_ids: true
         }
       end
+
+      # rubocop: disable Gitlab/FeatureFlagWithoutActor -- global flags
+      def hybrid_issue_search?
+        return false unless options[:hybrid_similarity]
+        return false unless Feature.enabled?(:search_issues_hybrid_search)
+        return false unless Feature.enabled?(:ai_global_switch, type: :ops)
+        return false unless Gitlab::Saas.feature_available?(:ai_vertex_embeddings)
+        return false unless ::Elastic::DataMigrationService.migration_has_finished?(:add_embedding_to_issues)
+
+        project = Project.id_in(options[:project_ids])&.first
+        user = options[:current_user]
+
+        return false unless project && user
+
+        Feature.enabled?(:elasticsearch_issue_embedding, project, type: :ops) &&
+          user.any_group_with_ai_available?
+      end
+      # rubocop: enable Gitlab/FeatureFlagWithoutActor
     end
   end
 end
