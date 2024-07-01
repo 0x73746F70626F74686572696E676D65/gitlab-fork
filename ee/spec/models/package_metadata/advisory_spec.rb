@@ -94,4 +94,36 @@ RSpec.describe PackageMetadata::Advisory, type: :model, feature_category: :softw
       end
     end
   end
+
+  describe '#from_container_scanning?' do
+    subject { advisory.from_container_scanning? }
+
+    context 'when source_xid is trivy-db' do
+      let(:advisory) { build(:pm_advisory, source_xid: 'trivy-db') }
+
+      it { is_expected.to be true }
+    end
+
+    context 'when source_xid is not trivy-db' do
+      let(:advisory) { build(:pm_advisory, source_xid: 'glad') }
+
+      it { is_expected.to be false }
+    end
+  end
+
+  describe '#from_dependency_scanning?' do
+    subject { advisory.from_dependency_scanning? }
+
+    context 'when source_xid is glad' do
+      let(:advisory) { build(:pm_advisory, source_xid: 'glad') }
+
+      it { is_expected.to be true }
+    end
+
+    context 'when source_xid is not glad' do
+      let(:advisory) { build(:pm_advisory, source_xid: 'trivy-db') }
+
+      it { is_expected.to be false }
+    end
+  end
 end
