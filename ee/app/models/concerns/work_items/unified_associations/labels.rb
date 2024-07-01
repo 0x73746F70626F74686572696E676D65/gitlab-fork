@@ -108,14 +108,6 @@ module WorkItems
             remove_duplicates: true
           ).with_preloaded_container.group_by { |label| [label.target_id, label.target_type] }
         end
-
-        def batched_object
-          [
-            [id, self.class.base_class.name],
-            [sync_object&.id, sync_object&.class&.base_class&.name]
-          ]
-        end
-        strong_memoize_attr :batched_object
       end
     end
   end
