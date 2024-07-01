@@ -317,7 +317,7 @@ domains:
     feature_categories:
       - webhooks
 
-  WebIDE:
+  WebIde:
     description:
     feature_categories:
       - web_ide
