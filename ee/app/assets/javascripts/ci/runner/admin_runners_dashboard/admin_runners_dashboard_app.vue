@@ -1,5 +1,6 @@
 <script>
 import { GlButton } from '@gitlab/ui';
+import { InternalEvents } from '~/tracking';
 import { INSTANCE_TYPE, STATUS_ONLINE, STATUS_OFFLINE } from '~/ci/runner/constants';
 import RunnerListHeader from '~/ci/runner/components/runner_list_header.vue';
 
@@ -9,6 +10,8 @@ import RunnerJobFailures from '../components/runner_job_failures.vue';
 
 import AdminRunnersActiveList from './admin_runners_active_list.vue';
 import AdminRunnersWaitTimes from './admin_runners_wait_times.vue';
+
+const trackingMixin = InternalEvents.mixin();
 
 export default {
   components: {
@@ -20,6 +23,7 @@ export default {
     RunnerUsage,
     RunnerJobFailures,
   },
+  mixins: [trackingMixin],
   inject: {
     clickhouseCiAnalyticsAvailable: {
       default: false,
@@ -34,6 +38,11 @@ export default {
       type: String,
       required: true,
     },
+  },
+  mounted() {
+    this.trackEvent('view_runner_fleet_dashboard_pageload', {
+      label: 'instance',
+    });
   },
   INSTANCE_TYPE,
   STATUS_ONLINE,
