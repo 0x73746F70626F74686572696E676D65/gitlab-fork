@@ -318,8 +318,11 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
 
       it_behaves_like 'registering a medium risk user with identity verification',
         flow: :invite, skip_email_validation: true
-      it_behaves_like 'registering a high risk user with identity verification',
-        flow: :invite, skip_email_validation: true
+
+      context 'when user is high risk', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/449531' do
+        it_behaves_like 'registering a high risk user with identity verification',
+          flow: :invite, skip_email_validation: true
+      end
 
       context 'when invite is from a paid namespace', :saas do
         let_it_be(:ultimate_group) { create(:group_with_plan, plan: :ultimate_plan) }
