@@ -34,6 +34,8 @@ With the Value Streams Dashboard, you can:
 - Drill down into individual projects or metrics to take actions for improvement.
 - Understand the impact of adding AI to the software development life cycle (SDLC) and demonstrate the return on investment (ROI) of investments in GitLab Duo.
 
+For a click-through demo, see [the Value Stream Management product tour](https://gitlab.navattic.com/vsm).
+
 NOTE:
 Data displayed on the Value Streams Dashboard is continuously collected in the backend.
 If you upgrade to the Ultimate tier, you get access to historical data, and can view metrics about past GitLab usage and performance.
