@@ -48,7 +48,7 @@ RSpec.describe Epic, feature_category: :portfolio_management do
           expect(work_item.award_emoji.find(emoji_2.id)).to eq(emoji_2)
         end
 
-        context 'when epic_and_work_item_unification is disabled' do
+        context 'when epic_and_work_item_associations_unification is disabled' do
           before do
             stub_feature_flags(epic_and_work_item_associations_unification: false)
           end
@@ -78,7 +78,7 @@ RSpec.describe Epic, feature_category: :portfolio_management do
         end
       end
 
-      context 'when epic_and_work_item_unification is disabled' do
+      context 'when epic_and_work_item_associations_unification is disabled' do
         before do
           stub_feature_flags(epic_and_work_item_associations_unification: false)
         end
@@ -1798,6 +1798,34 @@ RSpec.describe Epic, feature_category: :portfolio_management do
           expect(epic.reload.description_versions.find(version1.id)).to eq(version1)
           expect(work_item.reload.description_versions.find(version1.id)).to eq(version1)
         end
+      end
+    end
+  end
+
+  context 'with subscriptions' do
+    let_it_be(:epic) { create(:epic, group: group) }
+    let_it_be(:work_item) { epic.work_item }
+    let_it_be(:work_item_subscription) { create(:subscription, user: user, subscribable: work_item, subscribed: true) }
+
+    context 'when subscriptions are read from the epic itself' do
+      before do
+        stub_feature_flags(epic_and_work_item_associations_unification: false)
+      end
+
+      it 'returns epic subscriptions only' do
+        expect(work_item.reload.subscriptions).to contain_exactly(work_item_subscription)
+        expect(epic.reload.subscriptions).to be_empty
+      end
+    end
+
+    context 'when subscriptions are read from the epic and the epic work item' do
+      before do
+        stub_feature_flags(epic_and_work_item_associations_unification: true)
+      end
+
+      it 'returns subscriptions from both' do
+        expect(epic.reload.subscriptions).to contain_exactly(work_item_subscription)
+        expect(work_item.reload.subscriptions).to contain_exactly(work_item_subscription)
       end
     end
   end

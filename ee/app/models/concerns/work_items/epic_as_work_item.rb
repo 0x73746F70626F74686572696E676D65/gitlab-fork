@@ -9,6 +9,7 @@ module WorkItems
       include ::WorkItems::UnifiedAssociations::Labels
       include ::WorkItems::UnifiedAssociations::AwardEmoji
       include ::WorkItems::UnifiedAssociations::DescriptionVersions
+      include ::WorkItems::UnifiedAssociations::Subscriptions
 
       # this overrides the scope in Issuable by removing the labels association from it as labels are now preloaded
       # by loading labels for epic and for epic work item
@@ -42,6 +43,14 @@ module WorkItems
       def notes_unification_enabled?
         unified_associations? && container&.epic_and_work_item_notes_unification_enabled?
       end
+
+      def batched_object
+        [
+          [id, self.class.base_class.name],
+          [sync_object&.id, sync_object&.class&.base_class&.name]
+        ]
+      end
+      strong_memoize_attr :batched_object
     end
   end
 end

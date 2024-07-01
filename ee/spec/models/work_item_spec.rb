@@ -4,6 +4,8 @@ require 'spec_helper'
 
 RSpec.describe WorkItem, :elastic_helpers, feature_category: :team_planning do
   let_it_be(:reusable_project) { create(:project) }
+  let_it_be(:reusable_group) { create(:group) }
+  let_it_be(:user) { create(:user) }
 
   it 'has one `color`' do
     is_expected.to have_one(:color)
@@ -617,6 +619,36 @@ RSpec.describe WorkItem, :elastic_helpers, feature_category: :team_planning do
       it 'also deletes award emoji from legacy epic' do
         expect { work_item.destroy! }.to change { ::AwardEmoji.count }.by(-3)
         expect(emoji_4.reload).to be_persisted
+      end
+    end
+  end
+
+  context 'with subscriptions' do
+    context 'when type is Epic' do
+      let_it_be(:epic) { create(:epic, group: reusable_group) }
+      let_it_be(:work_item) { epic.work_item }
+      let_it_be(:epic_subscription) { create(:subscription, user: user, subscribable: epic, subscribed: true) }
+
+      context 'when subscriptions are read from the work item itself' do
+        before do
+          stub_feature_flags(epic_and_work_item_associations_unification: false)
+        end
+
+        it 'returns only work item subscriptions' do
+          expect(epic.reload.subscriptions).to contain_exactly(epic_subscription)
+          expect(work_item.reload.subscriptions).to be_empty
+        end
+      end
+
+      context 'when subscriptions are read from the epic and the epic work item' do
+        before do
+          stub_feature_flags(epic_and_work_item_associations_unification: true)
+        end
+
+        it 'returns subscriptions from both' do
+          expect(epic.reload.subscriptions).to contain_exactly(epic_subscription)
+          expect(work_item.reload.subscriptions).to contain_exactly(epic_subscription)
+        end
       end
     end
   end
