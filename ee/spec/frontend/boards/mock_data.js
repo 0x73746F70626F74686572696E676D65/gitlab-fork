@@ -965,6 +965,32 @@ export const mockGroupBoardCurrentIterationResponse = {
   },
 };
 
+export const mockGroupBoardNoIterationResponse = {
+  data: {
+    workspace: {
+      id: 'gid://gitlab/Group/1',
+      board: {
+        id: 'gid://gitlab/Board/1',
+        name: 'No iteration board',
+        hideBacklogList: false,
+        hideClosedList: false,
+        labels: [],
+        milestone: null,
+        assignee: null,
+        weight: null,
+        iterationCadence: null,
+        iteration: {
+          id: 'gid://gitlab/Iteration/0',
+          title: 'None',
+          __typename: 'Iteration',
+        },
+        __typename: 'Board',
+      },
+      __typename: 'Group',
+    },
+  },
+};
+
 export const currentIterationQueryResponse = {
   data: {
     group: {

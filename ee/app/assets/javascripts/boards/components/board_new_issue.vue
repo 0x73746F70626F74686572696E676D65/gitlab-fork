@@ -52,9 +52,12 @@ export default {
         assigneeId: assignee?.id || null,
         milestoneId: milestone?.id || null,
         weight,
-        iterationId: iteration?.id || null,
-        iterationCadenceId: iterationCadence?.id || null,
       };
+
+      if (iteration?.id !== IterationIDs.NONE) {
+        config.iterationId = iteration?.id || null;
+        config.iterationCadenceId = iterationCadence?.id || null;
+      }
 
       // When board is scoped to current iteration we need to fetch and assign a cadence to the issue being created
       if (!config.iterationCadenceId && config.iterationId === IterationIDs.CURRENT) {
