@@ -24,6 +24,14 @@ RSpec.describe Gitlab::Llm::Chain::GitlabContext, :saas, feature_category: :duo_
     group.namespace_settings.update!(experiment_features_enabled: true)
   end
 
+  describe '#current_page_type' do
+    let(:resource) { create(:issue, project: project) }
+
+    it 'delegates to ai resource' do
+      expect(context.current_page_type).to eq("issue")
+    end
+  end
+
   describe '#resource_serialized' do
     let(:content_limit) { 500 }
 

@@ -1,0 +1,9 @@
+---
+name: v2_chat_agent_integration
+feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/456258
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/150529
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/466910
+milestone: '17.2'
+group: group::duo chat
+type: wip
+default_enabled: false

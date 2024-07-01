@@ -15,6 +15,7 @@ module Gitlab
 
           ENDPOINT = '/v1/chat/agent'
           BASE_ENDPOINT = '/v1/chat'
+          CHAT_V2_ENDPOINT = '/v2/chat/agent'
           DEFAULT_TYPE = 'prompt'
           DEFAULT_SOURCE = 'GitLab EE'
           TEMPERATURE = 0.1
@@ -33,10 +34,16 @@ module Gitlab
             options = default_options.merge(prompt.fetch(:options, {}))
             return unless model_provider_valid?(options)
 
-            body = request_body(prompt: prompt[:prompt], options: options)
+            v2_chat_schema = Feature.enabled?(:v2_chat_agent_integration, user) && options.delete(:single_action_agent)
+
+            body = if v2_chat_schema
+                     request_body_chat_2(prompt: prompt[:prompt], options: options)
+                   else
+                     request_body(prompt: prompt[:prompt], options: options)
+                   end
 
             response = ai_client.stream(
-              endpoint: endpoint(unit_primitive),
+              endpoint: endpoint(unit_primitive, v2_chat_schema),
               body: body
             ) do |data|
               yield data if block_given?
@@ -76,9 +83,11 @@ module Gitlab
             provider(options)
           end
 
-          def endpoint(unit_primitive)
+          def endpoint(unit_primitive, v2_chat_schema)
             if unit_primitive.present?
               "#{BASE_ENDPOINT}/#{unit_primitive}"
+            elsif v2_chat_schema
+              CHAT_V2_ENDPOINT
             else
               ENDPOINT
             end
@@ -116,6 +125,28 @@ module Gitlab
                 model: model(options)
               }
             end
+          end
+
+          def request_body_chat_2(prompt:, options: {})
+            option_params = {
+              chat_history: "",
+              agent_scratchpad: {
+                agent_type: "react",
+                steps: options[:agent_scratchpad]
+              }
+            }
+
+            if options[:current_resource_type]
+              option_params[:context] = {
+                type: options[:current_resource_type],
+                content: options[:current_resource_content]
+              }
+            end
+
+            {
+              prompt: prompt,
+              options: option_params
+            }
           end
 
           def payload_params(options)

@@ -14,6 +14,7 @@ RSpec.describe 'GitLab Duo Chat QA Evaluation', :real_ai_request, :saas, :clean_
   let_it_be(:issue_fixtures) { load_fixture('issues') }
 
   before_all do
+    stub_feature_flags(v2_chat_agent_integration: false)
     # link_reference_pattern is memoized for Issue
     # and stubbed url (gitlab.com) is not used to derive the link reference pattern.
     Issue.instance_variable_set(:@link_reference_pattern, nil)

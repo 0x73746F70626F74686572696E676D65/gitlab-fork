@@ -165,5 +165,67 @@ RSpec.describe Gitlab::Llm::Chain::Requests::AiGateway, feature_category: :duo_c
 
       it_behaves_like 'performing request to the AI Gateway'
     end
+
+    context 'when request is sent for a new ReAct Duo Chat prompt' do
+      let(:endpoint) { described_class::CHAT_V2_ENDPOINT }
+
+      let(:prompt) { { prompt: user_prompt, options: options } }
+
+      let(:options) do
+        {
+          agent_scratchpad: [],
+          single_action_agent: true,
+          current_resource_type: "issue",
+          current_resource_content: "string"
+        }
+      end
+
+      let(:body) do
+        {
+          prompt: user_prompt,
+          options: {
+            chat_history: "",
+            agent_scratchpad: {
+              agent_type: "react",
+              steps: []
+            },
+            context: {
+              type: "issue",
+              content: "string"
+            }
+          }
+        }
+      end
+
+      it_behaves_like 'performing request to the AI Gateway'
+    end
+
+    context 'when request is sent for a new ReAct Duo Chat prompt withouth context params' do
+      let(:endpoint) { described_class::CHAT_V2_ENDPOINT }
+
+      let(:prompt) { { prompt: user_prompt, options: options } }
+
+      let(:options) do
+        {
+          agent_scratchpad: [],
+          single_action_agent: true
+        }
+      end
+
+      let(:body) do
+        {
+          prompt: user_prompt,
+          options: {
+            chat_history: "",
+            agent_scratchpad: {
+              agent_type: "react",
+              steps: []
+            }
+          }
+        }
+      end
+
+      it_behaves_like 'performing request to the AI Gateway'
+    end
   end
 end

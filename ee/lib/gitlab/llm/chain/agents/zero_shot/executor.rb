@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# Deprecation: this executor will be removed in favor of SingleActionExecutor
+# see https://gitlab.com/gitlab-org/gitlab/-/issues/469087
+
 module Gitlab
   module Llm
     module Chain

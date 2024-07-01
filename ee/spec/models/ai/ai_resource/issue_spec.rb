@@ -35,4 +35,10 @@ RSpec.describe Ai::AiResource::Issue, feature_category: :duo_chat do
         .not_to include("utilize it instead of using the 'IssueReader' tool")
     end
   end
+
+  describe '#current_page_type' do
+    it 'returns type' do
+      expect(wrapped_issue.current_page_type).to eq('issue')
+    end
+  end
 end
