@@ -16,7 +16,11 @@ module Gitlab
       def execute
         export_parts.each { |export_part| export.export_service.export_segment(export_part) }
 
-        Gitlab::Export::SegmentedExportFinalisationWorker.perform_in(10.seconds, export.to_global_id)
+        # This is going to run the job over and over until it finalises.
+        # This may use a lot of Redis and Sidekiq throughtput to effectively poll the
+        # export state until finalisation can occur.
+        # https://gitlab.com/gitlab-org/gitlab/-/merge_requests/157695#note_1973854202
+        Gitlab::Export::SegmentedExportFinalisationWorker.perform_async(export.to_global_id)
       end
 
       private
