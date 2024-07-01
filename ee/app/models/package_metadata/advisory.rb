@@ -32,5 +32,13 @@ module PackageMetadata
     end
 
     scope :with_affected_packages, -> { includes(:affected_packages) }
+
+    def from_container_scanning?
+      source_xid == 'trivy-db'
+    end
+
+    def from_dependency_scanning?
+      source_xid == 'glad'
+    end
   end
 end
