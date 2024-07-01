@@ -92,7 +92,7 @@ module Registrations
         uid: current_user.id,
         comment: params[:jobs_to_be_done_other],
         jtbd: update_params[:registration_objective],
-        product_interaction: onboarding_status.iterable_product_interaction,
+        product_interaction: onboarding_status.product_interaction,
         opt_in: current_user.onboarding_status_email_opt_in,
         preferred_language: ::Gitlab::I18n.trimmed_language_name(current_user.preferred_language),
         setup_for_company: current_user.setup_for_company

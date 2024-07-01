@@ -28,7 +28,7 @@ module Registrations
       @initialize_with_readme = true
 
       experiment(:project_templates_during_registration, user: current_user)
-        .track(:render_groups_new, label: onboarding_status.group_creation_tracking_label)
+        .track(:render_groups_new, label: onboarding_status.tracking_label)
 
       track_event('view_new_group_action')
     end
@@ -82,14 +82,14 @@ module Registrations
 
     def track_event(action)
       ::Gitlab::Tracking
-        .event(self.class.name, action, user: current_user, label: onboarding_status.group_creation_tracking_label)
+        .event(self.class.name, action, user: current_user, label: onboarding_status.tracking_label)
     end
 
     def track_project_registration_submission(project)
       experiment_project_templates_during_registration(
         project,
         :successfully_submitted_form,
-        onboarding_status.group_creation_tracking_label
+        onboarding_status.tracking_label
       )
 
       template_name = params.dig(:project, :template_name)
@@ -98,7 +98,7 @@ module Registrations
       experiment_project_templates_during_registration(
         project,
         "select_project_template_#{template_name}",
-        onboarding_status.group_creation_tracking_label
+        onboarding_status.tracking_label
       )
     end
 

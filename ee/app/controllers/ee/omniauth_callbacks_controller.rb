@@ -47,6 +47,7 @@ module EE
           .new(
             request.env.fetch('omniauth.params', {}).deep_symbolize_keys, session, user, onboarding_first_step_path
           ).execute
+        clear_memoization(:onboarding_status) # clear since registration_type is now set
 
         # We need to do this here since the subscription flow relies on what was set in the stored_location_for(:user)
         # that was set on initial redirect from the SubscriptionsController#new and super will wipe that out.

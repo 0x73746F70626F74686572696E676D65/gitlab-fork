@@ -7,7 +7,10 @@ RSpec.describe 'registrations/welcome/show', feature_category: :onboarding do
   let(:trial?) { false }
   let(:onboarding_status) do
     instance_double(
-      ::Onboarding::Status, invite?: invite?, enabled?: true, subscription?: false, trial?: trial?, oauth?: false
+      ::Onboarding::Status,
+      invite?: invite?, enabled?: true, subscription?: false, trial?: trial?, oauth?: false,
+      setup_for_company_label_text: '_text_',
+      welcome_submit_button_text: '_button_text_'
     )
   end
 
@@ -23,11 +26,11 @@ RSpec.describe 'registrations/welcome/show', feature_category: :onboarding do
 
   context 'with basic form items' do
     it 'the text for the :setup_for_company label' do
-      is_expected.to have_selector('label[for="user_setup_for_company"]', text: _('Who will be using GitLab?'))
+      is_expected.to have_selector('label[for="user_setup_for_company"]', text: '_text_')
     end
 
     it 'shows the text for the submit button' do
-      is_expected.to have_button(_('Continue'))
+      is_expected.to have_button('_button_text_')
     end
 
     it 'has the joining_project fields' do

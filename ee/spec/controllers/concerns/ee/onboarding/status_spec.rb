@@ -8,6 +8,15 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
   let_it_be(:member) { create(:group_member) }
   let_it_be(:user) { member.user }
 
+  context 'for delegations' do
+    subject { described_class.new({}, nil, nil) }
+
+    it { is_expected.to delegate_method(:tracking_label).to(:registration_type) }
+    it { is_expected.to delegate_method(:product_interaction).to(:registration_type) }
+    it { is_expected.to delegate_method(:setup_for_company_label_text).to(:registration_type) }
+    it { is_expected.to delegate_method(:redirect_to_company_form?).to(:registration_type) }
+  end
+
   describe '.enabled?' do
     subject { described_class.enabled? }
 
@@ -46,13 +55,49 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
     end
   end
 
+  describe '#welcome_submit_button_text' do
+    let(:continue_text) { _('Continue') }
+    let(:get_started_text) { _('Get started!') }
+    let(:session_in_oauth) do
+      { 'user_return_to' => ::Gitlab::Routing.url_helpers.oauth_authorization_path(some_param: '_param_') }
+    end
+
+    let(:session_not_in_oauth) { { 'user_return_to' => nil } }
+
+    where(:registration_type, :session, :expected_result) do
+      'free'         | ref(:session_not_in_oauth) | ref(:continue_text)
+      'free'         | ref(:session_in_oauth)     | ref(:get_started_text)
+      nil            | ref(:session_not_in_oauth) | ref(:continue_text)
+      nil            | ref(:session_in_oauth)     | ref(:get_started_text)
+      'trial'        | ref(:session_not_in_oauth) | ref(:continue_text)
+      'trial'        | ref(:session_in_oauth)     | ref(:get_started_text)
+      'invite'       | ref(:session_not_in_oauth) | ref(:get_started_text)
+      'invite'       | ref(:session_in_oauth)     | ref(:get_started_text)
+      'subscription' | ref(:session_not_in_oauth) | ref(:continue_text)
+      'subscription' | ref(:session_in_oauth)     | ref(:continue_text)
+    end
+
+    with_them do
+      let(:current_user) { build(:user, onboarding_status_registration_type: registration_type) }
+      let(:instance) { described_class.new({}, session, current_user) }
+
+      before do
+        stub_saas_features(onboarding: true)
+      end
+
+      subject { instance.welcome_submit_button_text }
+
+      it { is_expected.to eq(expected_result) }
+    end
+  end
+
   describe '#registration_type' do
     where(:registration_type, :expected_klass) do
       'free'         | ::Onboarding::FreeRegistration
+      nil            | ::Onboarding::FreeRegistration
       'trial'        | ::Onboarding::TrialRegistration
       'invite'       | ::Onboarding::InviteRegistration
       'subscription' | ::Onboarding::SubscriptionRegistration
-      nil            | ::Onboarding::FreeRegistration
     end
 
     with_them do
@@ -155,60 +200,6 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
       let(:instance) { described_class.new(params, nil, nil) }
 
       subject { instance.joining_a_project? }
-
-      it { is_expected.to eq(expected_result) }
-    end
-  end
-
-  describe '#tracking_label' do
-    let(:instance) { described_class.new({}, nil, nil) }
-    let(:trial?) { false }
-    let(:invite?) { false }
-    let(:subscription?) { false }
-
-    subject(:tracking_label) { instance.tracking_label }
-
-    before do
-      allow(instance).to receive(:trial?).and_return(trial?)
-      allow(instance).to receive(:invite?).and_return(invite?)
-      allow(instance).to receive(:subscription?).and_return(subscription?)
-    end
-
-    it { is_expected.to eq('free_registration') }
-
-    context 'when it is a trial' do
-      let(:trial?) { true }
-
-      it { is_expected.to eq('trial_registration') }
-    end
-
-    context 'when it is an invite' do
-      let(:invite?) { true }
-
-      it { is_expected.to eq('invite_registration') }
-    end
-
-    context 'when it is a subscription' do
-      let(:subscription?) { true }
-
-      it { is_expected.to eq('subscription_registration') }
-    end
-  end
-
-  describe '#group_creation_tracking_label' do
-    where(:trial?, :expected_result) do
-      true  | 'trial_registration'
-      false | 'free_registration'
-    end
-
-    with_them do
-      let(:instance) { described_class.new({}, nil, nil) }
-
-      subject { instance.group_creation_tracking_label }
-
-      before do
-        allow(instance).to receive(:trial?).and_return(trial?)
-      end
 
       it { is_expected.to eq(expected_result) }
     end
@@ -330,26 +321,6 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
 
     context 'when onboarding feature is not available' do
       it { is_expected.to eq(false) }
-    end
-  end
-
-  describe '#iterable_product_interaction' do
-    let(:current_user) { user }
-
-    subject { described_class.new(nil, nil, current_user).iterable_product_interaction }
-
-    context 'when invite registration is detected from onboarding_status' do
-      context 'when it is an invite registration' do
-        let(:current_user) { build_stubbed(:user, onboarding_status_registration_type: 'invite') }
-
-        it { is_expected.to eq('Invited User') }
-      end
-
-      context 'when it is not an invite registration' do
-        let(:current_user) { build_stubbed(:user, onboarding_status_registration_type: 'free') }
-
-        it { is_expected.to eq('Personal SaaS Registration') }
-      end
     end
   end
 

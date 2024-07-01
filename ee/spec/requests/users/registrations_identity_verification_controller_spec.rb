@@ -629,7 +629,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
         it 'sets the tracking_label to invite registration' do
           get success_signup_identity_verification_path
 
-          expect(assigns(:tracking_label)).to eq(::Onboarding::Status::TRACKING_LABEL[:invite])
+          expect(assigns(:tracking_label)).to eq(::Onboarding::InviteRegistration.tracking_label)
         end
       end
     end
@@ -645,7 +645,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
 
         get success_signup_identity_verification_path
 
-        expect(assigns(:tracking_label)).to eq(::Onboarding::Status::TRACKING_LABEL[:trial])
+        expect(assigns(:tracking_label)).to eq(::Onboarding::TrialRegistration.tracking_label)
       end
     end
   end
