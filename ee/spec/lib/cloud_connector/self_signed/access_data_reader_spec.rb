@@ -33,7 +33,6 @@ RSpec.describe CloudConnector::SelfSigned::AccessDataReader, feature_category: :
           duo_chat
           explain_code
           explain_vulnerability
-          fill_in_merge_request_template
           generate_commit_message
           generate_cube_query
           resolve_vulnerability

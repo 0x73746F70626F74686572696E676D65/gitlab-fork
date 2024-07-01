@@ -188,7 +188,6 @@ module GitlabSubscriptions
       api_fuzzing
       auto_rollback
       breach_and_attack_simulation
-      fill_in_merge_request_template
       cluster_image_scanning
       external_status_checks
       combined_project_analytics_dashboards
