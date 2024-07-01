@@ -10,6 +10,7 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import RunnerDashboardStatStatus from 'ee/ci/runner/components/runner_dashboard_stat_status.vue';
 import RunnerUsage from 'ee/ci/runner/components/runner_usage.vue';
 import RunnerJobFailures from 'ee/ci/runner/components/runner_job_failures.vue';
+import { useMockInternalEventsTracking } from 'helpers/tracking_internal_events_helper';
 
 const mockAdminRunnersPath = '/runners/list';
 const mockNewRunnerPath = '/runners/new';
@@ -17,6 +18,7 @@ const mockNewRunnerPath = '/runners/new';
 describe('AdminRunnersDashboardApp', () => {
   let wrapper;
 
+  const { bindInternalEventDocument } = useMockInternalEventsTracking();
   const createComponent = (options) => {
     wrapper = shallowMountExtended(AdminRunnersDashboardApp, {
       propsData: {
@@ -39,6 +41,18 @@ describe('AdminRunnersDashboardApp', () => {
 
     expect(newBtn.text()).toBe('New instance runner');
     expect(newBtn.attributes('href')).toBe(mockNewRunnerPath);
+  });
+
+  it('should track that the admin runner fleet dashboard has been viewed', () => {
+    const { trackEventSpy } = bindInternalEventDocument(wrapper.element);
+
+    expect(trackEventSpy).toHaveBeenCalledWith(
+      'view_runner_fleet_dashboard_pageload',
+      {
+        label: 'instance',
+      },
+      undefined,
+    );
   });
 
   it('shows dashboard panels', () => {

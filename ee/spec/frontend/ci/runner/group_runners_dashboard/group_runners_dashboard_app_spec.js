@@ -9,6 +9,7 @@ import RunnerDashboardStatStatus from 'ee/ci/runner/components/runner_dashboard_
 import RunnerUsage from 'ee/ci/runner/components/runner_usage.vue';
 import GroupRunnersActiveList from 'ee/ci/runner/group_runners_dashboard/group_runners_active_list.vue';
 import GroupRunnersWaitTimes from 'ee/ci/runner/group_runners_dashboard/group_runners_wait_times.vue';
+import { useMockInternalEventsTracking } from 'helpers/tracking_internal_events_helper';
 
 const mockGroupPath = 'group';
 const mockGroupRunnersPath = '/group/-/runners';
@@ -20,6 +21,7 @@ describe('GroupRunnersDashboardApp', () => {
   const findGroupRunnersActiveList = () => wrapper.findComponent(GroupRunnersActiveList);
   const findGroupRunnersWaitTimes = () => wrapper.findComponent(GroupRunnersWaitTimes);
 
+  const { bindInternalEventDocument } = useMockInternalEventsTracking();
   const createComponent = (options) => {
     wrapper = shallowMountExtended(GroupRunnersDashboardApp, {
       propsData: {
@@ -63,6 +65,18 @@ describe('GroupRunnersDashboardApp', () => {
     expect(findGroupRunnersWaitTimes().props()).toEqual({
       groupFullPath: mockGroupPath,
     });
+  });
+
+  it('should track that the group runner fleet dashboard has been viewed', () => {
+    const { trackEventSpy } = bindInternalEventDocument(wrapper.element);
+
+    expect(trackEventSpy).toHaveBeenCalledWith(
+      'view_runner_fleet_dashboard_pageload',
+      {
+        label: 'group',
+      },
+      undefined,
+    );
   });
 
   describe('when clickhouse is available', () => {
