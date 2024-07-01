@@ -71,43 +71,21 @@ RSpec.describe Llm::CompletionWorker, feature_category: :ai_abstraction_layer do
       )
     end
 
-    context 'when Session is present' do
-      let(:rack_session) { Rack::Session::SessionId.new('6919a6f1bb119dd7396fadc38fd18d0d') }
-      let(:session) { instance_double(ActionDispatch::Request::Session, id: rack_session) }
+    it 'sets set_session_id' do
+      allow(::Gitlab::Session).to receive(:session_id_for_worker).and_return('abc')
 
-      it 'sets set_session_id' do
-        ::Gitlab::Session.with_session(session) do
-          described_class.perform_for(prompt_message, options)
-        end
+      described_class.perform_for(prompt_message, options)
 
-        job = described_class.jobs.first
+      job = described_class.jobs.first
 
-        expect(job).to include(
-          'ip_address_state' => ip_address,
-          'set_session_id' => rack_session.private_id,
-          'args' => [
-            hash_including("ai_action" => ai_action_name.to_s),
-            options
-          ]
-        )
-      end
-    end
-
-    context 'when sessionless' do
-      it 'sets set_session_id to nil' do
-        described_class.perform_for(prompt_message, options)
-
-        job = described_class.jobs.first
-
-        expect(job).to include(
-          'ip_address_state' => ip_address,
-          'set_session_id' => nil,
-          'args' => [
-            hash_including("ai_action" => ai_action_name.to_s),
-            options
-          ]
-        )
-      end
+      expect(job).to include(
+        'ip_address_state' => ip_address,
+        'set_session_id' => 'abc',
+        'args' => [
+          hash_including("ai_action" => ai_action_name.to_s),
+          options
+        ]
+      )
     end
   end
 end

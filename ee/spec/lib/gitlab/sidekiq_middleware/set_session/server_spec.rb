@@ -21,14 +21,14 @@ RSpec.describe Gitlab::SidekiqMiddleware::SetSession::Server, feature_category: 
 
       it 'sets the session and yields' do
         expect(ActiveSession).to receive(:sessions_from_ids).with([session_id]).and_return([session])
-        expect(Gitlab::Session).to receive(:with_session).with(session).and_yield
+        expect(Gitlab::Session).to receive(:with_session).with(session.merge("set_session_id" => session_id)).and_yield
 
         call!
       end
 
       it 'when session is not found' do
         expect(ActiveSession).to receive(:sessions_from_ids).with([session_id]).and_return([])
-        expect(Gitlab::Session).to receive(:with_session).with({}).and_yield
+        expect(Gitlab::Session).to receive(:with_session).with({ "set_session_id" => session_id }).and_yield
 
         call!
       end
@@ -38,7 +38,7 @@ RSpec.describe Gitlab::SidekiqMiddleware::SetSession::Server, feature_category: 
 
         it 'sets empty session and yields' do
           expect(ActiveSession).not_to receive(:sessions_from_ids)
-          expect(Gitlab::Session).to receive(:with_session).with({}).and_yield
+          expect(Gitlab::Session).to receive(:with_session).with({ "set_session_id" => session_id }).and_yield
 
           call!
         end
