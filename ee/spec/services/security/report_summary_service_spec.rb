@@ -47,7 +47,6 @@ RSpec.describe Security::ReportSummaryService, '#execute', feature_category: :vu
         create(
           :security_finding,
           severity: finding.severity,
-          confidence: finding.confidence,
           project_fingerprint: finding.project_fingerprint,
           deduplicated: true,
           scan: artifact.job.security_scans.first

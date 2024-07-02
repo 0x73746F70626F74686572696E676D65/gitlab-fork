@@ -12,6 +12,9 @@ module Security
     include EachBatch
     include Presentable
     include PartitionedTable
+    include IgnorableColumns
+
+    ignore_column :confidence, remove_with: '17.4', remove_after: '2024-09-22'
 
     MAX_PARTITION_SIZE = 100.gigabyte
     ATTRIBUTES_DELEGATED_TO_FINDING_DATA = %i[name description solution location identifiers links false_positive?
@@ -51,7 +54,6 @@ module Security
       primary_key: 'uuid',
       foreign_key: 'finding_uuid'
 
-    enum confidence: ::Enums::Vulnerability.confidence_levels, _prefix: :confidence
     enum severity: ::Enums::Vulnerability.severity_levels, _prefix: :severity
 
     validates :uuid, presence: true
@@ -60,7 +62,6 @@ module Security
     scope :by_uuid, ->(uuids) { where(uuid: uuids) }
     scope :by_build_ids, ->(build_ids) { joins(:scan).merge(Security::Scan.by_build_ids(build_ids)) }
     scope :by_severity_levels, ->(severity_levels) { where(severity: severity_levels) }
-    scope :by_confidence_levels, ->(confidence_levels) { where(confidence: confidence_levels) }
     scope :by_report_types, ->(report_types) { joins(:scan).merge(Scan.by_scan_types(report_types)) }
     scope :by_scan, ->(scans) { where(scan: scans) }
     scope :by_scanners, ->(scanners) { where(scanner: scanners) }

@@ -6,7 +6,6 @@ FactoryBot.define do
     scan factory: :security_scan
 
     severity { :critical }
-    confidence { :high }
     uuid { SecureRandom.uuid }
     project_fingerprint { generate(:project_fingerprint) }
 

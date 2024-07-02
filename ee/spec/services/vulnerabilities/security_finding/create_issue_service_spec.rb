@@ -177,11 +177,12 @@ RSpec.describe Vulnerabilities::SecurityFinding::CreateIssueService, '#execute',
 
   def insert_security_findings(report, scan)
     report.findings.map do |finding|
-      create(:security_finding,
+      create(
+        :security_finding,
         severity: finding.severity,
-        confidence: finding.confidence,
         uuid: finding.uuid,
-        scan: scan)
+        scan: scan
+      )
     end
   end
 end

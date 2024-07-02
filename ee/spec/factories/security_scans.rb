@@ -37,7 +37,6 @@ FactoryBot.define do
           create(
             :security_finding,
             severity: finding.severity,
-            confidence: finding.confidence,
             uuid: finding.uuid,
             deduplicated: true,
             scan: scan

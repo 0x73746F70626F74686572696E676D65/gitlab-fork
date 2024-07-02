@@ -12,7 +12,6 @@ RSpec.shared_examples 'security findings finder' do
   let_it_be(:report_sast) { create(:ci_reports_security_report, pipeline: pipeline, type: :sast) }
 
   let(:severity_levels) { nil }
-  let(:confidence_levels) { nil }
   let(:report_types) { nil }
   let(:scope) { nil }
   let(:scanner) { nil }
@@ -22,7 +21,6 @@ RSpec.shared_examples 'security findings finder' do
   let(:params) do
     {
       severity: severity_levels,
-      confidence: confidence_levels,
       report_type: report_types,
       scope: scope,
       scanner: scanner,
@@ -57,7 +55,6 @@ RSpec.shared_examples 'security findings finder' do
           create(
             :security_finding,
             severity: finding.severity,
-            confidence: finding.confidence,
             uuid: finding.uuid,
             deduplicated: true,
             scan: scan,
@@ -124,13 +121,6 @@ RSpec.shared_examples 'security findings finder' do
           it { is_expected.to match_array(expected_uuids) }
         end
 
-        context 'when the `confidence_levels` is provided' do
-          let(:confidence_levels) { [:low] }
-          let(:expected_uuids) { Security::Finding.where(confidence: 'low').pluck(:uuid) }
-
-          it { is_expected.to match_array(expected_uuids) }
-        end
-
         context 'when the `report_types` is provided' do
           let(:report_types) { :dependency_scanning }
           let(:expected_uuids) do
@@ -190,7 +180,6 @@ RSpec.shared_examples 'security findings finder' do
               create(
                 :security_finding,
                 severity: finding.severity,
-                confidence: finding.confidence,
                 uuid: finding.uuid,
                 deduplicated: true,
                 scan: scan
@@ -219,7 +208,6 @@ RSpec.shared_examples 'security findings finder' do
               create(
                 :security_finding,
                 severity: finding.severity,
-                confidence: finding.confidence,
                 uuid: finding.uuid,
                 deduplicated: true,
                 scan: scan

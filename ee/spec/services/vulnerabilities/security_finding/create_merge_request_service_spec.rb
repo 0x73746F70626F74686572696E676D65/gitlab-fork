@@ -19,7 +19,6 @@ RSpec.describe Vulnerabilities::SecurityFinding::CreateMergeRequestService, '#ex
     create(
       :security_finding,
       severity: report_finding.severity,
-      confidence: report_finding.confidence,
       uuid: report_finding.uuid,
       scan: scan
     )
