@@ -8,11 +8,6 @@
     width: 16px;
   }
 
-  &.inline {
-    display: inline-block;
-    margin: 0 4px;
-  }
-
   &[data-plan='gold'] {
     color: darken($gl-ultimate-plan, 20%);
     svg g { fill: $gl-ultimate-plan; }
@@ -59,7 +54,7 @@ $max-invite-modal-height: 600px;
 .invite-modal-transition-leave-active {
   transition-property: max-height, opacity;
   transition-timing-function: ease-in-out;
-  
+
   @apply gl-transition-all;
   @apply gl-duration-slow;
 
