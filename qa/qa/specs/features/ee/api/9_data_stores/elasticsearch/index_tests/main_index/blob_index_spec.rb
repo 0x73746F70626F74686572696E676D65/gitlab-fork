@@ -23,7 +23,7 @@ module QA
       end
 
       it(
-        'finds blob that matches file content',
+        'finds blob that matches file content', :blocking,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347632'
       ) do
         QA::Support::Retrier.retry_on_exception(
