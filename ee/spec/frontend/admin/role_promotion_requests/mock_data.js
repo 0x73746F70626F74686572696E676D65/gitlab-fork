@@ -89,6 +89,34 @@ export const selfManagedUsersQueuedForRolePromotion = {
   },
 };
 
+export const processUserLicenseSeatRequestMutationSuccess = {
+  data: {
+    processUserBillablePromotionRequest: {
+      errors: [],
+      result: 'SUCCESS',
+    },
+  },
+};
+
+export const processUserLicenseSeatRequestMutationPartialSuccess = {
+  data: {
+    processUserBillablePromotionRequest: {
+      errors: [],
+      result: 'PARTIAL_SUCCESS',
+    },
+  },
+};
+
+export const FAILURE_REASON = 'Some error occured';
+export const processUserLicenseSeatRequestMutationFailure = {
+  data: {
+    processUserBillablePromotionRequest: {
+      errors: [FAILURE_REASON],
+      result: 'FAILURE',
+    },
+  },
+};
+
 export const defaultProvide = {
   paths: {
     adminUser: '///',

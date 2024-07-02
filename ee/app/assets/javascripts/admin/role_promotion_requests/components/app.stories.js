@@ -1,9 +1,13 @@
 import createMockApollo from 'helpers/mock_apollo_helper';
 import {
   defaultProvide,
+  processUserLicenseSeatRequestMutationFailure,
+  processUserLicenseSeatRequestMutationPartialSuccess,
+  processUserLicenseSeatRequestMutationSuccess,
   selfManagedUsersQueuedForRolePromotion,
 } from 'ee_jest/admin/role_promotion_requests/mock_data';
 import usersQueuedForLicenseSeat from '../graphql/users_queued_for_license_seat.query.graphql';
+import processUserLicenseSeatRequestMutation from '../graphql/process_user_license_seat_request.mutation.graphql';
 import RolePromotionRequestsApp from './app.vue';
 
 const meta = {
@@ -23,6 +27,24 @@ const createTemplate = (config = {}) => {
   if (apolloProvider == null) {
     const requestHandlers = [
       [usersQueuedForLicenseSeat, () => Promise.resolve(selfManagedUsersQueuedForRolePromotion)],
+      [
+        processUserLicenseSeatRequestMutation,
+        ({ userId }) => {
+          // Mimic different response types for different users:
+          const { nodes } =
+            selfManagedUsersQueuedForRolePromotion.data.selfManagedUsersQueuedForRolePromotion;
+          if (userId === nodes[0].user.id) {
+            return Promise.reject(new Error('Some network error'));
+          }
+          if (userId === nodes[1].user.id) {
+            return Promise.resolve(processUserLicenseSeatRequestMutationFailure);
+          }
+          if (userId === nodes[2].user.id) {
+            return Promise.resolve(processUserLicenseSeatRequestMutationPartialSuccess);
+          }
+          return Promise.resolve(processUserLicenseSeatRequestMutationSuccess);
+        },
+      ],
     ];
     apolloProvider = createMockApollo(requestHandlers);
   }
@@ -43,7 +65,7 @@ export const Default = {
   render: createTemplate(),
 };
 
-export const Loading = {
+export const LoadingState = {
   render: (...args) => {
     const apolloProvider = createMockApollo([
       [usersQueuedForLicenseSeat, () => new Promise(() => {})],
@@ -55,7 +77,7 @@ export const Loading = {
   },
 };
 
-export const Error = {
+export const ErrorState = {
   render: (...args) => {
     const apolloProvider = createMockApollo([[usersQueuedForLicenseSeat, () => Promise.reject()]]);
 

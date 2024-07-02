@@ -40,5 +40,17 @@ describe('PromotionRequestsTable', () => {
       expect(firstRowCells.at(1).text()).toBe('DEVELOPER');
       expect(firstRowCells.at(2).text()).toBe('Nov 03, 2023');
     });
+
+    describe('actions', () => {
+      it('emits approve event', () => {
+        wrapper.findByRole('button', { name: 'Approve' }).trigger('click');
+        expect(wrapper.emitted('approve')).toStrictEqual([[list[0].user.id]]);
+      });
+
+      it('emits reject event', () => {
+        wrapper.findByRole('button', { name: 'Reject' }).trigger('click');
+        expect(wrapper.emitted('reject')).toStrictEqual([[list[0].user.id]]);
+      });
+    });
   });
 });
