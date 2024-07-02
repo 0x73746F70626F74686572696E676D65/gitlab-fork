@@ -48,7 +48,9 @@ RSpec.describe Resolvers::ComplianceManagement::SecurityPolicies::ScanExecutionP
             policy_scope: {
               compliance_frameworks: [framework],
               including_projects: [],
-              excluding_projects: []
+              excluding_projects: [],
+              including_groups: [],
+              excluding_groups: []
             },
             yaml: YAML.dump(policy.deep_stringify_keys),
             updated_at: policy_configuration.policy_last_updated_at,

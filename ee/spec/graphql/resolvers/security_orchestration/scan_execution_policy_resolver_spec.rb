@@ -39,7 +39,9 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanExecutionPolicyResolver, fe
         policy_scope: {
           compliance_frameworks: [],
           including_projects: [],
-          excluding_projects: []
+          excluding_projects: [],
+          including_groups: [],
+          excluding_groups: []
         },
         yaml: YAML.dump(policy.deep_stringify_keys),
         updated_at: policy_configuration.policy_last_updated_at,
@@ -137,7 +139,9 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanExecutionPolicyResolver, fe
                   policy_scope: {
                     compliance_frameworks: [],
                     including_projects: [],
-                    excluding_projects: []
+                    excluding_projects: [],
+                    including_groups: [],
+                    excluding_groups: []
                   },
                   yaml: YAML.dump(policy.deep_stringify_keys),
                   updated_at: group_policy_configuration.policy_last_updated_at,
@@ -197,7 +201,9 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanExecutionPolicyResolver, fe
                   policy_scope: {
                     compliance_frameworks: [],
                     including_projects: [],
-                    excluding_projects: []
+                    excluding_projects: [],
+                    including_groups: [],
+                    excluding_groups: []
                   },
                   yaml: YAML.dump(policy.deep_stringify_keys),
                   updated_at: policy_configuration.policy_last_updated_at,
@@ -215,7 +221,9 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanExecutionPolicyResolver, fe
                   policy_scope: {
                     compliance_frameworks: [],
                     including_projects: [],
-                    excluding_projects: []
+                    excluding_projects: [],
+                    including_groups: [],
+                    excluding_groups: []
                   },
                   yaml: YAML.dump(policy.deep_stringify_keys),
                   updated_at: group_policy_configuration.policy_last_updated_at,

@@ -24,7 +24,9 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanResultPolicyResolver, featu
         policy_scope: {
           compliance_frameworks: [],
           including_projects: [],
-          excluding_projects: []
+          excluding_projects: [],
+          including_groups: [],
+          excluding_groups: []
         },
         yaml: YAML.dump(policy.deep_stringify_keys),
         updated_at: policy_last_updated_at,

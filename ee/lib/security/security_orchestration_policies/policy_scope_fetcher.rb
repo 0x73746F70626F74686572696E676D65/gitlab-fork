@@ -12,20 +12,23 @@ module Security
       def execute
         return result if policy_scope.blank?
 
-        including_projects, excluding_projects = scoped_projects
-
-        result(compliance_frameworks, including_projects, excluding_projects)
+        result(compliance_frameworks, scoped_projects, scoped_groups)
       end
 
       private
 
       attr_reader :policy_scope, :container, :current_user
 
-      def result(compliance_frameworks = [], including_projects = [], excluding_projects = [])
+      def result(compliance_frameworks = [], scoped_projects = [[], []], scoped_groups = [[], []])
+        including_projects, excluding_projects = scoped_projects
+        including_groups, excluding_groups = scoped_groups
+
         {
           compliance_frameworks: compliance_frameworks,
           including_projects: including_projects,
-          excluding_projects: excluding_projects
+          excluding_projects: excluding_projects,
+          including_groups: including_groups,
+          excluding_groups: excluding_groups
         }
       end
 
@@ -38,17 +41,25 @@ module Security
       end
 
       def scoped_projects
-        included_project_ids = policy_scope.dig(:projects, :including)&.pluck(:id) || []
-        excluded_project_ids = policy_scope.dig(:projects, :excluding)&.pluck(:id) || []
-        project_ids = included_project_ids + excluded_project_ids
+        scoped_resources(:projects, root_ancestor.all_projects)
+      end
 
-        return [[], []] if project_ids.empty?
+      def scoped_groups
+        scoped_resources(:groups, Group.by_root_id(root_ancestor.id))
+      end
 
-        projects = root_ancestor.all_projects.id_in(project_ids).index_by(&:id)
-        including_projects = projects.values_at(*included_project_ids).compact
-        excluding_projects = projects.values_at(*excluded_project_ids).compact
+      def scoped_resources(resource_type, root_ancestor_resources)
+        included_ids = policy_scope.dig(resource_type, :including)&.pluck(:id) || []
+        excluded_ids = policy_scope.dig(resource_type, :excluding)&.pluck(:id) || []
+        ids = included_ids + excluded_ids
 
-        [including_projects, excluding_projects]
+        return [[], []] if ids.empty?
+
+        resources = root_ancestor_resources.id_in(ids).index_by(&:id)
+        including_resources = resources.values_at(*included_ids).compact
+        excluding_resources = resources.values_at(*excluded_ids).compact
+
+        [including_resources, excluding_resources]
       end
 
       def root_ancestor
