@@ -15,6 +15,10 @@ fragment WorkItemWidgets on WorkItemWidget {
       name
       webPath
     }
+    taskCompletionStatus {
+      completedCount
+      count
+    }
   }
   ... on WorkItemWidgetAssignees {
     allowsMultipleAssignees
