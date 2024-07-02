@@ -1761,6 +1761,22 @@ RETURN NEW;
 END
 $$;
 
+CREATE FUNCTION trigger_e0864d1cff37() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+IF NEW."group_id" IS NULL THEN
+  SELECT "group_id"
+  INTO NEW."group_id"
+  FROM "packages_debian_group_distributions"
+  WHERE "packages_debian_group_distributions"."id" = NEW."distribution_id";
+END IF;
+
+RETURN NEW;
+
+END
+$$;
+
 CREATE FUNCTION trigger_e1da4a738230() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -13929,6 +13945,7 @@ CREATE TABLE packages_debian_group_architectures (
     updated_at timestamp with time zone NOT NULL,
     distribution_id bigint NOT NULL,
     name text NOT NULL,
+    group_id bigint,
     CONSTRAINT check_ddb220164a CHECK ((char_length(name) <= 255))
 );
 
@@ -28127,6 +28144,8 @@ CREATE UNIQUE INDEX index_packages_conan_metadata_on_package_id_username_channel
 
 CREATE INDEX index_packages_conan_metadata_on_project_id ON packages_conan_metadata USING btree (project_id);
 
+CREATE INDEX index_packages_debian_group_architectures_on_group_id ON packages_debian_group_architectures USING btree (group_id);
+
 CREATE INDEX index_packages_debian_group_component_files_on_component_id ON packages_debian_group_component_files USING btree (component_id);
 
 CREATE INDEX index_packages_debian_group_components_on_group_id ON packages_debian_group_components USING btree (group_id);
@@ -31607,6 +31626,8 @@ CREATE TRIGGER trigger_dc13168b8025 BEFORE INSERT OR UPDATE ON vulnerability_fla
 
 CREATE TRIGGER trigger_delete_project_namespace_on_project_delete AFTER DELETE ON projects FOR EACH ROW WHEN ((old.project_namespace_id IS NOT NULL)) EXECUTE FUNCTION delete_associated_project_namespace();
 
+CREATE TRIGGER trigger_e0864d1cff37 BEFORE INSERT OR UPDATE ON packages_debian_group_architectures FOR EACH ROW EXECUTE FUNCTION trigger_e0864d1cff37();
+
 CREATE TRIGGER trigger_e1da4a738230 BEFORE INSERT OR UPDATE ON vulnerability_external_issue_links FOR EACH ROW EXECUTE FUNCTION trigger_e1da4a738230();
 
 CREATE TRIGGER trigger_ebab34f83f1d BEFORE INSERT OR UPDATE ON packages_debian_publications FOR EACH ROW EXECUTE FUNCTION trigger_ebab34f83f1d();
@@ -32450,6 +32471,9 @@ ALTER TABLE ONLY vulnerability_exports
 
 ALTER TABLE ONLY todos
     ADD CONSTRAINT fk_91d1f47b13 FOREIGN KEY (note_id) REFERENCES notes(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY packages_debian_group_architectures
+    ADD CONSTRAINT fk_92714bcab1 FOREIGN KEY (group_id) REFERENCES namespaces(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY dast_site_profiles_builds
     ADD CONSTRAINT fk_94e80df60e FOREIGN KEY (dast_site_profile_id) REFERENCES dast_site_profiles(id) ON DELETE CASCADE;
