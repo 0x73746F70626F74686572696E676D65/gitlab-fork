@@ -60,10 +60,10 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
 
     shared_examples 'trial status widget data' do
       describe 'trial status when subscriptions_trials feature is available', :saas do
-        let_it_be(:root_group) { namespace }
-        let_it_be(:gitlab_subscription) { build(:gitlab_subscription, :active_trial, namespace: root_group) }
+        let(:root_group) { namespace }
 
         before do
+          build(:gitlab_subscription, :active_trial, namespace: root_group)
           stub_saas_features(subscriptions_trials: true)
           allow(root_group).to receive(:actual_plan_name).and_return('_actual_plan_name_')
         end
@@ -89,13 +89,16 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
 
     shared_examples 'duo pro trial status widget data' do
       describe 'duo pro trial status', :saas do
-        let_it_be(:root_group) { namespace }
-        let_it_be(:add_on_purchase) do
-          create(:gitlab_subscription_add_on_purchase, :gitlab_duo_pro, :trial, namespace: root_group) # rubocop:disable RSpec/FactoryBot/AvoidCreate -- Needed for interaction with other records
+        let(:root_group) { namespace }
+        let(:add_on_purchase) do
+          build(:gitlab_subscription_add_on_purchase, :gitlab_duo_pro, :trial, namespace: root_group)
         end
 
         before do
           stub_saas_features(subscriptions_trials: true)
+          allow(GitlabSubscriptions::Trials::DuoPro).to receive(:add_on_purchase_for_namespace)
+          allow(GitlabSubscriptions::Trials::DuoPro)
+            .to receive(:add_on_purchase_for_namespace).with(root_group).and_return(add_on_purchase)
         end
 
         describe 'does not return trial status widget data' do
@@ -111,14 +114,18 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
           end
 
           context 'when only qualified for duo pro' do
-            let_it_be(:gitlab_subscription) { build(:gitlab_subscription, :ultimate, namespace: root_group) }
+            before do
+              build(:gitlab_subscription, :ultimate, namespace: root_group)
+            end
 
             it { is_expected.to include(:duo_pro_trial_status_widget_data_attrs) }
             it { is_expected.to include(:duo_pro_trial_status_popover_data_attrs) }
           end
 
           context 'when a namespace is also qualified for a trial status widget' do
-            let_it_be(:gitlab_subscription) { build(:gitlab_subscription, :active_trial, namespace: root_group) }
+            before do
+              build(:gitlab_subscription, :active_trial, namespace: root_group)
+            end
 
             it { is_expected.to include(:trial_status_widget_data_attrs) }
             it { is_expected.to include(:trial_status_popover_data_attrs) }
@@ -149,8 +156,8 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
         allow(helper).to receive(:show_buy_pipeline_minutes?).and_return(true)
       end
 
-      let_it_be(:project) { create(:project) } # rubocop:disable RSpec/FactoryBot/AvoidCreate -- Needed for interaction with other records
-      let_it_be(:namespace) { project.namespace }
+      let(:project) { build(:project) }
+      let(:namespace) { project.namespace }
       let(:group) { nil }
 
       subject(:super_sidebar_context) do
@@ -173,8 +180,8 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
         allow(helper).to receive(:show_buy_pipeline_minutes?).and_return(true)
       end
 
-      let_it_be(:group) { create(:group) } # rubocop:disable RSpec/FactoryBot/AvoidCreate -- Needed for interaction with other records
-      let_it_be(:namespace) { group }
+      let(:group) { build(:group) }
+      let(:namespace) { group }
       let(:project) { nil }
 
       subject(:super_sidebar_context) do

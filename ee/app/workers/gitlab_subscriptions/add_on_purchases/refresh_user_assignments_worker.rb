@@ -45,10 +45,7 @@ module GitlabSubscriptions
       attr_reader :root_namespace_id
 
       def add_on_purchase
-        @add_on_purchase ||= ::GitlabSubscriptions::AddOnPurchase
-          .for_gitlab_duo_pro
-          .by_namespace_id(root_namespace_id)
-          .first
+        @add_on_purchase ||= GitlabSubscriptions::DuoPro.any_add_on_purchase_for_namespace_id(root_namespace_id)
       end
 
       def lock_key

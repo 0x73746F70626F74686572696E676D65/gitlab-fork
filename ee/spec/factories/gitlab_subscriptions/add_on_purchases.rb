@@ -20,8 +20,18 @@ FactoryBot.define do
       expires_on { GitlabSubscriptions::Trials::DuoPro::DURATION.from_now }
     end
 
+    trait :active_trial do
+      trial
+      active
+    end
+
     trait :expired do
       expires_on { 2.days.ago }
+    end
+
+    trait :expired_trial do
+      trial
+      expired
     end
 
     trait :gitlab_duo_pro do

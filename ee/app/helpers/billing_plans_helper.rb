@@ -111,7 +111,7 @@ module BillingPlansHelper
   end
 
   def show_code_suggestions_card?(namespace)
-    namespace.subscription_add_on_purchases.active.for_gitlab_duo_pro.none?
+    GitlabSubscriptions::DuoPro.no_active_add_on_purchase_for_namespace?(namespace)
   end
 
   def billing_upgrade_button_data(plan)

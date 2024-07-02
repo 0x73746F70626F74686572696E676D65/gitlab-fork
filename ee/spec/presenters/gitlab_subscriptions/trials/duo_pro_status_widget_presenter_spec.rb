@@ -4,13 +4,16 @@ require 'spec_helper'
 
 RSpec.describe GitlabSubscriptions::Trials::DuoProStatusWidgetPresenter, :saas, feature_category: :acquisition do
   let(:user) { build(:user) }
-  let_it_be(:group) { create(:group) } # rubocop:todo RSpec/FactoryBot/AvoidCreate -- https://gitlab.com/gitlab-org/gitlab/-/issues/467062
-  let_it_be(:add_on_purchase) do
-    create(:gitlab_subscription_add_on_purchase, :gitlab_duo_pro, :trial, namespace: group) # rubocop:todo RSpec/FactoryBot/AvoidCreate -- https://gitlab.com/gitlab-org/gitlab/-/issues/467062
+  let(:group) { build(:group) }
+  let(:add_on_purchase) do
+    build(:gitlab_subscription_add_on_purchase, :gitlab_duo_pro, :active_trial, namespace: group)
   end
 
   before do
     build(:gitlab_subscription, :ultimate, namespace: group)
+    allow(GitlabSubscriptions::Trials::DuoPro).to receive(:add_on_purchase_for_namespace)
+    allow(GitlabSubscriptions::Trials::DuoPro)
+      .to receive(:add_on_purchase_for_namespace).with(group).and_return(add_on_purchase)
   end
 
   describe '#attributes' do
@@ -19,7 +22,7 @@ RSpec.describe GitlabSubscriptions::Trials::DuoProStatusWidgetPresenter, :saas, 
     specify do
       freeze_time do
         # set here to ensure no date barrier flakiness
-        add_on_purchase.update!(expires_on: 60.days.from_now)
+        add_on_purchase.expires_on = 60.days.from_now
 
         duo_pro_trial_status_widget_data_attrs = {
           container_id: 'duo-pro-trial-status-sidebar-widget',

@@ -167,7 +167,7 @@ module EE
       strong_memoize_attr :auto_assign_duo_pro?
 
       def add_on_purchase
-        @add_on_purchase ||= source.root_ancestor.subscription_add_on_purchases.for_gitlab_duo_pro.active.last
+        @add_on_purchase ||= GitlabSubscriptions::DuoPro.add_on_purchase_for_namespace(source.root_ancestor)
       end
     end
   end
