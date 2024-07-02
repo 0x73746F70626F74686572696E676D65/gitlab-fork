@@ -3,9 +3,10 @@
 require 'spec_helper'
 
 RSpec.describe Security::SecurityOrchestrationPolicies::PolicyScopeService, feature_category: :security_policy_management do
-  let_it_be_with_refind(:group) { create(:group) }
+  let_it_be_with_refind(:root_group) { create(:group) }
+  let_it_be_with_refind(:group) { create(:group, parent: root_group) }
   let_it_be_with_refind(:project) { create(:project, group: group) }
-  let_it_be(:compliance_framework) { create(:compliance_framework, namespace: group) }
+  let_it_be(:compliance_framework) { create(:compliance_framework, namespace: root_group) }
 
   let(:service) { described_class.new(project: project) }
 
@@ -152,6 +153,127 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyScopeService, feat
 
             it { is_expected.to eq false }
           end
+        end
+      end
+
+      context 'when policy is scoped for groups' do
+        context 'with including group scope' do
+          context 'when included group scope is not matching group id' do
+            let(:policy) do
+              {
+                policy_scope: {
+                  groups: {
+                    including: [{ id: non_existing_record_id }]
+                  }
+                }
+              }
+            end
+
+            it { is_expected.to eq false }
+          end
+
+          context 'when included group scope is matching project distant ancestor group id' do
+            let(:policy) do
+              {
+                policy_scope: {
+                  groups: {
+                    including: [{ id: root_group.id }]
+                  }
+                }
+              }
+            end
+
+            it { is_expected.to eq true }
+          end
+
+          context 'when included group scope is matching project direct ancestor group id' do
+            let(:policy) do
+              {
+                policy_scope: {
+                  groups: {
+                    including: [{ id: group.id }]
+                  }
+                }
+              }
+            end
+
+            it { is_expected.to eq true }
+
+            context 'when additionally excluding group scope is matching project ancestor group id' do
+              let(:policy) do
+                {
+                  policy_scope: {
+                    groups: {
+                      including: [{ id: group.id }],
+                      excluding: [{ id: group.id }]
+                    }
+                  }
+                }
+              end
+
+              it { is_expected.to eq false }
+            end
+          end
+        end
+
+        context 'with excluding group scope' do
+          context 'when excluding group scope is not matching project ancestor group id' do
+            let(:policy) do
+              {
+                policy_scope: {
+                  groups: {
+                    excluding: [{ id: non_existing_record_id }]
+                  }
+                }
+              }
+            end
+
+            it { is_expected.to eq true }
+          end
+
+          context 'when excluding group scope is matching project ancestor group id' do
+            let(:policy) do
+              {
+                policy_scope: {
+                  groups: {
+                    excluding: [{ id: group.id }]
+                  }
+                }
+              }
+            end
+
+            it { is_expected.to eq false }
+          end
+        end
+
+        context 'with excluding parent group and including subgroup' do
+          let(:policy) do
+            {
+              policy_scope: {
+                groups: {
+                  excluding: [{ id: root_group.id }],
+                  including: [{ id: group.id }]
+                }
+              }
+            }
+          end
+
+          it { is_expected.to eq false }
+        end
+
+        context 'with excluding subgroup and including parent group' do
+          let(:policy) do
+            {
+              policy_scope: {
+                groups: {
+                  excluding: [{ id: group.id }],
+                  including: [{ id: root_group.id }]
+                }
+              }
+            }
+          end
+
+          it { is_expected.to eq false }
         end
       end
     end

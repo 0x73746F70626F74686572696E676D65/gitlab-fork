@@ -13,11 +13,19 @@ module Types
 
       field :including_projects, ::Types::ProjectType.connection_type,
         null: false,
-        description: 'Projects to which the policy should be applied to.'
+        description: 'Projects to which the policy should be applied.'
 
       field :excluding_projects, ::Types::ProjectType.connection_type,
         null: false,
-        description: 'Projects to which the policy should not be applied to.'
+        description: 'Projects to which the policy should not be applied.'
+
+      field :including_groups, ::Types::GroupType.connection_type, # rubocop:disable GraphQL/ExtractType -- following the convention in the GraphQL type
+        null: false,
+        description: 'Groups to which the policy should be applied.'
+
+      field :excluding_groups, ::Types::GroupType.connection_type, # rubocop:disable GraphQL/ExtractType -- following the convention in the GraphQL type
+        null: false,
+        description: 'Groups to which the policy should not be applied.'
     end
   end
 end
