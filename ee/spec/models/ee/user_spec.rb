@@ -192,15 +192,16 @@ RSpec.describe User, feature_category: :system_access do
       end
     end
 
-    describe '.excluding_guests_and_requests' do
+    describe '.excluding_guests_and_optionally_requests' do
       let!(:user_without_membership) { create(:user).id }
       let!(:project_guest_user)      { create(:project_member, :guest).user_id }
       let!(:project_reporter_user)   { create(:project_member, :reporter).user_id }
       let!(:group_guest_user)        { create(:group_member, :guest).user_id }
       let!(:group_reporter_user)     { create(:group_member, :reporter).user_id }
+      let_it_be(:requested_user)     { create(:group_member, :reporter, :access_request).user_id }
 
       it 'exclude users with a Guest role in a Project/Group' do
-        user_ids = described_class.excluding_guests_and_requests.pluck(:id)
+        user_ids = described_class.excluding_guests_and_optionally_requests.pluck(:id)
 
         expect(user_ids).to include(project_reporter_user)
         expect(user_ids).to include(group_reporter_user)
@@ -208,6 +209,14 @@ RSpec.describe User, feature_category: :system_access do
         expect(user_ids).not_to include(user_without_membership)
         expect(user_ids).not_to include(project_guest_user)
         expect(user_ids).not_to include(group_guest_user)
+        expect(user_ids).not_to include(requested_user)
+      end
+
+      context 'when include_requests is true' do
+        it 'excludes only guest users' do
+          user_ids = described_class.excluding_guests_and_optionally_requests(true).pluck(:id)
+          expect(user_ids).to include(requested_user, project_reporter_user, group_reporter_user)
+        end
       end
     end
 
@@ -1265,6 +1274,153 @@ RSpec.describe User, feature_category: :system_access do
 
           expect(users).to include(guest_with_elevated_role)
           expect(users).not_to include(guest_without_elevated_role)
+        end
+      end
+    end
+  end
+
+  describe '.non_billable_users_for_billable_management' do
+    let_it_be(:non_billable_role) { create(:member_role, :guest, :instance, read_code: true) }
+    let_it_be(:billable_role) { create(:member_role, :guest, :instance, read_vulnerability: true) }
+
+    let_it_be(:billable_member) do
+      create(:group_member, access_level: Gitlab::Access::DEVELOPER)
+    end
+
+    let_it_be(:non_billable_member) do
+      create(:group_member, access_level: Gitlab::Access::GUEST)
+    end
+
+    let_it_be(:non_billable_minimal_access_member) do
+      create(:group_member, :minimal_access)
+    end
+
+    let_it_be(:bot_user) { create(:user, :bot) }
+
+    let(:user_ids) do
+      [
+        non_billable_member.user_id, billable_member.user_id, bot_user.id, non_billable_minimal_access_member.user_id
+      ]
+    end
+
+    let(:non_billable_user_ids) do
+      [
+        non_billable_member.user_id, non_billable_minimal_access_member.user_id
+      ]
+    end
+
+    context 'when license includes guests in active count' do
+      it 'returns no users' do
+        expect(described_class.non_billable_users_for_billable_management(user_ids)).to be_empty
+      end
+    end
+
+    context 'when license excludes guests in active count' do
+      let_it_be(:ultimate) { create(:license, plan: License::ULTIMATE_PLAN) }
+
+      before do
+        allow(License).to receive(:current).and_return(ultimate)
+      end
+
+      it 'returns non billable users' do
+        users = described_class.non_billable_users_for_billable_management(user_ids)
+
+        expect(users.pluck(:id)).to match_array(non_billable_user_ids)
+      end
+
+      context 'with requested members' do
+        it 'does not return > GUEST request membership users' do
+          user_ids << create(:group_member, :developer, :access_request).user_id
+          users = described_class.non_billable_users_for_billable_management(user_ids)
+
+          expect(users.pluck(:id)).to match_array(non_billable_user_ids)
+        end
+
+        it 'returns <= GUEST request membership users' do
+          requested_user_id = create(:group_member, :guest, :access_request).user_id
+          user_ids << requested_user_id
+          users = described_class.non_billable_users_for_billable_management(user_ids)
+
+          expect(users.pluck(:id)).to match_array(non_billable_user_ids << requested_user_id)
+        end
+      end
+
+      context 'with users in multiple groups' do
+        let_it_be(:user) { create(:user) }
+        let(:role_in_group1) { Gitlab::Access::GUEST }
+        let(:role_in_group2) { Gitlab::Access::GUEST }
+
+        let!(:guest_member) do
+          create(:group_member, user: user, access_level: role_in_group1)
+        end
+
+        let!(:another_guest_member) do
+          create(:group_member, user: user, access_level: role_in_group2)
+        end
+
+        let(:user_ids) { super() << user.id }
+
+        shared_examples "skips user because user is billable" do
+          it 'does not return billable user' do
+            users = described_class.non_billable_users_for_billable_management(user_ids)
+            expect(users.pluck(:id)).to match_array(non_billable_user_ids)
+          end
+        end
+
+        shared_examples "returns user because user is non billable" do
+          it 'returns user' do
+            users = described_class.non_billable_users_for_billable_management(user_ids)
+
+            expect(users.pluck(:id)).to match_array(non_billable_user_ids << user.id)
+          end
+        end
+
+        context 'with both non billable roles' do
+          it_behaves_like "returns user because user is non billable"
+        end
+
+        context 'with one billable role and one non billable role' do
+          let(:role_in_group2) { Gitlab::Access::DEVELOPER }
+
+          it_behaves_like "skips user because user is billable"
+        end
+
+        context 'with both billable roles' do
+          let(:role_in_group1) { Gitlab::Access::DEVELOPER }
+          let(:role_in_group2) { Gitlab::Access::DEVELOPER }
+
+          it_behaves_like "skips user because user is billable"
+        end
+
+        context 'with elevation scenarios' do
+          context 'with just one evelated role' do
+            before do
+              another_guest_member.update!(member_role: billable_role)
+            end
+
+            it_behaves_like "skips user because user is billable"
+          end
+
+          context 'with one evelated and one non elevated role' do
+            let_it_be(:third_guest_member) do
+              create(:group_member, user: user, access_level: Gitlab::Access::GUEST)
+            end
+
+            before do
+              another_guest_member.update!(member_role: billable_role)
+              third_guest_member.update!(member_role: non_billable_role)
+            end
+
+            it_behaves_like "skips user because user is billable"
+          end
+
+          context 'with just non elevated role' do
+            before do
+              another_guest_member.update!(member_role: non_billable_role)
+            end
+
+            it_behaves_like "returns user because user is non billable"
+          end
         end
       end
     end

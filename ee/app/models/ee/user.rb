@@ -131,12 +131,13 @@ module EE
       scope :auditors, -> { where('auditor IS true') }
       scope :managed_by, ->(group) { where(managing_group: group) }
 
-      scope :excluding_guests_and_requests, -> do
+      scope :excluding_guests_and_optionally_requests, ->(include_requests = false) do
         subquery = ::Member
           .select(1)
           .where(::Member.arel_table[:user_id].eq(::User.arel_table[:id]))
           .with_elevated_guests
-          .non_request
+
+        subquery = subquery.non_request unless include_requests
 
         where('EXISTS (?)', subquery)
           .allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/422405')
@@ -230,10 +231,20 @@ module EE
         scope = active.without_bots
 
         if License.current&.exclude_guests_from_active_count?
-          scope = scope.excluding_guests_and_requests
+          scope = scope.excluding_guests_and_optionally_requests
         end
 
         scope
+      end
+
+      def non_billable_users_for_billable_management(user_ids)
+        # Billable management is done for Ultimate Licenses, so returning None for other Licenses
+        return ::User.none unless License.current&.exclude_guests_from_active_count?
+
+        scope = active.without_bots
+        billable_user_ids_excluding_lte_guests = ::User.select(:id).where(id: user_ids)
+                                                       .excluding_guests_and_optionally_requests(true)
+        scope.where(id: user_ids).where.not(id: billable_user_ids_excluding_lte_guests)
       end
 
       def user_cap_reached?
