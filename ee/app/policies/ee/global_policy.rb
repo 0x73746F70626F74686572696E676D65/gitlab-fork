@@ -69,7 +69,9 @@ module EE
         next true if ::Gitlab::Saas.feature_available?(:duo_chat_on_saas)
         next false unless ::License.feature_available?(:ai_chat)
 
-        if duo_chat_free_access_was_cut_off?
+        if duo_chat_self_hosted?
+          self_hosted_models_available_for?(@user)
+        elsif duo_chat_free_access_was_cut_off?
           duo_chat.allowed_for?(@user)
         else # Before service start date
           ::Gitlab::CurrentSettings.duo_features_enabled?
@@ -80,7 +82,9 @@ module EE
         next false unless @user
         next true unless ::Gitlab::Saas.feature_available?(:duo_chat_on_saas)
 
-        if duo_chat_free_access_was_cut_off?
+        if duo_chat_self_hosted?
+          self_hosted_models_available_for?(@user)
+        elsif duo_chat_free_access_was_cut_off?
           duo_chat.allowed_for?(@user)
         else
           @user.any_group_with_ai_chat_available?
@@ -212,6 +216,18 @@ module EE
 
     def duo_chat
       CloudConnector::AvailableServices.find_by_name(:duo_chat)
+    end
+
+    # Check whether a user is allowed to use Duo Chat powered by self-hosted models
+    def duo_chat_self_hosted?
+      ::Ai::FeatureSetting.find_by_feature(:duo_chat)&.self_hosted?
+    end
+
+    def self_hosted_models_available_for?(user)
+      service = CloudConnector::AvailableServices.find_by_name(:self_hosted_models)
+      return false unless service
+
+      service.free_access? || service.allowed_for?(user)
     end
   end
 end

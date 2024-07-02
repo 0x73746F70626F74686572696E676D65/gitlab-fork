@@ -50,7 +50,10 @@ module Gitlab
         end
 
         def access_token
-          ::CloudConnector::AvailableServices.find_by_name(:duo_chat).access_token(user)
+          chat_feature_setting = ::Ai::FeatureSetting.find_by_feature(:duo_chat)
+          feature_name = chat_feature_setting&.self_hosted? ? :self_hosted_models : :duo_chat
+
+          ::CloudConnector::AvailableServices.find_by_name(feature_name).access_token(user)
         end
         strong_memoize_attr :access_token
 

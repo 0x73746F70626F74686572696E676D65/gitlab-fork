@@ -25,7 +25,7 @@ module Gitlab
           def initialize(user, service_name: :duo_chat, tracking_context: {})
             @user = user
             @tracking_context = tracking_context
-            @ai_client = ::Gitlab::Llm::AiGateway::Client.new(user, service_name: service_name,
+            @ai_client = ::Gitlab::Llm::AiGateway::Client.new(user, service_name: processed_service_name(service_name),
               tracking_context: tracking_context)
             @logger = Gitlab::Llm::Logger.build
           end
@@ -170,6 +170,13 @@ module Gitlab
 
           def chat_feature_setting
             ::Ai::FeatureSetting.find_by_feature(:duo_chat)
+          end
+
+          def processed_service_name(service_name)
+            return service_name unless service_name == :duo_chat
+            return service_name unless chat_feature_setting&.self_hosted?
+
+            :self_hosted_models
           end
         end
       end
