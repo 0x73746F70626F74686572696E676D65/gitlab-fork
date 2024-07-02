@@ -48,8 +48,8 @@ RSpec.describe CodeSuggestions::Tasks::SelfHostedCodeCompletion, feature_categor
   end
 
   subject(:task) do
-    described_class.new(feature_setting: feature_setting, params: params,
-      unsafe_passthrough_params: unsafe_params)
+    described_class.new(feature_setting: feature_setting,
+      params: params, unsafe_passthrough_params: unsafe_params)
   end
 
   describe '#body' do
@@ -115,6 +115,12 @@ RSpec.describe CodeSuggestions::Tasks::SelfHostedCodeCompletion, feature_categor
 
         expect { task.body }.to raise_error("Unknown model: unknown")
       end
+    end
+  end
+
+  describe '#feature_name' do
+    it 'returns code suggestions feature name' do
+      expect(task.feature_name).to eq(:self_hosted_models)
     end
   end
 end

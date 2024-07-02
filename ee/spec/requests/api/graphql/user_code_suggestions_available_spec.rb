@@ -34,6 +34,8 @@ RSpec.describe 'Querying user code suggestions access',
     before do
       allow(Ability)
         .to receive(:allowed?).and_call_original
+
+      stub_licensed_features(code_suggestions: true)
     end
 
     context 'when user has access to code suggestions' do

@@ -61,8 +61,12 @@ module EE
 
       condition(:code_suggestions_enabled_for_user) do
         next false unless @user
+        next true if CloudConnector::AvailableServices.find_by_name(:code_suggestions).allowed_for?(@user)
 
-        CloudConnector::AvailableServices.find_by_name(:code_suggestions).allowed_for?(@user)
+        next false unless ::Ai::FeatureSetting.code_suggestions_self_hosted?
+
+        self_hosted_models = CloudConnector::AvailableServices.find_by_name(:self_hosted_models)
+        self_hosted_models.free_access? || self_hosted_models.allowed_for?(@user)
       end
 
       condition(:duo_chat_enabled) do

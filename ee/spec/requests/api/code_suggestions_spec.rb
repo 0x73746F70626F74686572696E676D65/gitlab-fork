@@ -170,8 +170,10 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
 
     before do
       allow(Gitlab::ApplicationRateLimiter).to receive(:threshold).and_return(0)
-      allow(CloudConnector::AvailableServices).to receive_message_chain(:find_by_name,
-        :access_token).and_return(token)
+
+      service = instance_double('::CloudConnector::SelfSigned::AvailableServiceData')
+      allow(::CloudConnector::AvailableServices).to receive(:find_by_name).and_return(service)
+      allow(service).to receive_messages({ free_access?: false, allowed_for?: true, access_token: token })
     end
 
     shared_examples 'code completions endpoint' do

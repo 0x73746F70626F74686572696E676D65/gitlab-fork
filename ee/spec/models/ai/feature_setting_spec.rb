@@ -28,4 +28,24 @@ RSpec.describe Ai::FeatureSetting, feature_category: :custom_models do
 
     it { expect(feature_setting.provider_title).to eq('Disabled') }
   end
+
+  describe '#code_suggestions_self_hosted?' do
+    where(:feature, :provider, :code_suggestions_self_hosted) do
+      [
+        [:code_generations, :self_hosted, true],
+        [:code_generations, :vendored, false],
+        [:code_completions, :self_hosted, true],
+        [:code_generations, :vendored, false],
+        [:duo_chat, :self_hosted, false]
+      ]
+    end
+
+    with_them do
+      it 'returns whether code generations or completions are self hosted' do
+        create(:ai_feature_setting, feature: feature, provider: provider)
+
+        expect(described_class.code_suggestions_self_hosted?).to eq(code_suggestions_self_hosted)
+      end
+    end
+  end
 end
