@@ -20,31 +20,18 @@ RSpec.describe Gitlab::Llm::Chain::Tools::CiEditorAssistant::Prompts::Anthropic,
       )
     end
 
-    context 'when ai_claude_3_ci_editor is enabled' do
-      it 'returns prompt in correct format for messages api' do
-        prompt = described_class.claude_3_prompt(options)[:prompt]
-        expect(prompt.length).to eq(3)
+    it 'returns prompt in correct format for messages api' do
+      prompt = described_class.prompt(options)[:prompt]
+      expect(prompt.length).to eq(3)
 
-        expect(prompt[0][:role]).to eq(:system)
-        expect(prompt[0][:content]).to eq(system_prompt)
+      expect(prompt[0][:role]).to eq(:system)
+      expect(prompt[0][:content]).to eq(system_prompt)
 
-        expect(prompt[1][:role]).to eq(:user)
-        expect(prompt[1][:content]).to eq("foo")
+      expect(prompt[1][:role]).to eq(:user)
+      expect(prompt[1][:content]).to eq("foo")
 
-        expect(prompt[2][:role]).to eq(:assistant)
-        expect(prompt[2][:content]).to eq('```yaml')
-      end
-    end
-
-    context 'when ai_claude_3_ci_editor is disabled' do
-      it 'returns prompt in correct format for text completions api' do
-        prompt = described_class.prompt(options)[:prompt]
-
-        expect(prompt).to include('Human:')
-        expect(prompt).to include('Assistant:')
-        expect(prompt).to include('foo')
-        expect(prompt).to include(system_prompt)
-      end
+      expect(prompt[2][:role]).to eq(:assistant)
+      expect(prompt[2][:content]).to eq('```yaml')
     end
   end
 
