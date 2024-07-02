@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Groups::Analytics::CycleAnalytics::SummaryController, feature_category: :team_planning do
   let_it_be(:user) { create(:user) }
-  let_it_be(:group, refind: true) { create(:group) }
+  let_it_be(:group, refind: true) { create(:group, :with_organization) }
 
   let(:params) { { group_id: group.full_path, created_after: '2010-01-01', created_before: '2010-01-02' } }
 

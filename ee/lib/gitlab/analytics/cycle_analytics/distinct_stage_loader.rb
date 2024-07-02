@@ -78,12 +78,15 @@ module Gitlab
 
         # rubocop: disable CodeReuse/ActiveRecord
         def add_stage_event_hash_id(stage)
+          organization_id = stage.namespace.organization_id
           # find or create the stage event hash
-          hash_record = ::Analytics::CycleAnalytics::StageEventHash.find_by(hash_sha256: stage.events_hash_code)
+          hash_record = ::Analytics::CycleAnalytics::StageEventHash.find_by(organization_id: organization_id,
+            hash_sha256: stage.events_hash_code)
+
           stage.stage_event_hash_id = if hash_record
                                         hash_record.id
                                       else
-                                        ::Analytics::CycleAnalytics::StageEventHash.record_id_by_hash_sha256(stage.events_hash_code)
+                                        ::Analytics::CycleAnalytics::StageEventHash.record_id_by_hash_sha256(stage.namespace.organization_id, stage.events_hash_code)
                                       end
 
           stage

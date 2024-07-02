@@ -7,8 +7,8 @@ RSpec.describe 'Analytics Dashboard Visualizations', :js, feature_category: :val
 
   let_it_be(:current_user) { create(:user) }
   let_it_be(:user) { current_user }
-  let_it_be(:group) { create(:group, name: "vsd test group") }
-  let_it_be(:project) { create(:project, :repository, name: "vsd project", group: group) }
+  let_it_be(:group) { create(:group, :with_organization, name: "vsd test group") }
+  let_it_be(:project) { create(:project, :repository, name: "vsd project", namespace: group) }
   let_it_be(:environment) { create(:environment, :production, project: project) }
 
   before_all do

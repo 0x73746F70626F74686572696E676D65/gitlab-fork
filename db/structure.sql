@@ -4968,7 +4968,8 @@ ALTER SEQUENCE analytics_cycle_analytics_group_value_streams_id_seq OWNED BY ana
 
 CREATE TABLE analytics_cycle_analytics_stage_event_hashes (
     id bigint NOT NULL,
-    hash_sha256 bytea
+    hash_sha256 bytea,
+    organization_id bigint DEFAULT 1 NOT NULL
 );
 
 CREATE SEQUENCE analytics_cycle_analytics_stage_event_hashes_id_seq
@@ -26689,7 +26690,7 @@ CREATE INDEX index_customer_relations_contacts_on_organization_id ON customer_re
 
 CREATE UNIQUE INDEX index_customer_relations_contacts_on_unique_email_per_group ON customer_relations_contacts USING btree (group_id, lower(email), id);
 
-CREATE UNIQUE INDEX index_cycle_analytics_stage_event_hashes_on_hash_sha_256 ON analytics_cycle_analytics_stage_event_hashes USING btree (hash_sha256);
+CREATE UNIQUE INDEX index_cycle_analytics_stage_event_hashes_on_org_id_sha_256 ON analytics_cycle_analytics_stage_event_hashes USING btree (organization_id, hash_sha256);
 
 CREATE UNIQUE INDEX index_daily_build_group_report_results_unique_columns ON ci_daily_build_group_report_results USING btree (project_id, ref_path, date, group_name);
 

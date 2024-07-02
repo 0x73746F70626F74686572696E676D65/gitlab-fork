@@ -4,8 +4,8 @@ require 'spec_helper'
 
 RSpec.describe Projects::Analytics::CycleAnalytics::StagesController, feature_category: :team_planning do
   let_it_be(:user) { create(:user) }
-  let_it_be(:group) { create(:group) }
-  let_it_be(:project) { create(:project, group: group) }
+  let_it_be(:group) { create(:group, :with_organization) }
+  let_it_be(:project) { create(:project, namespace: group) }
   let_it_be(:namespace) { project.project_namespace }
 
   let_it_be(:stages) do

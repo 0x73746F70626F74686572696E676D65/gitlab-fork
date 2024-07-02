@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Analytics::CycleAnalytics::AggregatorService do
-  let!(:group) { create(:group) }
+  let!(:group) { create(:group, :with_organization) }
   let!(:aggregation) { create(:cycle_analytics_aggregation, :enabled, namespace: group) }
   let(:mode) { :incremental }
 
@@ -32,7 +32,8 @@ RSpec.describe Analytics::CycleAnalytics::AggregatorService do
   end
 
   context 'when a subgroup is given' do
-    let(:group) { create(:group, parent: create(:group)) }
+    let(:parent_group) { create(:group, :with_organization) }
+    let(:group) { create(:group, parent: parent_group, organization_id: parent_group.organization_id) }
 
     it 'sets the aggregation record disabled' do
       stub_licensed_features(cycle_analytics_for_groups: true)
@@ -86,7 +87,7 @@ RSpec.describe Analytics::CycleAnalytics::AggregatorService do
     end
 
     context 'when merge requests and issues are present for the configured VSA stages' do
-      let(:project) { create(:project, group: group) }
+      let(:project) { create(:project, namespace: group) }
       let!(:merge_request) { create(:merge_request, :with_merged_metrics, project: project) }
       let!(:issue1) { create(:issue, project: project, closed_at: Time.current) }
       let!(:issue2) { create(:issue, project: project, closed_at: Time.current) }
@@ -123,7 +124,7 @@ RSpec.describe Analytics::CycleAnalytics::AggregatorService do
     context 'when running a full aggregation' do
       let(:mode) { :full }
 
-      let(:project) { create(:project, group: group) }
+      let(:project) { create(:project, namespace: group) }
       let!(:merge_request_1) { create(:merge_request, :with_merged_metrics, :unique_branches, project: project) }
       let!(:merge_request_2) { create(:merge_request, :with_merged_metrics, :unique_branches, project: project) }
 

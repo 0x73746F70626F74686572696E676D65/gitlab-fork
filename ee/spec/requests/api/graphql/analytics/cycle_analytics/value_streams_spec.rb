@@ -310,7 +310,7 @@ RSpec.describe '(Project|Group).value_streams', feature_category: :value_stream_
   context 'for projects' do
     let(:resource_type) { 'project' }
 
-    let_it_be(:resource) { create(:project, group: create(:group)) }
+    let_it_be(:resource) { create(:project, namespace: create(:group, :with_organization)) }
     let_it_be(:project) { resource }
     let_it_be(:namespace) { resource.project_namespace }
     let_it_be(:start_label) { create(:label, project: resource, title: 'Start Label') }
@@ -335,8 +335,8 @@ RSpec.describe '(Project|Group).value_streams', feature_category: :value_stream_
   context 'for groups' do
     let(:resource_type) { 'group' }
 
-    let_it_be(:resource) { create(:group) }
-    let_it_be(:project) { create(:project, group: resource) }
+    let_it_be(:resource) { create(:group, :with_organization) }
+    let_it_be(:project) { create(:project, namespace: resource) }
     let_it_be(:namespace) { resource }
     let_it_be(:start_label) { create(:group_label, group: resource, title: 'Start Label') }
     let_it_be(:end_label) { create(:group_label, group: resource, title: 'End Label') }

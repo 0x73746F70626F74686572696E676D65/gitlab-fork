@@ -156,7 +156,7 @@ RSpec.describe Analytics::CycleAnalytics::ConsistencyWorker, feature_category: :
   it 'invokes the consistency check service for merge requests' do
     stub_licensed_features(cycle_analytics_for_groups: true)
 
-    group = create(:group)
+    group = create(:group, :with_organization)
     stage = create(:cycle_analytics_stage, namespace: group)
     event1 = create(
       :cycle_analytics_merge_request_stage_event,
