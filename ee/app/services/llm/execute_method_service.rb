@@ -24,6 +24,8 @@ module Llm
     attr_reader :method
 
     def track_snowplow_event(result)
+      request_id = result[:ai_message]&.request_id
+
       Gitlab::Tracking.event(
         self.class.to_s,
         "execute_llm_method",
@@ -31,7 +33,8 @@ module Llm
         property: result.success? ? "success" : "error",
         user: user,
         namespace: namespace,
-        project: project
+        project: project,
+        requestId: request_id
       )
     end
   end
