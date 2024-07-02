@@ -112,11 +112,10 @@ export default {
   },
   data() {
     return {
-      addOnAssignmentError: undefined,
+      error: undefined,
       selectedUsers: [],
       bulkAction: undefined,
-      bulkActionSuccessMessage: undefined,
-      bulkActionError: undefined,
+      successMessage: undefined,
       isBulkActionInProgress: false,
       isConfirmationModalVisible: false,
     };
@@ -213,13 +212,15 @@ export default {
     isBulkActionToAssignSeats() {
       return this.bulkAction === ASSIGN_SEATS_BULK_ACTION;
     },
-    errorAlertAddOnAssigmentPrimaryButtonText() {
-      return this.getAddSeatsButtonText(
-        this.addOnAssignmentError === NO_SEATS_AVAILABLE_ERROR_CODE,
-      );
-    },
-    errorAlertBulkActionPrimaryButtonText() {
-      return this.getAddSeatsButtonText(this.bulkActionError === NOT_ENOUGH_SEATS_ERROR_CODE);
+    errorAlertPrimaryButtonText() {
+      const isErrorKnown =
+        this.error === NO_SEATS_AVAILABLE_ERROR_CODE || this.error === NOT_ENOUGH_SEATS_ERROR_CODE;
+
+      if (this.hideAddSeatsButton || !isErrorKnown) {
+        return '';
+      }
+
+      return this.$options.i18n.addSeatsText;
     },
     hideAddSeatsButton() {
       return !this.subscriptionPermissions?.canAddDuoProSeats && this.hasLimitedAccess;
@@ -255,8 +256,8 @@ export default {
       this.unselectAllUsers();
       this.$emit('prev', this.pageInfo.startCursor);
     },
-    handleAddOnAssignmentError(errorCode) {
-      this.addOnAssignmentError = errorCode;
+    handleError(error) {
+      this.error = error;
       this.scrollToTop();
     },
     scrollToTop() {
@@ -291,9 +292,8 @@ export default {
       this.bulkAction = undefined;
     },
     clearAlerts() {
-      this.addOnAssignmentError = undefined;
-      this.bulkActionError = undefined;
-      this.bulkActionSuccessMessage = undefined;
+      this.error = undefined;
+      this.successMessage = undefined;
     },
     async assignSeats() {
       this.clearAlerts();
@@ -364,13 +364,13 @@ export default {
     },
     handleBulkActionSuccess() {
       if (this.isBulkActionToAssignSeats) {
-        this.bulkActionSuccessMessage = n__(
+        this.successMessage = n__(
           'Billing|%d user has been successfully assigned a seat.',
           'Billing|%d users have been successfully assigned a seat.',
           this.selectedUsers.length,
         );
       } else {
-        this.bulkActionSuccessMessage = n__(
+        this.successMessage = n__(
           'Billing|%d user has been successfully unassigned a seat.',
           'Billing|%d users have been successfully unassigned a seat.',
           this.selectedUsers.length,
@@ -379,25 +379,22 @@ export default {
       this.unselectAllUsers();
     },
     handleBulkActionError(error) {
-      let bulkActionError = error;
-      if (!isKnownErrorCode(error, ADD_ON_ERROR_DICTIONARY)) {
-        bulkActionError = this.isBulkActionToAssignSeats
-          ? CANNOT_BULK_ASSIGN_ADDON_ERROR_CODE
-          : CANNOT_BULK_UNASSIGN_ADDON_ERROR_CODE;
+      let bulkActionError;
+
+      if (isKnownErrorCode(error, ADD_ON_ERROR_DICTIONARY)) {
+        bulkActionError = error;
+      } else if (this.isBulkActionToAssignSeats) {
+        bulkActionError = CANNOT_BULK_ASSIGN_ADDON_ERROR_CODE;
+      } else {
+        bulkActionError = CANNOT_BULK_UNASSIGN_ADDON_ERROR_CODE;
       }
-      this.bulkActionError = bulkActionError;
+
+      this.handleError(bulkActionError);
     },
     resetBulkAction() {
       this.bulkAction = undefined;
       this.isBulkActionInProgress = false;
       this.isConfirmationModalVisible = false;
-    },
-    getAddSeatsButtonText(isErrorKnown) {
-      if (this.hideAddSeatsButton || !isErrorKnown) {
-        return '';
-      }
-
-      return this.$options.i18n.addSeatsText;
     },
     forwardException(error) {
       this.$emit('error', error);
@@ -413,38 +410,26 @@ export default {
     <slot name="search-and-sort-bar"> </slot>
     <slot name="error-alert"></slot>
     <error-alert
-      v-if="addOnAssignmentError"
-      data-testid="add-on-assignment-error"
-      :error="addOnAssignmentError"
+      v-if="error"
+      data-testid="error-alert"
+      :error="error"
       :error-dictionary="$options.addOnErrorDictionary"
       :dismissible="true"
       :primary-button-link="addDuoProHref"
-      :primary-button-text="errorAlertAddOnAssigmentPrimaryButtonText"
+      :primary-button-text="errorAlertPrimaryButtonText"
       :secondary-button-link="$options.links.sales"
       :secondary-button-text="$options.i18n.contactSalesText"
-      @dismiss="addOnAssignmentError = undefined"
+      @dismiss="error = undefined"
     />
     <gl-alert
-      v-if="bulkActionSuccessMessage"
-      data-testid="bulk-action-success-alert"
+      v-if="successMessage"
+      data-testid="success-alert"
       variant="success"
       :dismissible="true"
-      @dismiss="bulkActionSuccessMessage = undefined"
+      @dismiss="successMessage = undefined"
     >
-      {{ bulkActionSuccessMessage }}
+      {{ successMessage }}
     </gl-alert>
-    <error-alert
-      v-if="bulkActionError"
-      data-testid="bulk-action-error-alert"
-      :error="bulkActionError"
-      :error-dictionary="$options.addOnErrorDictionary"
-      :dismissible="true"
-      :primary-button-link="addDuoProHref"
-      :primary-button-text="errorAlertBulkActionPrimaryButtonText"
-      :secondary-button-link="$options.links.sales"
-      :secondary-button-text="$options.i18n.contactSalesText"
-      @dismiss="bulkActionError = undefined"
-    />
     <div
       v-if="isAnyUserSelected"
       class="gl-display-flex gl-mt-5 gl-bg-gray-10 gl-p-5 gl-align-items-center gl-justify-content-space-between"
@@ -537,8 +522,8 @@ export default {
           :add-on-assignments="item.addOnAssignments"
           :add-on-purchase-id="addOnPurchaseId"
           :duo-tier="duoTier"
-          @handleAddOnAssignmentError="handleAddOnAssignmentError"
-          @clearAddOnAssignmentError="clearAlerts"
+          @handleError="handleError"
+          @clearError="clearAlerts"
         />
       </template>
       <template #cell(maxRole)="{ item }">
