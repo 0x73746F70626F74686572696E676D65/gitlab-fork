@@ -37,6 +37,7 @@ RSpec.describe DependencyManagement::AggregationsFinder, feature_category: :depe
         an_object_having_attributes(
           component_id: occurrence.component_id,
           component_version_id: occurrence.component_version_id,
+          licenses: [],
           occurrence_count: 1,
           project_count: 1,
           vulnerability_count: 2
@@ -64,6 +65,37 @@ RSpec.describe DependencyManagement::AggregationsFinder, feature_category: :depe
         it 'returns max number of items + 1' do
           expect(execute.to_a.size).to eq(max + 1)
         end
+      end
+    end
+
+    context 'when occurrences have licenses' do
+      let_it_be(:occurrence_mit_apache_2) do
+        create(:sbom_occurrence, :mit, :apache_2, :bundler, project: target_projects.first)
+      end
+
+      let_it_be(:occurrence_mpl) { create(:sbom_occurrence, :mpl_2, :nuget, project: target_projects.first) }
+      let_it_be(:occurrence_apache_2) { create(:sbom_occurrence, :apache_2, :yarn, project: target_projects.first) }
+
+      it 'returns the first license' do
+        expect(execute).to match_array([
+          an_object_having_attributes(
+            component_id: occurrence_mit_apache_2.component_id,
+            component_version_id: occurrence_mit_apache_2.component_version_id,
+            licenses: [{ "url" => "https://spdx.org/licenses/MIT.html", "name" => "MIT License",
+                         "spdx_identifier" => "MIT" }]),
+          an_object_having_attributes(
+            component_id: occurrence_mpl.component_id,
+            component_version_id: occurrence_mpl.component_version_id,
+            licenses: [{ "url" => "https://spdx.org/licenses/MPL-2.0.html",
+                         "name" => "Mozilla Public License 2.0", "spdx_identifier" => "MPL-2.0" }]),
+          an_object_having_attributes(
+            component_id: occurrence_apache_2.component_id,
+            component_version_id: occurrence_apache_2.component_version_id,
+            licenses: [{ "url" => "https://spdx.org/licenses/Apache-2.0.html",
+                         "name" => "Apache 2.0 License", "spdx_identifier" => "Apache-2.0" }]),
+          an_object_having_attributes(licenses: []),
+          an_object_having_attributes(licenses: [])
+        ])
       end
     end
 
