@@ -50193,31 +50193,13 @@ msgstr ""
 msgid "SignUp|By signing in you accept the %{link_start}Terms of Use and acknowledge the Privacy Statement and Cookie Policy%{link_end}."
 msgstr ""
 
-msgid "SignUp|Contribute to a public project on GitLab"
-msgstr ""
-
 msgid "SignUp|First name is too long (maximum is %{max_length} characters)."
-msgstr ""
-
-msgid "SignUp|I want to..."
-msgstr ""
-
-msgid "SignUp|Join an existing team"
 msgstr ""
 
 msgid "SignUp|Last name is too long (maximum is %{max_length} characters)."
 msgstr ""
 
 msgid "SignUp|Minimum length is %{minimum_password_length} characters."
-msgstr ""
-
-msgid "SignUp|Please select an option..."
-msgstr ""
-
-msgid "SignUp|Set up a new personal account"
-msgstr ""
-
-msgid "SignUp|Set up a new team"
 msgstr ""
 
 msgid "SignUp|Username is too long (maximum is %{max_length} characters)."

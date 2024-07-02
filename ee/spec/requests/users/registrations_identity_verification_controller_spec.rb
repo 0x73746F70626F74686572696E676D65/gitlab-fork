@@ -144,26 +144,6 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
       expect(response).to render_template('show', layout: 'minimal')
     end
 
-    context 'for signup_intent_step_one experiment' do
-      let(:experiment) { instance_double(ApplicationExperiment) }
-
-      it 'tracks signup_intent_step_one experiment events' do
-        stub_session(session_data: { verification_user_id: unconfirmed_user.id })
-
-        allow_next_instance_of(described_class) do |controller|
-          allow(controller)
-            .to receive(:experiment)
-                  .with(:signup_intent_step_one, actor: unconfirmed_user)
-                  .and_return(experiment)
-        end
-
-        expect(experiment).to receive(:run)
-        expect(experiment).to receive(:track).with(:render_identity_verification, label: 'free_registration')
-
-        do_request
-      end
-    end
-
     context 'with a banned user' do
       let_it_be_with_reload(:user) { unconfirmed_user }
 

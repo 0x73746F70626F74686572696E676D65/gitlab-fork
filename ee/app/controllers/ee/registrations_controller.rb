@@ -119,11 +119,6 @@ module EE
         label: onboarding_status.tracking_label,
         user: user
       )
-
-      return unless params[:signup_intent].present?
-
-      experiment(:signup_intent_step_one, actor: user)
-        .track(params[:signup_intent], label: onboarding_status.tracking_label)
     end
 
     override :set_resource_fields

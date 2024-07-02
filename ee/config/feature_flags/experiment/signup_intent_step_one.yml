@@ -1,9 +1,0 @@
----
-name: signup_intent_step_one
-feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/441494
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/147092
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/444310
-milestone: '16.11'
-type: experiment
-group: group::acquisition
-default_enabled: false

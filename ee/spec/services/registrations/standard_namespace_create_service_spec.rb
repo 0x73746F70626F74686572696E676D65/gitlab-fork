@@ -102,17 +102,6 @@ RSpec.describe Registrations::StandardNamespaceCreateService, :aggregate_failure
         expect(execute).to be_success
       end
 
-      context 'for signup_intent_step_one experiment' do
-        subject(:service) { described_class.new(user, params) }
-
-        it 'tracks experiment assignment event' do
-          allow(service).to receive(:experiment).and_call_original
-          expect(service).to receive(:experiment).with(:signup_intent_step_one, actor: user)
-
-          expect(service.execute).to be_success
-        end
-      end
-
       it 'does not attempt to create a trial' do
         expect(GitlabSubscriptions::Trials::ApplyTrialWorker).not_to receive(:perform_async)
 
