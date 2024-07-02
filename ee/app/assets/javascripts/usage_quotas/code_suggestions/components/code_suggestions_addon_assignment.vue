@@ -73,7 +73,7 @@ export default {
   methods: {
     async onToggle() {
       this.isLoading = true;
-      this.$emit('clearAddOnAssignmentError');
+      this.$emit('clearError');
 
       try {
         const response = this.isAssigned ? await this.unassignAddOn() : await this.assignAddOn();
@@ -96,14 +96,18 @@ export default {
         this.isLoading = false;
       }
     },
-    handleError(error) {
-      let errorCode = error;
-      if (!isKnownErrorCode(error, ADD_ON_ERROR_DICTIONARY)) {
-        errorCode = this.isAssigned
-          ? CANNOT_UNASSIGN_ADDON_ERROR_CODE
-          : CANNOT_ASSIGN_ADDON_ERROR_CODE;
+    handleError(e) {
+      let error;
+
+      if (isKnownErrorCode(e, ADD_ON_ERROR_DICTIONARY)) {
+        error = e;
+      } else if (this.isAssigned) {
+        error = CANNOT_UNASSIGN_ADDON_ERROR_CODE;
+      } else {
+        error = CANNOT_ASSIGN_ADDON_ERROR_CODE;
       }
-      this.$emit('handleAddOnAssignmentError', errorCode);
+
+      this.$emit('handleError', error);
     },
     async assignAddOn() {
       const {

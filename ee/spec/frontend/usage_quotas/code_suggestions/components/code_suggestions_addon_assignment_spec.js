@@ -235,7 +235,8 @@ describe('CodeSuggestionsAddonAssignment', () => {
 
       await waitForPromises();
 
-      expect(wrapper.emitted('handleAddOnAssignmentError')).toEqual([['NO_SEATS_AVAILABLE']]);
+      expect(wrapper.emitted('clearError')).toEqual([[]]);
+      expect(wrapper.emitted('handleError')).toEqual([['NO_SEATS_AVAILABLE']]);
     });
 
     it('emits an event with generic error code for a non string error code', async () => {
@@ -249,7 +250,8 @@ describe('CodeSuggestionsAddonAssignment', () => {
 
       await waitForPromises();
 
-      expect(wrapper.emitted('handleAddOnAssignmentError')).toEqual([['CANNOT_ASSIGN_ADDON']]);
+      expect(wrapper.emitted('clearError')).toEqual([[]]);
+      expect(wrapper.emitted('handleError')).toEqual([['CANNOT_ASSIGN_ADDON']]);
     });
 
     it('emits an event with generic error code for an unknown error', async () => {
@@ -263,7 +265,8 @@ describe('CodeSuggestionsAddonAssignment', () => {
 
       await waitForPromises();
 
-      expect(wrapper.emitted('handleAddOnAssignmentError')).toEqual([['CANNOT_ASSIGN_ADDON']]);
+      expect(wrapper.emitted('clearError')).toEqual([[]]);
+      expect(wrapper.emitted('handleError')).toEqual([['CANNOT_ASSIGN_ADDON']]);
     });
 
     it('emits an event with the generic error code', async () => {
@@ -275,7 +278,8 @@ describe('CodeSuggestionsAddonAssignment', () => {
 
       await waitForPromises();
 
-      expect(wrapper.emitted('handleAddOnAssignmentError')).toEqual([['CANNOT_ASSIGN_ADDON']]);
+      expect(wrapper.emitted('clearError')).toEqual([[]]);
+      expect(wrapper.emitted('handleError')).toEqual([['CANNOT_ASSIGN_ADDON']]);
     });
 
     it('captures error on Sentry for generic errors', async () => {
@@ -342,7 +346,8 @@ describe('CodeSuggestionsAddonAssignment', () => {
 
       await waitForPromises();
 
-      expect(wrapper.emitted('handleAddOnAssignmentError')).toEqual([['NO_SEATS_AVAILABLE']]);
+      expect(wrapper.emitted('clearError')).toEqual([[]]);
+      expect(wrapper.emitted('handleError')).toEqual([['NO_SEATS_AVAILABLE']]);
     });
 
     it('emits an event with generic error code for a non string error code', async () => {
@@ -356,7 +361,8 @@ describe('CodeSuggestionsAddonAssignment', () => {
 
       await waitForPromises();
 
-      expect(wrapper.emitted('handleAddOnAssignmentError')).toEqual([['CANNOT_UNASSIGN_ADDON']]);
+      expect(wrapper.emitted('clearError')).toEqual([[]]);
+      expect(wrapper.emitted('handleError')).toEqual([['CANNOT_UNASSIGN_ADDON']]);
     });
 
     it('emits an event with generic error code for an unknown error', async () => {
@@ -370,7 +376,8 @@ describe('CodeSuggestionsAddonAssignment', () => {
 
       await waitForPromises();
 
-      expect(wrapper.emitted('handleAddOnAssignmentError')).toEqual([['CANNOT_UNASSIGN_ADDON']]);
+      expect(wrapper.emitted('clearError')).toEqual([[]]);
+      expect(wrapper.emitted('handleError')).toEqual([['CANNOT_UNASSIGN_ADDON']]);
     });
 
     it('emits an event with the generic error code', async () => {
@@ -382,7 +389,8 @@ describe('CodeSuggestionsAddonAssignment', () => {
 
       await waitForPromises();
 
-      expect(wrapper.emitted('handleAddOnAssignmentError')).toEqual([['CANNOT_UNASSIGN_ADDON']]);
+      expect(wrapper.emitted('clearError')).toEqual([[]]);
+      expect(wrapper.emitted('handleError')).toEqual([['CANNOT_UNASSIGN_ADDON']]);
     });
   });
 });

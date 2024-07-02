@@ -251,7 +251,6 @@ describe('Add On Eligible User List', () => {
       .map(({ label }) => label);
   const findAllCodeSuggestionsAddonComponents = () =>
     wrapper.findAllComponents(CodeSuggestionsAddOnAssignment);
-  const findAddOnAssignmentError = () => wrapper.findByTestId('add-on-assignment-error');
   const findPagination = () => wrapper.findComponent(GlKeysetPagination);
   const findSkeletonLoader = () => wrapper.findComponent(GlSkeletonLoader);
 
@@ -295,8 +294,8 @@ describe('Add On Eligible User List', () => {
   const findAssignSeatsButton = () => wrapper.findByTestId('assign-seats-button');
   const findUnassignSeatsButton = () => wrapper.findByTestId('unassign-seats-button');
   const findConfirmationModal = () => wrapper.findComponent(AddOnBulkActionConfirmationModal);
-  const findBulkActionSuccessAlert = () => wrapper.findByTestId('bulk-action-success-alert');
-  const findBulkActionErrorAlert = () => wrapper.findByTestId('bulk-action-error-alert');
+  const findSuccessAlert = () => wrapper.findByTestId('success-alert');
+  const findErrorAlert = () => wrapper.findByTestId('error-alert');
 
   const confirmSeatAssignment = async () => {
     await findSelectUserCheckboxAt(1).find('input').setChecked(true);
@@ -324,9 +323,7 @@ describe('Add On Eligible User List', () => {
     await createComponent({
       mountFn: mount,
     });
-    findAllCodeSuggestionsAddonComponents()
-      .at(0)
-      .vm.$emit('handleAddOnAssignmentError', 'NO_SEATS_AVAILABLE');
+    findAllCodeSuggestionsAddonComponents().at(0).vm.$emit('handleError', 'NO_SEATS_AVAILABLE');
     await nextTick();
   };
 
@@ -615,33 +612,30 @@ describe('Add On Eligible User List', () => {
       });
 
       describe('when there is an error while assigning addon', () => {
-        const addOnAssignmentError = 'NO_SEATS_AVAILABLE';
+        const error = 'NO_SEATS_AVAILABLE';
+
         beforeEach(async () => {
           await createComponent({
             mountFn: mount,
           });
-          findAllCodeSuggestionsAddonComponents()
-            .at(0)
-            .vm.$emit('handleAddOnAssignmentError', addOnAssignmentError);
+          findAllCodeSuggestionsAddonComponents().at(0).vm.$emit('handleError', error);
         });
 
         it('shows an error alert', () => {
           const expectedProps = {
             dismissible: true,
-            error: addOnAssignmentError,
+            error,
             errorDictionary: ADD_ON_ERROR_DICTIONARY,
           };
-          expect(findAddOnAssignmentError().props()).toEqual(
-            expect.objectContaining(expectedProps),
-          );
+          expect(findErrorAlert().props()).toEqual(expect.objectContaining(expectedProps));
         });
 
         it('clears error alert when dismissed', async () => {
-          findAddOnAssignmentError().vm.$emit('dismiss');
+          findErrorAlert().vm.$emit('dismiss');
 
           await nextTick();
 
-          expect(findAddOnAssignmentError().exists()).toBe(false);
+          expect(findErrorAlert().exists()).toBe(false);
         });
 
         it('scrolls to the top of the table', () => {
@@ -922,9 +916,7 @@ describe('Add On Eligible User List', () => {
         it('shows a success alert', async () => {
           await waitForPromises();
 
-          expect(findBulkActionSuccessAlert().text()).toBe(
-            '2 users have been successfully assigned a seat.',
-          );
+          expect(findSuccessAlert().text()).toBe('2 users have been successfully assigned a seat.');
         });
       });
 
@@ -962,7 +954,7 @@ describe('Add On Eligible User List', () => {
         it('shows a generic error alert', async () => {
           await waitForPromises();
 
-          expect(findBulkActionErrorAlert().props()).toMatchObject({
+          expect(findErrorAlert().props()).toMatchObject({
             dismissible: true,
             error: 'CANNOT_BULK_ASSIGN_ADDON',
             errorDictionary: ADD_ON_ERROR_DICTIONARY,
@@ -972,7 +964,7 @@ describe('Add On Eligible User List', () => {
         it('shows no add seats button', async () => {
           await waitForPromises();
 
-          expect(findBulkActionErrorAlert().props()).toMatchObject({
+          expect(findErrorAlert().props()).toMatchObject({
             dismissible: true,
             error: 'CANNOT_BULK_ASSIGN_ADDON',
             errorDictionary: ADD_ON_ERROR_DICTIONARY,
@@ -982,13 +974,17 @@ describe('Add On Eligible User List', () => {
             secondaryButtonText: 'Contact sales',
           });
         });
+
+        it('scrolls to the top of the table', () => {
+          expect(scrollToElement).toHaveBeenCalled();
+        });
       });
 
       describe('known error code', () => {
         it('shows not enough seats error and buttons', async () => {
           await triggerErrorAlertNotEnoughSeats();
 
-          expect(findBulkActionErrorAlert().props()).toMatchObject({
+          expect(findErrorAlert().props()).toMatchObject({
             dismissible: true,
             error: 'NOT_ENOUGH_SEATS',
             errorDictionary: ADD_ON_ERROR_DICTIONARY,
@@ -997,12 +993,13 @@ describe('Add On Eligible User List', () => {
             secondaryButtonLink: `${PROMO_URL}/solutions/code-suggestions/sales/`,
             secondaryButtonText: 'Contact sales',
           });
+          expect(scrollToElement).toHaveBeenCalled();
         });
 
         it('shows no seats available error and buttons', async () => {
           await triggerErrorAlertNoSeatsAvailable();
 
-          expect(findAddOnAssignmentError().props()).toMatchObject({
+          expect(findErrorAlert().props()).toMatchObject({
             dismissible: true,
             error: 'NO_SEATS_AVAILABLE',
             errorDictionary: ADD_ON_ERROR_DICTIONARY,
@@ -1011,6 +1008,7 @@ describe('Add On Eligible User List', () => {
             secondaryButtonLink: `${PROMO_URL}/solutions/code-suggestions/sales/`,
             secondaryButtonText: 'Contact sales',
           });
+          expect(scrollToElement).toHaveBeenCalled();
         });
 
         describe('when subscriptionPermissions returns error', () => {
@@ -1034,7 +1032,7 @@ describe('Add On Eligible User List', () => {
 
           it('shows error, sales button and add seats button', () => {
             // When clicked the button will redirect a customer and we will handle the error on CustomersPortal side
-            expect(findAddOnAssignmentError().props()).toMatchObject({
+            expect(findErrorAlert().props()).toMatchObject({
               dismissible: true,
               error: 'NO_SEATS_AVAILABLE',
               errorDictionary: ADD_ON_ERROR_DICTIONARY,
@@ -1043,6 +1041,10 @@ describe('Add On Eligible User List', () => {
               secondaryButtonLink: `${PROMO_URL}/solutions/code-suggestions/sales/`,
               secondaryButtonText: 'Contact sales',
             });
+          });
+
+          it('scrolls to the top of the table', () => {
+            expect(scrollToElement).toHaveBeenCalled();
           });
         });
 
@@ -1071,7 +1073,7 @@ describe('Add On Eligible User List', () => {
               });
 
               it('shows error, sales button and no add seats button', () => {
-                expect(findAddOnAssignmentError().props()).toMatchObject({
+                expect(findErrorAlert().props()).toMatchObject({
                   dismissible: true,
                   error: 'NO_SEATS_AVAILABLE',
                   errorDictionary: ADD_ON_ERROR_DICTIONARY,
@@ -1109,7 +1111,7 @@ describe('Add On Eligible User List', () => {
               });
 
               it('shows error, sales button and add seats button', () => {
-                expect(findAddOnAssignmentError().props()).toMatchObject({
+                expect(findErrorAlert().props()).toMatchObject({
                   dismissible: true,
                   error: 'NO_SEATS_AVAILABLE',
                   errorDictionary: ADD_ON_ERROR_DICTIONARY,
@@ -1168,7 +1170,7 @@ describe('Add On Eligible User List', () => {
         it('shows a success alert', async () => {
           await waitForPromises();
 
-          expect(findBulkActionSuccessAlert().text()).toBe(
+          expect(findSuccessAlert().text()).toBe(
             '2 users have been successfully unassigned a seat.',
           );
         });
@@ -1185,7 +1187,6 @@ describe('Add On Eligible User List', () => {
           });
 
           await confirmSeatUnassignment();
-
           await waitForPromises();
         });
 
@@ -1201,14 +1202,16 @@ describe('Add On Eligible User List', () => {
           expect(findSelectedUsersSummary().text()).toMatchInterpolatedText('2 users selected');
         });
 
-        it('shows a generic error alert', async () => {
-          await waitForPromises();
-
-          expect(findBulkActionErrorAlert().props()).toMatchObject({
+        it('shows a generic error alert', () => {
+          expect(findErrorAlert().props()).toMatchObject({
             dismissible: true,
             error: 'CANNOT_BULK_UNASSIGN_ADDON',
             errorDictionary: ADD_ON_ERROR_DICTIONARY,
           });
+        });
+
+        it('scrolls to the top of the table', () => {
+          expect(scrollToElement).toHaveBeenCalled();
         });
       });
 
@@ -1223,13 +1226,12 @@ describe('Add On Eligible User List', () => {
           });
 
           await confirmSeatUnassignment();
+          await waitForPromises();
         });
 
-        it('treats no assignments found error as success', async () => {
-          await waitForPromises();
-
-          expect(findBulkActionErrorAlert().exists()).toBe(false);
-          expect(findBulkActionSuccessAlert().text()).toBe(
+        it('treats no assignments found error as success', () => {
+          expect(findErrorAlert().exists()).toBe(false);
+          expect(findSuccessAlert().text()).toBe(
             '2 users have been successfully unassigned a seat.',
           );
         });
@@ -1246,16 +1248,19 @@ describe('Add On Eligible User List', () => {
           });
 
           await confirmSeatUnassignment();
+          await waitForPromises();
         });
 
-        it('shows a generic error alert', async () => {
-          await waitForPromises();
-
-          expect(findBulkActionErrorAlert().props()).toMatchObject({
+        it('shows a generic error alert', () => {
+          expect(findErrorAlert().props()).toMatchObject({
             dismissible: true,
             error: 'CANNOT_BULK_UNASSIGN_ADDON',
             errorDictionary: ADD_ON_ERROR_DICTIONARY,
           });
+        });
+
+        it('scrolls to the top of the table', () => {
+          expect(scrollToElement).toHaveBeenCalled();
         });
       });
     });
