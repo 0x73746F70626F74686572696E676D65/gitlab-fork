@@ -57,7 +57,7 @@ export const fetchRules = ({ rootState, dispatch }) => {
       const rules = filter ? newRules.filter(({ name }) => filter.includes(name)) : newRules;
 
       dispatch('receiveRulesSuccess', {
-        approvalSettings: mapApprovalSettingsResponse(rules),
+        approvalSettings: mapApprovalSettingsResponse(rules, filter),
         pagination: { nextPage, total },
       });
     })

@@ -61,6 +61,21 @@ describe('Approvals ProjectRules', () => {
       store.state.settings.allowMultiRule = true;
     });
 
+    it('should never have any_approver rule', () => {
+      factory({ isBranchRulesEdit: true });
+      const hasAnyApproverRule = store.modules.approvals.state.rules.some(
+        (rule) => rule.ruleType === 'any_approver',
+      );
+
+      expect(hasAnyApproverRule).toBe(false);
+    });
+
+    it('should not have Show more pagination button', () => {
+      factory({ isBranchRulesEdit: true });
+
+      expect(findShowMoreButton(wrapper).exists()).toBe(false);
+    });
+
     it('does not render branches when `true`', () => {
       factory({ isBranchRulesEdit: true });
 

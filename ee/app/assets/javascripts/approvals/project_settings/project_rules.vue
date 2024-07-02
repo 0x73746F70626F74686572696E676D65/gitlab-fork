@@ -58,13 +58,17 @@ export default {
         !this.rules.some((rule) => rule.ruleType === RULE_TYPE_ANY_APPROVER)
       );
     },
+    hasPagination() {
+      return !this.isBranchRulesEdit && this.pagination.nextPage;
+    },
   },
   watch: {
     rules: {
       handler(newValue) {
         if (
           this.settings.allowMultiRule &&
-          !newValue.some((rule) => rule.ruleType === RULE_TYPE_ANY_APPROVER)
+          !newValue.some((rule) => rule.ruleType === RULE_TYPE_ANY_APPROVER) &&
+          !this.isBranchRulesEdit
         ) {
           this.addEmptyRule();
         }
@@ -189,10 +193,7 @@ export default {
       </template>
     </rules>
 
-    <div
-      v-if="pagination.nextPage"
-      class="gl-display-flex gl-justify-content-center gl-mb-4 gl-mt-6"
-    >
+    <div v-if="hasPagination" class="gl-display-flex gl-justify-content-center gl-mb-4 gl-mt-6">
       <gl-button :loading="isLoading" @click="fetchRules">{{ __('Show more') }}</gl-button>
     </div>
   </div>
