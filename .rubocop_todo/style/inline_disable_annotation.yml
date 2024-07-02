@@ -1,6 +1,5 @@
 ---
 Style/InlineDisableAnnotation:
-  Details: grace period
   Exclude:
     - 'Gemfile'
     - 'Guardfile'

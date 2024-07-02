@@ -1,7 +1,6 @@
 ---
 # Cop supports --autocorrect.
 Layout/LineBreakAfterFinalMixin:
-  Details: grace period
   Exclude:
     - 'app/controllers/admin/clusters_controller.rb'
     - 'app/controllers/admin/dashboard_controller.rb'

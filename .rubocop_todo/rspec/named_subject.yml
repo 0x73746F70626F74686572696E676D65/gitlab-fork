@@ -1,6 +1,5 @@
 ---
 RSpec/NamedSubject:
-  Details: grace period
   Exclude:
     - 'ee/spec/controllers/admin/audit_log_reports_controller_spec.rb'
     - 'ee/spec/controllers/admin/emails_controller_spec.rb'
