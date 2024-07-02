@@ -4,6 +4,7 @@ module Resolvers
   module Analytics
     class AiMetricsResolver < BaseResolver
       include Gitlab::Graphql::Authorize::AuthorizeResource
+      include LooksAhead
 
       type ::Types::Analytics::AiMetrics, null: true
 
@@ -24,14 +25,15 @@ module Resolvers
         super
       end
 
-      def resolve(**args)
+      def resolve_with_lookahead(**args)
         params = params_with_defaults(args)
 
-        service_response = ::Analytics::AiAnalytics::CodeSuggestionUsageRateService.new(
+        service_response = ::Analytics::AiAnalytics::CodeSuggestionUsageService.new(
           current_user,
           namespace: namespace,
           from: params[:start_date],
-          to: params[:end_date]
+          to: params[:end_date],
+          fields: selected_fields
         ).execute
 
         return unless service_response.success?
@@ -55,6 +57,12 @@ module Resolvers
 
       def namespace
         object.respond_to?(:project_namespace) ? object.project_namespace : object
+      end
+
+      def selected_fields
+        ::Analytics::AiAnalytics::CodeSuggestionUsageService::FIELDS.select do |field|
+          lookahead.selects?(field)
+        end
       end
     end
   end
