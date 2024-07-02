@@ -912,6 +912,14 @@ module EE
         enable :enable_container_scanning_for_registry
       end
 
+      condition(:start_duo_workflows_available) do
+        ::Feature.enabled?(:start_duo_workflows, @user)
+      end
+
+      rule { start_duo_workflows_available & can?(:developer_access) }.policy do
+        enable :start_duo_workflows
+      end
+
       rule { custom_role_enables_admin_web_hook }.policy do
         enable :read_web_hook
         enable :admin_web_hook
