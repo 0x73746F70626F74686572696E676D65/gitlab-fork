@@ -288,6 +288,7 @@ export default {
       :selection="selectedRows"
       :root-ancestor-path="rootAncestorPath"
       :is-apply-in-progress="isApplyInProgress"
+      :is-framework-creating-enabled="isFrameworkEditingEnabled"
       :default-framework="preselectedFrameworkForBulkOperation"
       @change="applyOperations"
       @create="createComplianceFramework($options.BULK_FRAMEWORK_ID)"
@@ -336,6 +337,7 @@ export default {
         <framework-selection-box
           v-else-if="!complianceFrameworks.length"
           :root-ancestor-path="rootAncestorPath"
+          :is-framework-creating-enabled="isFrameworkEditingEnabled"
           @select="
             applySingleItemOperation({
               projectId: id,
@@ -346,7 +348,12 @@ export default {
           @create="createComplianceFramework(id)"
         >
           <template #toggle>
-            <gl-button icon="plus" category="tertiary" variant="confirm">
+            <gl-button
+              v-if="isFrameworkEditingEnabled"
+              icon="plus"
+              category="tertiary"
+              variant="confirm"
+            >
               {{ $options.i18n.addFrameworkMessage }}
             </gl-button>
           </template>

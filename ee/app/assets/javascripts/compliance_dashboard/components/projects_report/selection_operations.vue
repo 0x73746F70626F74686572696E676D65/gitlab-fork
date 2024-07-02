@@ -31,7 +31,13 @@ export default {
       required: false,
       default: () => null,
     },
+    isFrameworkCreatingEnabled: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
+
   emits: ['change', 'create'],
   data() {
     return {
@@ -160,6 +166,7 @@ export default {
         v-model="selectedFramework"
         :disabled="!hasSelection"
         :root-ancestor-path="rootAncestorPath"
+        :is-framework-creating-enabled="isFrameworkCreatingEnabled"
         @create="$emit('create')"
       />
     </div>
