@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # EE:SaaS
-module Subscriptions
+module GitlabSubscriptions
   module Trials
     class DuoProController < ApplicationController
       include OneTrustCSP

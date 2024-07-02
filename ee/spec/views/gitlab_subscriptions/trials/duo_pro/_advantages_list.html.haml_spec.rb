@@ -2,9 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe 'subscriptions/trials/duo_pro/_advantages_list.html.haml', feature_category: :subscription_management do
+RSpec.describe 'gitlab_subscriptions/trials/duo_pro/_advantages_list.html.haml', feature_category: :subscription_management do
   it 'renders the list' do
-    render 'subscriptions/trials/duo_pro/advantages_list'
+    render 'gitlab_subscriptions/trials/duo_pro/advantages_list'
 
     expect(rendered).to have_content(s_("DuoProTrial|GitLab Duo Pro is designed to make teams more efficient " \
                                         "throughout the software development lifecycle with:"))
