@@ -73,6 +73,42 @@ RSpec.describe PackagesHelper, feature_category: :package_registry do
     end
   end
 
+  describe '#track_package_event' do
+    let_it_be(:project) { create(:project) }
+
+    let(:action) { 'push_package' }
+    let(:scope) { :terraform_module }
+    let(:category) { described_class.name }
+    let(:namespace) { project.namespace }
+    let(:user) { project.creator }
+    let(:create_event_service) { instance_double(::Packages::CreateEventService) }
+
+    before do
+      allow(helper).to receive(:current_user).and_return(user)
+      allow(Packages::CreateEventService).to receive(:new).and_return(create_event_service)
+      allow(create_event_service).to receive(:execute)
+    end
+
+    it 'tracks a snowplow event' do
+      helper.track_package_event(action, scope, category: category, namespace: namespace, user: user, project: project)
+
+      expect_snowplow_event(
+        category: category,
+        action: action,
+        user: user,
+        project: project,
+        namespace: namespace
+      )
+    end
+
+    it 'calls CreateEventService with correct parameters and executes it' do
+      helper.track_package_event(action, scope, category: category, namespace: namespace, user: user, project: project)
+
+      expect(Packages::CreateEventService).to have_received(:new).with(project, user, event_name: action, scope: scope)
+      expect(create_event_service).to have_received(:execute)
+    end
+  end
+
   describe '#show_cleanup_policy_link' do
     let_it_be(:user) { create(:user) }
     let_it_be_with_reload(:container_repository) { create(:container_repository) }
