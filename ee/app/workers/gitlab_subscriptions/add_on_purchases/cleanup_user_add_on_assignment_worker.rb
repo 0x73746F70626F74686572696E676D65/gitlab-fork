@@ -41,7 +41,7 @@ module GitlabSubscriptions
       end
 
       def add_on_purchase
-        @add_on_purchase ||= root_namespace.subscription_add_on_purchases.for_gitlab_duo_pro.first
+        @add_on_purchase ||= GitlabSubscriptions::DuoPro.any_add_on_purchase_for_namespace(root_namespace)
       end
 
       def assignment
