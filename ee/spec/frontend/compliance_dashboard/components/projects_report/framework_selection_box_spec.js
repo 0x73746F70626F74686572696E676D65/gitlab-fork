@@ -40,6 +40,7 @@ describe('FrameworkSelectionBox component', () => {
       apolloProvider,
       propsData: {
         rootAncestorPath: 'group-path',
+        isFrameworkCreatingEnabled: true,
         ...props,
       },
     });
@@ -115,5 +116,11 @@ describe('FrameworkSelectionBox component', () => {
     findNewFrameworkButton().vm.$emit('click');
 
     expect(wrapper.emitted('create')).toHaveLength(1);
+  });
+
+  it('does not have a new framework button when framework editing disabled', () => {
+    createComponent({ isFrameworkCreatingEnabled: false });
+
+    expect(findNewFrameworkButton().exists()).toBe(false);
   });
 });

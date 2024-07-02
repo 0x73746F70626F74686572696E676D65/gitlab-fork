@@ -36,6 +36,11 @@ export default {
       required: false,
       default: frameworksDropdownPlaceholder,
     },
+    isFrameworkCreatingEnabled: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
@@ -117,6 +122,7 @@ export default {
     </template>
     <template #footer>
       <div
+        v-if="isFrameworkCreatingEnabled"
         class="gl-border-t-solid gl-border-t-1 gl-border-t-gray-100 gl-display-flex gl-flex-direction-column gl-p-2! gl-pt-0!"
       >
         <gl-button
