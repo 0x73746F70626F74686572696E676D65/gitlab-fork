@@ -74,6 +74,7 @@ RSpec.describe Gitlab::Llm::Chain::Requests::AiGateway, feature_category: :duo_c
     before do
       allow(Gitlab::Llm::Logger).to receive(:build).and_return(logger)
       allow(instance).to receive(:ai_client).and_return(ai_client)
+      stub_feature_flags(use_sonnet_35: false)
     end
 
     shared_examples 'performing request to the AI Gateway' do
@@ -134,6 +135,53 @@ RSpec.describe Gitlab::Llm::Chain::Requests::AiGateway, feature_category: :duo_c
         before do
           allow(ai_client).to receive(:stream).with(endpoint: endpoint, body: body).and_return(response)
         end
+      end
+    end
+
+    context 'when using Sonnet 3.5 model' do
+      let(:expected_model) { described_class::CLAUDE_3_5_SONNET }
+
+      before do
+        stub_feature_flags(use_sonnet_35: true)
+      end
+
+      it 'calls the AI Gateway streaming endpoint and yields response without stripping it' do
+        expect(ai_client).to receive(:stream).with(endpoint: endpoint, body: body).and_yield(response)
+          .and_return(response)
+
+        expect { |b| instance.request(prompt, &b) }.to yield_with_args(response)
+      end
+
+      it_behaves_like 'performing request to the AI Gateway'
+
+      it_behaves_like 'tracks events for AI requests', 4, 2, klass: 'Gitlab::Llm::Anthropic::Client' do
+        before do
+          allow(ai_client).to receive(:stream).with(endpoint: endpoint, body: body).and_return(response)
+        end
+      end
+
+      context 'when additional params are passed in as options' do
+        let(:options) do
+          { temperature: 1, stop_sequences: %W[\n\Foo Bar:], max_tokens_to_sample: 1024, disallowed_param: 1, topP: 1 }
+        end
+
+        let(:params) do
+          {
+            max_tokens_to_sample: 1024,
+            stop_sequences: ["\n\Foo", "Bar:"],
+            temperature: 1
+          }
+        end
+
+        it_behaves_like 'performing request to the AI Gateway'
+      end
+
+      context 'when unit primitive is passed' do
+        let(:endpoint) { "#{described_class::BASE_ENDPOINT}/test" }
+
+        subject(:request) { instance.request(prompt, unit_primitive: :test) }
+
+        it_behaves_like 'performing request to the AI Gateway'
       end
     end
 
