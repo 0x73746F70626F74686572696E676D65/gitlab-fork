@@ -3,6 +3,7 @@ import { buildApiUrl } from '~/api/api_utils';
 import axios from '~/lib/utils/axios_utils';
 
 const GROUP_PATH = '/api/:version/groups/:id';
+const SUBSCRIPTIONS_GROUPS_PATH = '/-/subscriptions/groups';
 const GROUPS_BILLABLE_MEMBERS_SINGLE_PATH = '/api/:version/groups/:group_id/billable_members/:id';
 const GROUPS_BILLABLE_MEMBERS_PATH = '/api/:version/groups/:id/billable_members';
 const GROUPS_BILLABLE_MEMBERS_SINGLE_MEMBERSHIPS_PATH =
@@ -59,4 +60,10 @@ export function deleteGroup(groupId, params) {
   const url = buildApiUrl(GROUP_PATH).replace(':id', groupId);
 
   return axios.delete(url, { params });
+}
+
+export function subscriptionsCreateGroup(params = {}) {
+  const url = buildApiUrl(SUBSCRIPTIONS_GROUPS_PATH);
+
+  return axios.post(url, params);
 }

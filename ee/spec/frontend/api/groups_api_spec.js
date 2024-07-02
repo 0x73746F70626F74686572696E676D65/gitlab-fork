@@ -134,4 +134,21 @@ describe('GroupsApi', () => {
       });
     });
   });
+
+  describe('subscriptionsCreateGroup', () => {
+    const expectedUrl = '/gitlab/-/subscriptions/groups';
+
+    beforeEach(() => {
+      jest.spyOn(axios, 'post');
+      mock.onPost(expectedUrl).replyOnce(HTTP_STATUS_OK, {});
+    });
+
+    it('sends POST request to the correct URL with the correct payload', async () => {
+      const params = { name: 'Test Group', path: 'test-group' };
+      const { data } = await GroupsApi.subscriptionsCreateGroup(params);
+
+      expect(data).toEqual({});
+      expect(axios.post).toHaveBeenCalledWith(expectedUrl, params);
+    });
+  });
 });
