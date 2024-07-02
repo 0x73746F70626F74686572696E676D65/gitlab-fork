@@ -10,17 +10,11 @@ export function isRestrictedToEventType(eventType) {
 export const PANEL_VISUALIZATION_HEIGHT = '600px';
 
 export const PANEL_DISPLAY_TYPES = {
-  DATA: 'data',
   VISUALIZATION: 'visualization',
   CODE: 'code',
 };
 
 export const PANEL_DISPLAY_TYPE_ITEMS = [
-  {
-    type: PANEL_DISPLAY_TYPES.DATA,
-    icon: 'table',
-    title: s__('Analytics|Data'),
-  },
   {
     type: PANEL_DISPLAY_TYPES.VISUALIZATION,
     icon: 'chart',
@@ -192,7 +186,6 @@ export const DEFAULT_VISUALIZATION_QUERY_STATE = () => ({
   measureSubType: '',
 });
 export const DEFAULT_VISUALIZATION_TITLE = '';
-export const DEFAULT_SELECTED_VISUALIZATION_TYPE = '';
 
 export const FILE_ALREADY_EXISTS_SERVER_RESPONSE = 'A file with this name already exists';
 export const DEFAULT_DASHBOARD_LOADING_ERROR = s__(
@@ -246,3 +239,8 @@ export const CUSTOM_EVENT_FILTER_SUPPORTED_MEASURES = [
   `${EVENTS_TABLE_NAME}.count`,
   `${EVENTS_TABLE_NAME}.uniqueUsersCount`,
 ];
+
+export const VISUALIZATION_TYPE_DATA_TABLE = 'DataTable';
+export const VISUALIZATION_TYPE_LINE_CHART = 'LineChart';
+export const VISUALIZATION_TYPE_COLUMN_CHART = 'ColumnChart';
+export const VISUALIZATION_TYPE_SINGLE_STAT = 'SingleStat';

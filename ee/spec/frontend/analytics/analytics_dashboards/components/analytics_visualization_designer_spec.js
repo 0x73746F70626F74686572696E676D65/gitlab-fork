@@ -54,7 +54,6 @@ describe('AnalyticsVisualizationDesigner', () => {
   const findDimensionSelector = () => wrapper.findByTestId('panel-dimension-selector');
   const findSaveButton = () => wrapper.findByTestId('visualization-save-btn');
   const findQueryBuilder = () => wrapper.findByTestId('query-builder');
-  const findTypeFormGroup = () => wrapper.findByTestId('visualization-type-form-group');
   const findTypeSelector = () => wrapper.findComponent(VisualizationTypeSelector);
   const findPageTitle = () => wrapper.findByTestId('page-title');
   const findPageDescription = () => wrapper.findByTestId('page-description');
@@ -89,7 +88,6 @@ describe('AnalyticsVisualizationDesigner', () => {
 
   const setAllRequiredFieldsWithFilter = async () => {
     await setVisualizationTitle('New Title');
-    await setVisualizationType('SingleStat');
     await findFilteredSearch().vm.$emit('input', { measures: ['Sessions.count'], limit: 100 });
   };
 
@@ -271,7 +269,7 @@ describe('AnalyticsVisualizationDesigner', () => {
             },
           },
           queryBuilderData: {
-            availableMeasures: mockMetaData.cubes.at(0).availableMeasures,
+            availableMeasures: [],
             availableDimensions: mockMetaData.cubes.at(0).dimensions,
           },
         });
@@ -322,38 +320,8 @@ describe('AnalyticsVisualizationDesigner', () => {
       });
     });
 
-    describe('and there is no visualization type selected', () => {
-      beforeEach(() => {
-        findTypeSelector().element.focus = jest.fn();
-
-        return findSaveButton().vm.$emit('click');
-      });
-
-      it('does not save the dashboard', () => {
-        expect(saveProductAnalyticsVisualization).not.toHaveBeenCalled();
-      });
-
-      it('shows the invalid state on the type selector', () => {
-        expect(findTypeSelector().props('state')).toBe(false);
-        expect(findTypeFormGroup().attributes('invalid-feedback')).toBe('This field is required.');
-      });
-
-      it('sets focus on the dashboard type select', () => {
-        expect(findTypeSelector().element.focus).toHaveBeenCalled();
-      });
-
-      describe('and a user then selects a type', () => {
-        beforeEach(() => setVisualizationType('SingleStat'));
-
-        it('shows type selector as valid', () => {
-          expect(findTypeSelector().props('state')).toBe(true);
-        });
-      });
-    });
-
     it('creates an alert when the measurement is not selected', async () => {
       await setVisualizationTitle('New Title');
-      setVisualizationType('SingleStat');
 
       await findSaveButton().vm.$emit('click');
       expect(createAlert).toHaveBeenCalledWith({
@@ -607,7 +575,7 @@ describe('AnalyticsVisualizationDesigner', () => {
   describe('clear fields after saving', () => {
     const expectTitleAndTypeReset = () => {
       expect(findTitleInput().attributes('value')).toBe('');
-      expect(findTypeSelector().props('value')).toBe('');
+      expect(findTypeSelector().props('value')).toBe('DataTable');
     };
 
     describe('default behaviour', () => {

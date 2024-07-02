@@ -1,27 +1,28 @@
 <script>
 import { GlFormSelect } from '@gitlab/ui';
 import { s__ } from '~/locale';
+import {
+  VISUALIZATION_TYPE_DATA_TABLE,
+  VISUALIZATION_TYPE_LINE_CHART,
+  VISUALIZATION_TYPE_COLUMN_CHART,
+  VISUALIZATION_TYPE_SINGLE_STAT,
+} from '../../constants';
 
 const TYPES = [
   {
-    value: '',
-    disabled: true,
-    text: s__('Analytics|Select a visualization type'),
-  },
-  {
-    value: 'LineChart',
+    value: VISUALIZATION_TYPE_LINE_CHART,
     text: s__('Analytics|Line chart'),
   },
   {
-    value: 'ColumnChart',
+    value: VISUALIZATION_TYPE_COLUMN_CHART,
     text: s__('Analytics|Column chart'),
   },
   {
-    value: 'DataTable',
+    value: VISUALIZATION_TYPE_DATA_TABLE,
     text: s__('Analytics|Data table'),
   },
   {
-    value: 'SingleStat',
+    value: VISUALIZATION_TYPE_SINGLE_STAT,
     text: s__('Analytics|Single statistic'),
   },
 ];
