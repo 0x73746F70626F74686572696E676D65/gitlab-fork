@@ -294,7 +294,8 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
       end
     end
 
-    it 'removes indirect child of objective with undoing' do
+    it 'removes indirect child of objective with undoing',
+      quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/466192' do
       # https://gitlab.com/gitlab-org/gitlab/-/issues/467207
       allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(300)
 
