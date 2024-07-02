@@ -9,7 +9,10 @@ import EditorLayout from 'ee/security_orchestration/components/policy_editor/edi
 import { DEFAULT_PIPELINE_EXECUTION_POLICY } from 'ee/security_orchestration/components/policy_editor/pipeline_execution/constants';
 import { fromYaml } from 'ee/security_orchestration/components/policy_editor/pipeline_execution/utils';
 import { visitUrl } from '~/lib/utils/url_utility';
-import { modifyPolicy } from 'ee/security_orchestration/components/policy_editor/utils';
+import {
+  modifyPolicy,
+  doesFileExist,
+} from 'ee/security_orchestration/components/policy_editor/utils';
 import {
   EDITOR_MODE_YAML,
   SECURITY_POLICY_ACTIONS,
@@ -20,6 +23,7 @@ import {
   NEW_POLICY_PROJECT,
 } from 'ee_jest/security_orchestration/mocks/mock_data';
 import {
+  mockPipelineExecutionManifest,
   mockWithoutRefPipelineExecutionManifest,
   mockWithoutRefPipelineExecutionObject,
 } from 'ee_jest/security_orchestration/mocks/mock_pipeline_execution_policy_data';
@@ -36,6 +40,17 @@ jest.mock('ee/security_orchestration/components/policy_editor/utils', () => ({
     fullPath: 'path/to/new-project',
   }),
   modifyPolicy: jest.fn().mockResolvedValue({ id: '2' }),
+  doesFileExist: jest.fn().mockResolvedValue({
+    data: {
+      project: {
+        repository: {
+          blobs: {
+            nodes: [{ fileName: 'file ' }],
+          },
+        },
+      },
+    },
+  }),
 }));
 
 describe('EditorComponent', () => {
@@ -223,6 +238,84 @@ describe('EditorComponent', () => {
           await waitForPromises();
           expect(wrapper.emitted('error')).toStrictEqual([[''], [error.message]]);
         });
+      });
+    });
+  });
+
+  describe('action validation error', () => {
+    describe('no validation', () => {
+      it('does not validate on new linked file section', () => {
+        factory();
+        expect(doesFileExist).toHaveBeenCalledTimes(0);
+        expect(findPolicyEditorLayout().props('disableUpdate')).toBe(true);
+      });
+    });
+
+    describe('new policy', () => {
+      beforeEach(async () => {
+        factory();
+        await findPolicyEditorLayout().vm.$emit('update-property', 'name', 'New name');
+      });
+
+      it.each`
+        payload                                                                       | expectedResult
+        ${{ include: [{ project: 'project-path' }] }}                                 | ${{ filePath: undefined, fullPath: 'project-path', ref: null }}
+        ${{ include: [{ project: 'project-path', ref: 'main', file: 'file-name' }] }} | ${{ filePath: 'file-name', fullPath: 'project-path', ref: 'main' }}
+      `('makes a call to validate the selection', async ({ payload, expectedResult }) => {
+        expect(doesFileExist).toHaveBeenCalledTimes(0);
+
+        await findActionSection().vm.$emit('set-ref', 'main');
+        await findActionSection().vm.$emit('changed', 'content', payload);
+
+        expect(doesFileExist).toHaveBeenCalledWith(expectedResult);
+        expect(findPolicyEditorLayout().props('disableUpdate')).toBe(false);
+      });
+
+      it('calls validation when switched to yaml mode', async () => {
+        await changesToYamlMode();
+
+        expect(doesFileExist).toHaveBeenCalledTimes(0);
+
+        await findPolicyEditorLayout().vm.$emit('update-yaml', mockPipelineExecutionManifest);
+
+        expect(doesFileExist).toHaveBeenCalledWith({
+          filePath: 'test_path',
+          fullPath: 'gitlab-policies/js6',
+          ref: 'main',
+        });
+        expect(findPolicyEditorLayout().props('disableUpdate')).toBe(false);
+      });
+    });
+
+    describe('existing policy', () => {
+      beforeEach(() => {
+        mockWithoutRefPipelineExecutionObject.content.include[0].ref = 'main';
+        factory({
+          propsData: {
+            existingPolicy: { ...mockWithoutRefPipelineExecutionObject },
+          },
+        });
+      });
+      it('validates on existing policy initial state', () => {
+        expect(doesFileExist).toHaveBeenCalledWith({
+          filePath: '.pipeline-execution.yml',
+          fullPath: 'GitLab.org/GitLab',
+          ref: 'main',
+        });
+      });
+
+      it.each`
+        payload                                                                       | expectedResult
+        ${{ include: [{ project: 'project-path' }] }}                                 | ${{ filePath: undefined, fullPath: 'project-path', ref: null }}
+        ${{ include: [{ project: 'project-path', ref: 'main', file: 'file-name' }] }} | ${{ filePath: 'file-name', fullPath: 'project-path', ref: 'main' }}
+      `('makes a call to validate the selection', async ({ payload, expectedResult }) => {
+        expect(doesFileExist).toHaveBeenCalledTimes(1);
+
+        await findActionSection().vm.$emit('set-ref', 'main');
+        await findActionSection().vm.$emit('changed', 'content', payload);
+
+        expect(doesFileExist).toHaveBeenCalledWith(expectedResult);
+        expect(findPolicyEditorLayout().props('disableUpdate')).toBe(false);
       });
     });
   });

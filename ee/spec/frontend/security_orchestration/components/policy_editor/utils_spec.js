@@ -1,6 +1,7 @@
 import {
   addIdsToPolicy,
   assignSecurityPolicyProject,
+  doesFileExist,
   getPolicyLimitDetails,
   modifyPolicy,
   createHumanizedScanners,
@@ -78,6 +79,22 @@ const mockApolloResponses = (shouldReject) => {
       });
     }
     return Promise.resolve();
+  };
+};
+
+const mockApolloQueryResponse = (nodes = []) => {
+  return () => {
+    return Promise.resolve({
+      data: {
+        project: {
+          repository: {
+            blobs: {
+              nodes,
+            },
+          },
+        },
+      },
+    });
   };
 };
 
@@ -491,5 +508,35 @@ describe('mapBranchesToExceptions', () => {
     ${mockBranches} | ${mockBranches.map(mapExceptionsListBoxItem)}
   `('should check if branches has duplicates', ({ branches, output }) => {
     expect(mapBranchesToExceptions(branches)).toEqual(output);
+  });
+
+  describe('doesFileExist', () => {
+    it.each`
+      files                         | expectedResult
+      ${[{ fileName: 'filePath' }]} | ${true}
+      ${[]}                         | ${false}
+    `('returns $expectedResult when file exist', async ({ files, expectedResult }) => {
+      gqClient.query.mockImplementation(mockApolloQueryResponse(files));
+      const exists = await doesFileExist({
+        filePath: 'filePath',
+        fullPath: 'fullPath',
+        ref: 'main',
+      });
+
+      expect(exists).toBe(expectedResult);
+    });
+
+    it('returns false when fullPath is not provides', async () => {
+      gqClient.query.mockImplementation(mockApolloQueryResponse());
+      const exists = await doesFileExist({ fullPath: 'fullPath', ref: 'main' });
+
+      expect(exists).toBe(false);
+    });
+
+    it('fallbacks to false when request fails', async () => {
+      gqClient.query.mockRejectedValue({});
+      const exists = await doesFileExist({ fullPath: 'fullPath', ref: 'main' });
+      expect(exists).toBe(false);
+    });
   });
 });
