@@ -63,9 +63,10 @@ export default {
         .get(requestUrl)
         .then((res) => {
           this.isLoadingDescriptionVersion = false;
-          // need to use Vue.set to make sure the object key is reactive
-          // https://v2.vuejs.org/v2/api/#Vue-set
-          this.$set(this.descriptionVersions, versionId, res.data);
+          this.descriptionVersions = {
+            ...this.descriptionVersions,
+            [versionId]: res.data,
+          };
         })
         .catch(() => {
           createAlert({
