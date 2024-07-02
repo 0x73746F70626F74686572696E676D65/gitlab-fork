@@ -57746,6 +57746,9 @@ msgstr ""
 msgid "UserMapping|Source: %{source_hostname}"
 msgstr ""
 
+msgid "UserMapping|There was a problem fetching placeholder users."
+msgstr ""
+
 msgid "UserProfile|%{count} %{file}"
 msgstr ""
 
