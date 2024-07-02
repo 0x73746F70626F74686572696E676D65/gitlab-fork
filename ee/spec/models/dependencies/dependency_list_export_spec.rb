@@ -13,6 +13,7 @@ RSpec.describe Dependencies::DependencyListExport, feature_category: :dependency
     it { is_expected.to belong_to(:project) }
     it { is_expected.to belong_to(:group) }
     it { is_expected.to belong_to(:author).class_name('User') }
+    it { is_expected.to have_many(:export_parts).class_name('Dependencies::DependencyListExport::Part') }
   end
 
   describe 'validations' do
