@@ -10484,6 +10484,9 @@ msgstr ""
 msgid "CascadingSettings|Subgroups cannot change this setting."
 msgstr ""
 
+msgid "CascadingSettings|This setting has been enforced by an owner and cannot be changed."
+msgstr ""
+
 msgid "CascadingSettings|This setting has been enforced by an owner of %{link}."
 msgstr ""
 
