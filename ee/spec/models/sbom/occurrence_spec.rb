@@ -315,6 +315,29 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
     end
   end
 
+  describe '.by_primary_license' do
+    using RSpec::Parameterized::TableSyntax
+
+    let_it_be(:occurrence_1) { create(:sbom_occurrence, :apache_2) }
+    let_it_be(:occurrence_2) { create(:sbom_occurrence, :mit) }
+    let_it_be(:occurrence_3) { create(:sbom_occurrence, :mpl_2) }
+    let_it_be(:occurrence_4) { create(:sbom_occurrence, :apache_2, :mpl_2) }
+    let_it_be(:occurrence_5) { create(:sbom_occurrence) }
+
+    where(:input, :expected) do
+      %w[MIT MPL-2.0]     | [ref(:occurrence_2), ref(:occurrence_3)]
+      %w[MPL-2.0 unknown] | [ref(:occurrence_3), ref(:occurrence_5)]
+      %w[unknown]         | [ref(:occurrence_5)]
+      []                  | []
+    end
+
+    with_them do
+      it 'returns expected output for each input' do
+        expect(described_class.by_primary_license(input)).to match_array(expected)
+      end
+    end
+  end
+
   describe '.unarchived' do
     let_it_be(:unarchived_occurrence) { create(:sbom_occurrence) }
 
