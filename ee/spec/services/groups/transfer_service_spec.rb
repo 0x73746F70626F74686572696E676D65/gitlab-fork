@@ -319,7 +319,6 @@ RSpec.describe Groups::TransferService, '#execute', feature_category: :groups_an
 
       before do
         root_group.add_owner(user)
-        set_elasticsearch_migration_to :create_epic_index, including: true
         stub_ee_application_setting(elasticsearch_indexing: true)
         stub_licensed_features(epics: true)
       end

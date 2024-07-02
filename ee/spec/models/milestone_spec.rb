@@ -19,7 +19,6 @@ RSpec.describe Milestone do
 
     context 'when epic indexing is enabled' do
       before do
-        allow(Epic).to receive(:elasticsearch_available?).and_return(true)
         stub_ee_application_setting(elasticsearch_indexing: true)
         Epics::UpdateDatesService.new([epic, another_epic]).execute
         epic.reload

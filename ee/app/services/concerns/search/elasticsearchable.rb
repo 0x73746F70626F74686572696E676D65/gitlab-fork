@@ -22,8 +22,7 @@ module Search
     def advanced_epic_search?
       return true unless params[:scope] == 'epics'
 
-      ::Elastic::DataMigrationService.migration_has_finished?(:create_epic_index) &&
-        ::Elastic::DataMigrationService.migration_has_finished?(:backfill_epics)
+      ::Elastic::DataMigrationService.migration_has_finished?(:backfill_epics)
     end
   end
 end
