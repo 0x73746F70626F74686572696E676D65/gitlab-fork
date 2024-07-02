@@ -231,6 +231,7 @@ export default {
       </div>
       <gl-disclosure-dropdown
         :id="$options.inputId"
+        class="work-item-sidebar-dropdown"
         category="tertiary"
         :auto-close="false"
         start-opened
@@ -265,7 +266,7 @@ export default {
             :autofocus="true"
             :suggested-colors="$options.suggestedColors"
             :error-message="errorMessage"
-            class="gl-px-2 gl-mt-2"
+            class="gl-px-3 gl-mt-3"
           />
         </gl-disclosure-dropdown-item>
       </gl-disclosure-dropdown>
