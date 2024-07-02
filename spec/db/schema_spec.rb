@@ -334,7 +334,8 @@ RSpec.describe 'Database schema', feature_category: :database do
     "Packages::Composer::Metadatum" => %w[composer_json],
     "RawUsageData" => %w[payload], # Usage data payload changes often, we cannot use one schema
     "Releases::Evidence" => %w[summary],
-    "Vulnerabilities::Finding::Evidence" => %w[data] # Validation work in progress
+    "Vulnerabilities::Finding::Evidence" => %w[data], # Validation work in progress
+    "Ai::DuoWorkflows::Checkpoint" => %w[checkpoint metadata] # https://gitlab.com/gitlab-org/gitlab/-/issues/468632
   }.freeze
 
   # We are skipping GEO models for now as it adds up complexity

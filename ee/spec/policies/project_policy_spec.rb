@@ -4091,6 +4091,29 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     end
   end
 
+  describe 'start_duo_workflows' do
+    where(:start_duo_workflows_feature_flag, :current_user, :match_expected_result) do
+      true  | ref(:owner)      | be_allowed(:start_duo_workflows)
+      true  | ref(:maintainer) | be_allowed(:start_duo_workflows)
+      true  | ref(:developer)  | be_allowed(:start_duo_workflows)
+      true  | ref(:guest)      | be_disallowed(:start_duo_workflows)
+      true  | ref(:non_member) | be_disallowed(:start_duo_workflows)
+      false | ref(:owner)      | be_disallowed(:start_duo_workflows)
+      false | ref(:maintainer) | be_disallowed(:start_duo_workflows)
+      false | ref(:developer)  | be_disallowed(:start_duo_workflows)
+      false | ref(:guest)      | be_disallowed(:start_duo_workflows)
+      false | ref(:non_member) | be_disallowed(:start_duo_workflows)
+    end
+
+    with_them do
+      before do
+        stub_feature_flags(start_duo_workflows: start_duo_workflows_feature_flag)
+      end
+
+      it { is_expected.to match_expected_result }
+    end
+  end
+
   describe 'enable_container_scanning_for_registry' do
     where(:container_scanning_for_registry, :current_user, :match_expected_result) do
       true  | ref(:owner)      | be_allowed(:enable_container_scanning_for_registry)

@@ -69,6 +69,7 @@ module EE
         mount ::API::DependencyListExports
         mount ::API::GroupServiceAccounts
         mount ::API::Ai::Llm::GitCommand
+        mount ::API::Ai::DuoWorkflows::Workflows
         mount ::API::CodeSuggestions
         mount ::API::Chat
         mount ::API::GitlabSubscriptions::AddOnPurchases
