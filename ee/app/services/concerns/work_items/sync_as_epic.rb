@@ -13,8 +13,6 @@ module WorkItems
     ].freeze
 
     def create_epic_for!(work_item)
-      return true unless work_item.namespace.work_item_sync_to_epic_enabled?
-
       epic = Epic.create!(create_params(work_item))
 
       work_item.relative_position = epic.id
@@ -26,7 +24,6 @@ module WorkItems
     def update_epic_for!(work_item)
       epic = work_item.synced_epic
       return true unless epic
-      return true unless epic.group.work_item_sync_to_epic_enabled?
 
       epic.assign_attributes(update_params(work_item).merge(skip_description_version: true))
       epic.save!(touch: false)

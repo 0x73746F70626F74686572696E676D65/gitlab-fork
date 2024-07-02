@@ -162,17 +162,6 @@ RSpec.describe WorkItems::RelatedWorkItemLinks::CreateService, feature_category:
           )
         end
 
-        context 'when sync_work_item_to_epic feature flag is disabled' do
-          before do
-            stub_feature_flags(sync_work_item_to_epic: false)
-          end
-
-          it 'does not sync with a RelatedEpicLink record' do
-            expect { link_items }.to not_change { Epic::RelatedEpicLink.count }
-              .and change { link_class.count }.by(2)
-          end
-        end
-
         context 'when work item is not of epic type' do
           let_it_be(:work_item) { create(:work_item, :group_level, namespace: group) }
 

@@ -234,17 +234,5 @@ RSpec.describe WorkItems::CreateService, feature_category: :team_planning do
           .and not_change { Epic.count }
       end
     end
-
-    context 'when feature flag is disabled' do
-      before do
-        stub_feature_flags(synced_epic_work_item_editable: true, sync_work_item_to_epic: false)
-      end
-
-      it 'only creates a work item but not the epic' do
-        expect { service_result }
-          .to change { WorkItem.count }
-          .and not_change { Epic.count }
-      end
-    end
   end
 end

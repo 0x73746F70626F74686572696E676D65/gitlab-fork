@@ -41,18 +41,6 @@ RSpec.describe ::WorkItems::Widgets::RolledupDatesService::HierarchyUpdateServic
         expect(dates_source.due_date_sourcing_work_item&.synced_epic&.id)
           .to eq(epic.due_date_sourcing_epic_id)
       end
-
-      context 'when sync_work_item_to_epic feature flag is disabled' do
-        before do
-          stub_feature_flags(sync_work_item_to_epic: false)
-        end
-
-        it 'updates work item dates source but not synced epic' do
-          expect { described_class.new(work_item).execute }
-            .to change { work_item.reload.dates_source&.attributes }
-            .and not_change { epic.reload.attributes.except('color') }
-        end
-      end
     end
 
     shared_examples "does not update work_item's date_source" do

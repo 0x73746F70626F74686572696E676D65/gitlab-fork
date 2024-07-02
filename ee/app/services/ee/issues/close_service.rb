@@ -16,7 +16,7 @@ module EE
 
       override :handle_closing_issue!
       def handle_closing_issue!(issue, current_user)
-        return super unless sync_to_epic?(issue)
+        return super unless issue.synced_epic
 
         ApplicationRecord.transaction do
           next false unless super
@@ -39,7 +39,7 @@ module EE
 
       override :after_close
       def after_close(issue, closed_via: nil, notifications: true, system_note: true)
-        return super unless sync_to_epic?(issue)
+        return super unless issue.synced_epic
 
         super
         # Creating a system note changes `updated_at` for the issue
@@ -50,13 +50,6 @@ module EE
             namespace_id: issue.namespace_id
           })
         )
-      end
-
-      def sync_to_epic?(issue)
-        return false unless issue.work_item_type == ::WorkItems::Type.default_by_type(:epic)
-        return false unless issue.synced_epic
-
-        issue.namespace.work_item_sync_to_epic_enabled?
       end
     end
   end

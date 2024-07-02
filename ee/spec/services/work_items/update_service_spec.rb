@@ -565,18 +565,6 @@ RSpec.describe WorkItems::UpdateService, feature_category: :team_planning do
         end
       end
 
-      context 'when feature flag is disabled' do
-        before do
-          stub_feature_flags(synced_epic_work_item_editable: true, sync_work_item_to_epic: false)
-        end
-
-        it 'updates work item but not the epic' do
-          expect { execute }
-            .to change { work_item.reload.title }
-            .and not_change { epic.reload.title }
-        end
-      end
-
       context 'when work item record is outdated' do
         let(:widget_params) { {} }
         let(:params) do

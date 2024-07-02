@@ -158,14 +158,6 @@ RSpec.describe WorkItems::ParentLinks::ReorderService, feature_category: :portfo
             let(:synced_moving_object) { work_item.synced_epic.reload }
           end
         end
-
-        context 'when sync_work_item_to_epic feature flag is disabled' do
-          before do
-            stub_feature_flags(sync_work_item_to_epic: false, synced_epic_work_item_editable: true)
-          end
-
-          it_behaves_like 'only changes work item'
-        end
       end
 
       context 'when synced epic for the moving work item do not exist' do
@@ -212,14 +204,6 @@ RSpec.describe WorkItems::ParentLinks::ReorderService, feature_category: :portfo
       end
 
       it_behaves_like 'reorders the hierarchy'
-
-      context 'when sync_work_item_to_epic feature flag is disabled' do
-        before do
-          stub_feature_flags(sync_work_item_to_epic: false, synced_epic_work_item_editable: true)
-        end
-
-        it_behaves_like 'only changes work item'
-      end
 
       context 'when synced EpicIssue for the moving work item do not exist' do
         let(:synced_moving_object) { nil }

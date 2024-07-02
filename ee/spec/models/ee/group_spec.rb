@@ -3573,20 +3573,6 @@ RSpec.describe Group, feature_category: :groups_and_projects do
     end
   end
 
-  describe '#work_item_sync_to_epic_enabled?' do
-    subject { group.work_item_sync_to_epic_enabled? }
-
-    it { is_expected.to be true }
-
-    context 'when feature flag is disabled' do
-      before do
-        stub_feature_flags(sync_work_item_to_epic: false)
-      end
-
-      it { is_expected.to be false }
-    end
-  end
-
   describe '#block_seat_overages?' do
     context 'when gitlab subscriptions are available' do
       before do
