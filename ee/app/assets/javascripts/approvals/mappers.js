@@ -58,8 +58,10 @@ export const mapApprovalRuleResponse = (res) => ({
   minApprovalsRequired: 0,
 });
 
-export const mapApprovalSettingsResponse = (res) => ({
-  rules: withDefaultEmptyRule(res.map(mapApprovalRuleResponse)),
+export const mapApprovalSettingsResponse = (res, filter = false) => ({
+  rules: filter
+    ? res.map(mapApprovalRuleResponse)
+    : withDefaultEmptyRule(res.map(mapApprovalRuleResponse)),
   fallbackApprovalsRequired: res.fallback_approvals_required,
 });
 
