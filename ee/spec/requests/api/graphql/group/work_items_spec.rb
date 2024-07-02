@@ -117,6 +117,10 @@ RSpec.describe 'getting a work item list for a group', feature_category: :team_p
                   webPath
                   username
                 }
+                taskCompletionStatus {
+                  completedCount
+                  count
+                }
               }
               ... on WorkItemWidgetAssignees {
                 assignees { nodes { id } }
