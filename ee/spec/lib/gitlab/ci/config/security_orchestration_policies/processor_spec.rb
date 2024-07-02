@@ -367,6 +367,8 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor, fea
                     '**/*.c++',
                     '**/*.cp',
                     '**/*.cxx',
+                    '**/*.h',
+                    '**/*.hpp',
                     '**/*.go',
                     '**/*.java',
                     '**/*.html',
