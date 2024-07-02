@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import App from './components/subscription_group_selector.vue';
 
 export default () => {
@@ -7,7 +8,7 @@ export default () => {
   if (!el) return null;
 
   const { rootUrl } = el.dataset;
-  const plansData = JSON.parse(el.dataset.plansData);
+  const plansData = convertObjectPropsToCamelCase(JSON.parse(el.dataset.plansData), { deep: true });
   const eligibleGroups = JSON.parse(el.dataset.eligibleGroups);
 
   return new Vue({
