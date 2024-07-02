@@ -208,6 +208,16 @@ RSpec.describe ::Search::Zoekt::SchedulingService, :clean_gitlab_redis_shared_st
     let_it_be(:namespace_statistics) { create(:namespace_root_storage_statistics, repository_size: 1000) }
     let_it_be(:namespace_with_statistics) { create(:group, root_storage_statistics: namespace_statistics) }
 
+    context 'when feature flag is disabled' do
+      before do
+        stub_feature_flags(zoekt_node_assignment: false)
+      end
+
+      it 'returns false' do
+        expect(execute_task).to eq(false)
+      end
+    end
+
     context 'when some zoekt enabled namespaces missing zoekt index' do
       let(:logger) { instance_double(::Search::Zoekt::Logger) }
       let_it_be(:zkt_enabled_namespace) { create(:zoekt_enabled_namespace, namespace: namespace.root_ancestor) }
