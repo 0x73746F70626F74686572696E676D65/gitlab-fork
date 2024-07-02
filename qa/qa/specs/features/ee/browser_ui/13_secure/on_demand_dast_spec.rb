@@ -26,6 +26,10 @@ module QA
         'Test scan 1'
       end
 
+      let(:edited_scan_name) do
+        'Edited scan 1'
+      end
+
       before do
         webgoat.register!
         Resource::Repository::ProjectPush.fabricate! do |push|
@@ -87,7 +91,21 @@ module QA
 
           EE::Page::Project::Secure::OnDemandScans.perform do |on_demand_scans|
             on_demand_scans.scan_is_present(scan_name, webgoat_url)
+            on_demand_scans.click_edit_scan_button
           end
+
+          EE::Page::Project::Secure::NewOnDemandScan.perform do |new_on_demand_scan|
+            new_on_demand_scan.enter_scan_name(edited_scan_name)
+            new_on_demand_scan.save_scan
+          end
+
+          EE::Page::Project::Secure::OnDemandScans.perform do |on_demand_scans|
+            expect(on_demand_scans.scan_is_present(edited_scan_name, webgoat_url)).to be_truthy
+
+            on_demand_scans.delete_scan
+          end
+
+          expect(has_text?('There are no saved scans.')).to be_truthy
 
           # Test that a vulnerability for this URL exists in report
           # Note that further tests of this report are located at

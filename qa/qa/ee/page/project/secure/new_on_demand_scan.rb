@@ -9,21 +9,22 @@ module QA
             view 'ee/app/assets/javascripts/on_demand_scans_form/components/on_demand_scans_form.vue' do
               element 'dast-scan-name-input'
               element 'on-demand-scan-submit-button'
+              element 'on-demand-scan-save-button'
             end
 
             view 'ee/app/assets/javascripts/security_configuration/dast_profiles/dast_profiles_drawer' \
-                 '/dast_profiles_drawer_empty_state.vue' do
+              '/dast_profiles_drawer_empty_state.vue' do
               element 'new-empty-profile-button'
             end
 
             view 'ee/app/assets/javascripts/security_configuration/dast_profiles/dast_scanner_profiles' \
-                 '/components/dast_scanner_profile_form.vue' do
+              '/components/dast_scanner_profile_form.vue' do
               element 'profile-name-input'
               element 'scan-type-option'
             end
 
             view 'ee/app/assets/javascripts/security_configuration/dast_profiles/components' \
-                 '/base_dast_profile_form.vue' do
+              '/base_dast_profile_form.vue' do
               element 'dast-profile-form-submit-button'
             end
 
@@ -48,6 +49,10 @@ module QA
 
             def save_and_run_scan
               click_element('on-demand-scan-submit-button')
+            end
+
+            def save_scan
+              click_element('on-demand-scan-save-button')
             end
 
             private
