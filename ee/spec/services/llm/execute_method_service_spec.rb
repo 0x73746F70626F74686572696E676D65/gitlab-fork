@@ -10,8 +10,23 @@ RSpec.describe Llm::ExecuteMethodService, feature_category: :ai_abstraction_laye
   let(:resource) { nil }
   let(:params) { {} }
   let(:options) { { request_id: 'uuid' }.merge(params) }
+  let(:success) { true }
+  let(:request_id) { 'uuid' }
+  let(:chat_message) { instance_double(Gitlab::Llm::ChatMessage, request_id: request_id) }
+  let(:service_response) do
+    instance_double(
+      ServiceResponse,
+      success?: success,
+      error?: !success,
+      payload: { ai_message: chat_message }
+    )
+  end
 
   subject { described_class.new(user, resource, method, options).execute }
+
+  before do
+    allow(service_response).to receive(:[]).with(:ai_message).and_return(chat_message)
+  end
 
   describe '#execute' do
     using RSpec::Parameterized::TableSyntax
@@ -30,12 +45,8 @@ RSpec.describe Llm::ExecuteMethodService, feature_category: :ai_abstraction_laye
 
       with_them do
         it 'calls the correct service' do
-          expect_next_instance_of(service_class, user, resource, options) do |instance|
-            allow(instance)
-              .to receive(:execute)
-              .and_return(
-                instance_double(ServiceResponse, success?: true, error?: false, payload: { request_id: 'uuid' })
-              )
+          expect_next_instance_of(service_class, user, resource, options.merge(params)) do |instance|
+            expect(instance).to receive(:execute).and_return(service_response)
           end
 
           expect(subject).to be_success
@@ -44,14 +55,19 @@ RSpec.describe Llm::ExecuteMethodService, feature_category: :ai_abstraction_laye
     end
 
     context 'when service returns an error' do
+      let(:success) { false }
+      let(:error_message) { 'failed' }
+
+      before do
+        allow(service_response).to receive(:message).and_return(error_message)
+      end
+
       it 'returns an error' do
         expect_next_instance_of(Llm::GenerateSummaryService, user, resource, options) do |instance|
-          allow(instance)
-            .to receive(:execute)
-            .and_return(instance_double(ServiceResponse, success?: false, error?: true, message: 'failed'))
+          expect(instance).to receive(:execute).and_return(service_response)
         end
 
-        expect(subject).to be_error.and have_attributes(message: eq('failed'))
+        expect(subject).to be_error.and have_attributes(message: eq(error_message))
       end
     end
 
@@ -70,7 +86,6 @@ RSpec.describe Llm::ExecuteMethodService, feature_category: :ai_abstraction_laye
       let(:resource) { create(:issue, project: project) }
       let(:method) { :summarize_comments }
       let(:service_class) { Llm::GenerateSummaryService }
-      let(:success) { true }
 
       let_it_be(:default_params) do
         {
@@ -80,19 +95,14 @@ RSpec.describe Llm::ExecuteMethodService, feature_category: :ai_abstraction_laye
           label: 'summarize_comments',
           user: user,
           namespace: group,
-          project: project
+          project: project,
+          requestId: 'uuid'
         }
       end
 
       before do
         allow_next_instance_of(service_class, user, resource, options) do |instance|
-          allow(instance)
-            .to receive(:execute)
-            .and_return(
-              instance_double(
-                ServiceResponse, success?: success, error?: !success, payload: { request_id: 'uuid' }, message: nil
-              )
-            )
+          allow(instance).to receive(:execute).and_return(service_response)
         end
       end
 
@@ -148,6 +158,13 @@ RSpec.describe Llm::ExecuteMethodService, feature_category: :ai_abstraction_laye
       context 'when service responds with an error' do
         let(:success) { false }
         let(:expected_params) { default_params.merge(property: "error") }
+
+        it_behaves_like 'successful tracking'
+      end
+
+      context 'when request ID is nil' do
+        let(:request_id) { nil }
+        let(:expected_params) { default_params.merge(requestId: nil) }
 
         it_behaves_like 'successful tracking'
       end
