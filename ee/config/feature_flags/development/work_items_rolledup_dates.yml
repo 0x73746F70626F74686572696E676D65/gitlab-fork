@@ -4,6 +4,6 @@ feature_issue_url: https://gitlab.com/groups/gitlab-org/-/epics/11409
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/140224
 rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/439071
 milestone: '16.9'
-group: group::knowledge
+group: group::product planning
 type: development
 default_enabled: false
