@@ -10,7 +10,7 @@ module Security
       urgency :throttled
       data_consistency :delayed
 
-      concurrency_limit -> { 50 if Feature.enabled?(:scan_execution_pipeline_worker) }
+      concurrency_limit -> { Gitlab::CurrentSettings.security_policy_scheduled_scans_max_concurrency }
 
       def perform(project_id, current_user_id, schedule_id, branch)
         project = Project.find_by_id(project_id)
