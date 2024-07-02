@@ -70,7 +70,7 @@ module Gitlab
           def model(options)
             return options[:model] if options[:model].present?
 
-            CLAUDE_3_SONNET
+            Feature.enabled?(:use_sonnet_35, user) ? CLAUDE_3_5_SONNET : CLAUDE_3_SONNET
           end
 
           def provider(options)
