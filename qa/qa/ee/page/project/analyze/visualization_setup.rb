@@ -27,18 +27,14 @@ module QA
 
             def select_visualization_type(type)
               click_element 'visualization-type-dropdown'
-              select_item type, css: 'li.gl-dropdown-item'
+              find('option', text: type).click
             end
 
-            def choose_events
-              within_element 'events-button' do
-                click_element '.btn-confirm'
-              end
-            end
-
-            def choose_all_events_compared
-              within_element 'events-all-button' do
-                click_element '.btn-confirm'
+            def choose_measure_all_events
+              within_element 'visualization-filtered-search' do
+                click_element 'filtered-search-term'
+                click_link('Measure')
+                click_link('Tracked Events Count')
               end
             end
 
