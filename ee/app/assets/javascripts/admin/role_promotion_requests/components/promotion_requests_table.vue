@@ -1,5 +1,5 @@
 <script>
-import { GlTable } from '@gitlab/ui';
+import { GlTable, GlButton } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
 import UserDate from '~/vue_shared/components/user_date.vue';
 import UserAvatar from '~/vue_shared/components/users_table/user_avatar.vue';
@@ -8,6 +8,7 @@ export default {
   name: 'PromotionRequestsTable',
   components: {
     GlTable,
+    GlButton,
     UserAvatar,
     UserDate,
   },
@@ -36,6 +37,10 @@ export default {
       key: 'lastActivity',
       label: __('Last activity'),
     },
+    {
+      key: 'actions',
+      label: '',
+    },
   ],
 };
 </script>
@@ -60,6 +65,13 @@ export default {
 
       <template #cell(lastActivity)="{ item: { user } }">
         <user-date :date="user.lastActivityOn" />
+      </template>
+
+      <template #cell(actions)="{ item: { user } }">
+        <gl-button @click="$emit('reject', user.id)">{{ __('Reject') }}</gl-button>
+        <gl-button variant="confirm" @click="$emit('approve', user.id)">{{
+          __('Approve')
+        }}</gl-button>
       </template>
     </gl-table>
   </div>
