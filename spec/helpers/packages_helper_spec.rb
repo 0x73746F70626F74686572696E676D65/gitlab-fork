@@ -252,6 +252,97 @@ RSpec.describe PackagesHelper, feature_category: :package_registry do
     end
   end
 
+  describe '#group_packages_template_data' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:user) { create(:user) }
+
+    before do
+      allow(helper).to receive(:current_user) { user }
+      stub_config(packages: { enabled: true })
+    end
+
+    subject { helper.group_packages_template_data(group) }
+
+    it 'returns the correct data' do
+      is_expected.to include(
+        empty_list_illustration: match_asset_path('illustrations/empty-state/empty-package-md.svg'),
+        endpoint: group_packages_path(group),
+        full_path: group.full_path,
+        group_list_url: group_packages_path(group),
+        npm_instance_url: package_registry_instance_url(:npm),
+        page_type: 'groups',
+        project_list_url: ''
+      )
+    end
+
+    context 'when user has permission' do
+      before do
+        group.add_owner(user)
+      end
+
+      it 'returns the correct data' do
+        is_expected.to include(
+          can_delete_packages: 'true',
+          settings_path: group_settings_packages_and_registries_path(group)
+        )
+      end
+    end
+
+    context 'when user does not have permission' do
+      it 'returns the correct data' do
+        is_expected.to include(
+          can_delete_packages: 'false',
+          settings_path: ''
+        )
+      end
+    end
+  end
+
+  describe '#project_packages_template_data' do
+    let_it_be(:user) { create(:user) }
+
+    subject { helper.project_packages_template_data(project) }
+
+    before do
+      allow(helper).to receive(:current_user) { user }
+      stub_config(packages: { enabled: true })
+    end
+
+    it 'returns the correct data' do
+      is_expected.to include(
+        empty_list_illustration: match_asset_path('illustrations/empty-state/empty-package-md.svg'),
+        endpoint: project_packages_path(project),
+        full_path: project.full_path,
+        group_list_url: '',
+        npm_instance_url: package_registry_instance_url(:npm),
+        page_type: 'projects',
+        project_list_url: project_packages_path(project)
+      )
+    end
+
+    context 'when user has permission' do
+      before do
+        project.add_owner(user)
+      end
+
+      it 'returns the correct data' do
+        is_expected.to include(
+          can_delete_packages: 'true',
+          settings_path: project_settings_packages_and_registries_path(project)
+        )
+      end
+    end
+
+    context 'when user does not have permission' do
+      it 'returns the correct data' do
+        is_expected.to include(
+          can_delete_packages: 'false',
+          settings_path: ''
+        )
+      end
+    end
+  end
+
   describe '#settings_data' do
     let(:user) { build_stubbed(:user) }
 
