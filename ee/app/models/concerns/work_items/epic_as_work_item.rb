@@ -8,6 +8,9 @@ module WorkItems
       include Gitlab::Utils::StrongMemoize
       include ::WorkItems::UnifiedAssociations::Labels
       include ::WorkItems::UnifiedAssociations::AwardEmoji
+      include ::WorkItems::UnifiedAssociations::Notes
+      include ::WorkItems::UnifiedAssociations::ResourceLabelEvents
+      include ::WorkItems::UnifiedAssociations::ResourceStateEvents
       include ::WorkItems::UnifiedAssociations::DescriptionVersions
       include ::WorkItems::UnifiedAssociations::Subscriptions
 

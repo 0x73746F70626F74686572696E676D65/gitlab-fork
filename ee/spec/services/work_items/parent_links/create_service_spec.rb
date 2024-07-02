@@ -238,7 +238,7 @@ RSpec.describe WorkItems::ParentLinks::CreateService, feature_category: :portfol
               expect { create_link }.to change { child_issue.reload.epic }.to(parent_epic)
                 .and change { WorkItems::ParentLink.count }.by(1)
                 .and change { Note.count }.by(2)
-                .and not_change { parent_epic.reload.notes.count }
+                .and not_change { parent_epic.reload.own_notes.count }
 
               expect(child_issue.epic_issue.relative_position).to eq(child_work_item.parent_link.relative_position)
 
@@ -363,8 +363,8 @@ RSpec.describe WorkItems::ParentLinks::CreateService, feature_category: :portfol
               expect { create_link }.to change { child_epic.reload.parent }.to(parent_epic)
                 .and change { WorkItems::ParentLink.count }.by(1)
                 .and change { Note.count }.by(2)
-                .and not_change { parent_epic.notes.count }
-                .and not_change { child_epic.notes.count }
+                .and not_change { parent_epic.own_notes.count }
+                .and not_change { child_epic.own_notes.count }
 
               expect(child_epic.relative_position).to eq(child_work_item.parent_link.relative_position)
 

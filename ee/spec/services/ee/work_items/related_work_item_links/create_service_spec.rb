@@ -154,8 +154,8 @@ RSpec.describe WorkItems::RelatedWorkItemLinks::CreateService, feature_category:
           expect { link_items }.to change { Epic::RelatedEpicLink.count }.by(2)
             .and change { link_class.count }.by(2)
             .and change { work_item.notes.count }.by(1)
-            .and not_change { epic_a.notes.count }
-            .and not_change { epic_b.notes.count }
+            .and not_change { epic_a.own_notes.count }
+            .and not_change { epic_b.own_notes.count }
 
           expect(work_item.notes.last.note).to eq(
             "marked this epic as blocking #{work_item_a.to_reference} and #{another_work_item.to_reference}"
