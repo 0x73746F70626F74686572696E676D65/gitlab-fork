@@ -723,7 +723,7 @@ GEM
       redis-namespace (>= 1.8.2)
     gitlab-markup (1.9.0)
     gitlab-net-dns (0.9.2)
-    gitlab-sdk (0.3.0)
+    gitlab-sdk (0.3.1)
       activesupport (>= 5.2.0)
       rake (~> 13.0)
       snowplow-tracker (~> 0.8.0)
