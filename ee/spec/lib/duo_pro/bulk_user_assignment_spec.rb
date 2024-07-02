@@ -24,7 +24,7 @@ RSpec.describe DuoPro::BulkUserAssignment, feature_category: :seat_cost_manageme
       it 'returns success and failed assignments' do
         results = bulk_assignment.execute
 
-        expect(results[:successful_assignments]).to eq([
+        expect(results[:successful_assignments]).to match_array([
           "User assigned: code_suggestions_active_user1",
           "User assigned: code_suggestions_active_user2",
           "User assigned: code_suggestions_active_user3",
@@ -32,7 +32,7 @@ RSpec.describe DuoPro::BulkUserAssignment, feature_category: :seat_cost_manageme
           "User assigned: code_suggestions_extra_user2"
         ])
 
-        expect(results[:failed_assignments]).to eq([
+        expect(results[:failed_assignments]).to match_array([
           "Failed to assign seat to user: code_suggestions_blocked_user, Errors: [\"INVALID_USER_MEMBERSHIP\"]",
           "Failed to assign seat to user: code_suggestions_banned_user, Errors: [\"INVALID_USER_MEMBERSHIP\"]",
           "Failed to assign seat to user: code_suggestions_bot_user, Errors: [\"INVALID_USER_MEMBERSHIP\"]",
@@ -87,7 +87,7 @@ RSpec.describe DuoPro::BulkUserAssignment, feature_category: :seat_cost_manageme
       end
 
       context 'when the AddOn is purchased' do
-        context 'with enough seats', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/441511' do
+        context 'with enough seats' do
           include_examples 'bulk user assignment with enough seats' do
             let(:add_on_purchase) do
               create(:gitlab_subscription_add_on_purchase, :self_managed, quantity: 10, add_on: add_on)
