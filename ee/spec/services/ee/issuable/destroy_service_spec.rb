@@ -12,64 +12,246 @@ RSpec.describe Issuable::DestroyService, feature_category: :team_planning do
       let_it_be(:group) { create(:group) }
 
       context 'when deleting the epic' do
-        let_it_be(:label1) { create(:group_label, group: group) }
-        let_it_be(:label2) { create(:group_label, group: group) }
-        let_it_be(:epic) { create(:epic, group: group, labels: [label1]) }
-        let_it_be(:work_item) { epic.sync_object }
+        context 'and deletes epic, epic work item and label links', :sidekiq_inline do
+          let_it_be(:label1) { create(:group_label, group: group) }
+          let_it_be(:label2) { create(:group_label, group: group) }
+          let_it_be(:epic) { create(:epic, group: group, labels: [label1]) }
+          let_it_be(:work_item) { epic.sync_object }
 
-        let_it_be(:issuable) { epic }
-        let_it_be(:sync_object) { work_item }
+          let_it_be(:issuable) { epic }
+          let_it_be(:sync_object) { work_item }
 
-        before do
-          sync_object.labels << label2
+          before do
+            sync_object.labels << label2
+          end
+
+          it 'deletes the epic and the epic work item' do
+            epic_id = epic.id
+            epic_work_item_id = epic.issue_id
+
+            expect { subject.execute(issuable) }.to change { Epic.count }.by(-1).and(
+              change { WorkItem.count }.by(-1)).and(change { LabelLink.count(-2) })
+
+            expect(Epic.find_by_id(epic_id)).to be_nil
+            expect(WorkItem.find_by_id(epic_work_item_id)).to be_nil
+          end
+
+          it 'records usage ping epic destroy event' do
+            expect(Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(
+              :track_epic_destroyed).with(author: user, namespace: group)
+
+            subject.execute(issuable)
+          end
         end
 
-        it 'deletes the epic and the epic work item' do
-          epic_id = epic.id
-          epic_work_item_id = epic.issue_id
+        it_behaves_like 'service deleting todos' do
+          let_it_be(:label1) { create(:group_label, group: group) }
+          let_it_be(:label2) { create(:group_label, group: group) }
+          let_it_be(:epic) { create(:epic, group: group, labels: [label1]) }
+          let_it_be(:work_item) { epic.sync_object }
 
-          expect { subject.execute(issuable) }.to change { Epic.count }.by(-1).and(change { WorkItem.count }.by(-1))
-
-          expect(Epic.find_by_id(epic_id)).to be_nil
-          expect(WorkItem.find_by_id(epic_work_item_id)).to be_nil
+          let_it_be(:issuable) { epic }
+          let_it_be(:sync_object) { work_item }
         end
 
-        it 'records usage ping epic destroy event' do
-          expect(Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(
-            :track_epic_destroyed).with(author: user, namespace: group)
+        it_behaves_like 'service deleting label links' do
+          let_it_be(:label1) { create(:group_label, group: group) }
+          let_it_be(:label2) { create(:group_label, group: group) }
+          let_it_be(:epic) { create(:epic, group: group, labels: [label1]) }
+          let_it_be(:work_item) { epic.sync_object }
 
-          subject.execute(issuable)
+          let_it_be(:issuable) { epic }
+          let_it_be(:sync_object) { work_item }
         end
-
-        it_behaves_like 'service deleting todos'
-        it_behaves_like 'service deleting label links'
       end
 
       context 'when deleting the epic work item' do
-        let_it_be(:label1) { create(:group_label, group: group) }
-        let_it_be(:label2) { create(:group_label, group: group) }
-        let_it_be(:epic) { create(:epic, group: group, labels: [label1]) }
-        let_it_be(:work_item) { epic.sync_object }
+        context 'and deletes epic, epic work item and label links', :sidekiq_inline do
+          let_it_be(:label1) { create(:group_label, group: group) }
+          let_it_be(:label2) { create(:group_label, group: group) }
+          let_it_be(:epic) { create(:epic, group: group, labels: [label1]) }
+          let_it_be(:work_item) { epic.sync_object }
 
-        let_it_be(:issuable) { work_item.reload }
-        let_it_be(:sync_object) { epic.reload }
+          let_it_be(:issuable) { work_item.reload }
+          let_it_be(:sync_object) { epic.reload }
 
-        before do
-          sync_object.labels << label2
+          before do
+            sync_object.labels << label2
+          end
+
+          it 'deletes the epic and the epic work item' do
+            epic_id = epic.id
+            epic_work_item_id = epic.issue_id
+
+            expect { subject.execute(issuable) }.to change { Epic.count }.by(-1).and(
+              change { WorkItem.count }.by(-1)).and(change { LabelLink.count(-2) })
+
+            expect(Epic.find_by_id(epic_id)).to be_nil
+            expect(WorkItem.find_by_id(epic_work_item_id)).to be_nil
+          end
         end
 
-        it 'deletes the epic and the epic work item' do
-          epic_id = epic.id
-          epic_work_item_id = epic.issue_id
+        it_behaves_like 'service deleting todos' do
+          let_it_be(:label1) { create(:group_label, group: group) }
+          let_it_be(:label2) { create(:group_label, group: group) }
+          let_it_be(:epic) { create(:epic, group: group, labels: [label1]) }
+          let_it_be(:work_item) { epic.sync_object }
 
-          expect { subject.execute(issuable) }.to change { Epic.count }.by(-1).and(change { WorkItem.count }.by(-1))
-
-          expect(Epic.find_by_id(epic_id)).to be_nil
-          expect(WorkItem.find_by_id(epic_work_item_id)).to be_nil
+          let_it_be(:issuable) { work_item.reload }
+          let_it_be(:sync_object) { epic.reload }
         end
 
-        it_behaves_like 'service deleting todos'
-        it_behaves_like 'service deleting label links'
+        it_behaves_like 'service deleting label links' do
+          let_it_be(:label1) { create(:group_label, group: group) }
+          let_it_be(:label2) { create(:group_label, group: group) }
+          let_it_be(:epic) { create(:epic, group: group, labels: [label1]) }
+          let_it_be(:work_item) { epic.sync_object }
+
+          let_it_be(:issuable) { work_item.reload }
+          let_it_be(:sync_object) { epic.reload }
+        end
+      end
+
+      context 'with unified notes' do
+        shared_examples 'deletes notes on both epic and epic work item' do
+          it 'deletes the epic, epic work item and all notes' do
+            epic_id = epic.id
+            epic_work_item_id = epic.issue_id
+
+            expect(Note.where(noteable_type: 'Epic', noteable_id: epic_id).count).to eq(2)
+            expect(Note.where(noteable_type: 'Issue', noteable_id: epic_work_item_id).count).to eq(1)
+
+            expect { subject.execute(issuable) }.to change { Epic.count }.by(-1).and(
+              change { WorkItem.count }.by(-1)).and(change { Note.count }.by(-3))
+
+            expect(Epic.find_by_id(epic_id)).to be_nil
+            expect(WorkItem.find_by_id(epic_work_item_id)).to be_nil
+            expect(Note.where(noteable_type: 'Epic', noteable_id: epic_id).count).to eq(0)
+            expect(Note.where(noteable_type: 'Issue', noteable_id: epic_work_item_id).count).to eq(0)
+          end
+        end
+
+        context 'when deleting the epic' do
+          let_it_be(:epic) { create(:epic, group: group) }
+          let_it_be(:work_item) { epic.sync_object }
+          let_it_be(:note1) { create(:note, noteable: epic, note: 'first note on epic') }
+          let_it_be(:note2) { create(:note, noteable: epic, note: 'second note on epic') }
+          let_it_be(:note3) { create(:note, noteable: work_item, note: 'first note on epic work item') }
+
+          let_it_be(:issuable) { epic }
+          let_it_be(:sync_object) { work_item }
+
+          it_behaves_like 'deletes notes on both epic and epic work item'
+        end
+
+        context 'when deleting the epic work item' do
+          let_it_be(:epic) { create(:epic, group: group) }
+          let_it_be(:work_item) { epic.sync_object }
+          let_it_be(:note1) { create(:note, noteable: epic, note: 'first note on epic') }
+          let_it_be(:note2) { create(:note, noteable: epic, note: 'second note on epic') }
+          let_it_be(:note3) { create(:note, noteable: work_item, note: 'first note on epic work item') }
+
+          let_it_be(:issuable) { work_item }
+          let_it_be(:sync_object) { epic }
+
+          it_behaves_like 'deletes notes on both epic and epic work item'
+        end
+      end
+
+      context 'with unified resource_label_events' do
+        shared_examples 'deletes label events on both epic and epic work item' do
+          it 'deletes the epic, epic work item and all notes' do
+            epic_id = epic.id
+            epic_work_item_id = epic.issue_id
+
+            expect(ResourceLabelEvent.where(epic_id: epic_id).count).to eq(1)
+            expect(ResourceLabelEvent.where(issue_id: epic_work_item_id).count).to eq(1)
+
+            expect { subject.execute(issuable) }.to change { Epic.count }.by(-1).and(
+              change { WorkItem.count }.by(-1)).and(change { ResourceLabelEvent.count }.by(-2))
+
+            expect(Epic.find_by_id(epic_id)).to be_nil
+            expect(WorkItem.find_by_id(epic_work_item_id)).to be_nil
+            expect(ResourceLabelEvent.where(epic_id: epic_id).count).to eq(0)
+            expect(ResourceLabelEvent.where(issue_id: epic_work_item_id).count).to eq(0)
+          end
+        end
+
+        context 'when deleting the epic' do
+          let_it_be(:epic) { create(:epic, group: group) }
+          let_it_be(:work_item) { epic.sync_object }
+          let_it_be(:label1) { create(:group_label, group: group) }
+          let_it_be(:label2) { create(:group_label, group: group) }
+          let_it_be(:label_resource_event1) { create(:resource_label_event, epic: epic, label: label1) }
+          let_it_be(:label_resource_event2) { create(:resource_label_event, issue: work_item, label: label2) }
+
+          let_it_be(:issuable) { epic }
+          let_it_be(:sync_object) { work_item }
+
+          it_behaves_like 'deletes label events on both epic and epic work item'
+        end
+
+        context 'when deleting the epic work item' do
+          let_it_be(:epic) { create(:epic, group: group) }
+          let_it_be(:work_item) { epic.sync_object }
+          let_it_be(:label1) { create(:group_label, group: group) }
+          let_it_be(:label2) { create(:group_label, group: group) }
+          let_it_be(:label_resource_event1) { create(:resource_label_event, epic: epic, label: label1) }
+          let_it_be(:label_resource_event2) { create(:resource_label_event, issue: work_item, label: label2) }
+
+          let_it_be(:issuable) { work_item }
+          let_it_be(:sync_object) { epic }
+
+          it_behaves_like 'deletes label events on both epic and epic work item'
+        end
+      end
+
+      context 'with unified resource_state_events' do
+        shared_examples 'deletes state events on both epic and epic work item' do
+          it 'deletes the epic, epic work item and all notes' do
+            epic_id = epic.id
+            epic_work_item_id = epic.issue_id
+
+            expect(ResourceStateEvent.where(epic_id: epic_id).count).to eq(1)
+            expect(ResourceStateEvent.where(issue_id: epic_work_item_id).count).to eq(1)
+
+            expect { subject.execute(issuable) }.to change { Epic.count }.by(-1).and(
+              change { WorkItem.count }.by(-1)).and(change { ResourceStateEvent.count }.by(-2))
+
+            expect(Epic.find_by_id(epic_id)).to be_nil
+            expect(WorkItem.find_by_id(epic_work_item_id)).to be_nil
+            expect(ResourceStateEvent.where(epic_id: epic_id).count).to eq(0)
+            expect(ResourceStateEvent.where(issue_id: epic_work_item_id).count).to eq(0)
+          end
+        end
+
+        context 'when deleting the epic' do
+          let_it_be(:epic) { create(:epic, group: group) }
+          let_it_be(:work_item) { epic.sync_object }
+          let_it_be(:label1) { create(:group_label, group: group) }
+          let_it_be(:label2) { create(:group_label, group: group) }
+          let_it_be(:state_resource_event1) { create(:resource_state_event, epic: epic, state: :closed) }
+          let_it_be(:state_resource_event2) { create(:resource_state_event, issue: work_item, state: :opened) }
+
+          let_it_be(:issuable) { epic }
+          let_it_be(:sync_object) { work_item }
+
+          it_behaves_like 'deletes state events on both epic and epic work item'
+        end
+
+        context 'when deleting the epic work item' do
+          let_it_be(:epic) { create(:epic, group: group) }
+          let_it_be(:work_item) { epic.sync_object }
+          let_it_be(:label1) { create(:group_label, group: group) }
+          let_it_be(:label2) { create(:group_label, group: group) }
+          let_it_be(:state_resource_event1) { create(:resource_state_event, epic: epic, state: :closed) }
+          let_it_be(:state_resource_event2) { create(:resource_state_event, issue: work_item, state: :opened) }
+
+          let_it_be(:issuable) { work_item }
+          let_it_be(:sync_object) { epic }
+
+          it_behaves_like 'deletes state events on both epic and epic work item'
+        end
       end
 
       context 'with unified description_versions' do

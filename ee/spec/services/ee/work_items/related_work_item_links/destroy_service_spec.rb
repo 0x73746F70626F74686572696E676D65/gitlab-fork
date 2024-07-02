@@ -107,8 +107,8 @@ RSpec.describe WorkItems::RelatedWorkItemLinks::DestroyService, feature_category
             .and change { WorkItems::RelatedWorkItemLink.count }.by(-1)
             .and change { source.notes.count }.by(1)
             .and change { target.notes.count }.by(1)
-            .and not_change { epic_a.notes.count }
-            .and not_change { epic_b.notes.count }
+            .and not_change { epic_a.own_notes.count }
+            .and not_change { epic_b.own_notes.count }
         end
 
         context 'when destroying the related epic link fails' do

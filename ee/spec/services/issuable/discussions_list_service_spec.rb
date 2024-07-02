@@ -17,7 +17,7 @@ RSpec.describe Issuable::DiscussionsListService, feature_category: :team_plannin
   describe 'fetching notes for incidents' do
     let_it_be(:issuable) { create(:incident, project: project) }
 
-    it_behaves_like 'listing issuable discussions', :guest, 1, 7
+    it_behaves_like 'listing issuable discussions', user_role: :guest, internal_discussions: 1, total_discussions: 7
   end
 
   describe 'fetching notes for epics' do
@@ -27,7 +27,27 @@ RSpec.describe Issuable::DiscussionsListService, feature_category: :team_plannin
       stub_licensed_features(epics: true)
     end
 
-    it_behaves_like 'listing issuable discussions', :guest, 1, 5
+    it 'returns same discussions for epic and epic work item' do
+      epic_discussions = described_class.new(current_user, issuable, finder_params_for_issuable).execute
+      work_item_discussions = described_class.new(
+        current_user, issuable.sync_object, finder_params_for_issuable
+      ).execute
+
+      expect(epic_discussions.count).to eq(work_item_discussions.count)
+    end
+
+    it_behaves_like 'listing issuable discussions', user_role: :guest, internal_discussions: 1, total_discussions: 5
+
+    describe 'fetching notes for epic work item' do
+      let_it_be(:epic) { create(:epic, group: group) }
+      let_it_be(:issuable) { epic.work_item }
+
+      before do
+        stub_licensed_features(epics: true)
+      end
+
+      it_behaves_like 'listing issuable discussions', user_role: :guest, internal_discussions: 1, total_discussions: 5
+    end
   end
 
   describe 'fetching notes for vulnerabilities' do

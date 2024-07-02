@@ -1746,6 +1746,126 @@ RSpec.describe Epic, feature_category: :portfolio_management do
       end
     end
 
+    context 'with notes' do
+      let_it_be(:epic) { create(:epic, group: group) }
+      let_it_be(:work_item) { epic.work_item }
+      let_it_be(:note1) { create(:note, noteable: epic, note: 'first note on epic') }
+      let_it_be(:note2) { create(:note, noteable: epic, note: 'second note on epic') }
+      let_it_be(:note3) { create(:note, noteable: work_item, note: 'first note on epic work item') }
+
+      context 'when notes are fetched just from the epic itself' do
+        before do
+          stub_feature_flags(epic_and_work_item_notes_unification: false)
+        end
+
+        it 'returns only epic notes' do
+          expect(epic.reload.notes).to match_array([note1, note2])
+          expect(work_item.reload.notes).to match_array([note3])
+          expect(epic.reload.own_notes).to match_array([note1, note2])
+          expect(work_item.reload.own_notes).to match_array([note3])
+        end
+      end
+
+      context 'when notes are fetched from the epic and epic work item' do
+        before do
+          stub_feature_flags(epic_and_work_item_notes_unification: true)
+        end
+
+        it 'returns epic and epic work item notes' do
+          expect(epic.reload.notes).to match_array([note1, note2, note3])
+          expect(work_item.reload.notes).to match_array([note1, note2, note3])
+
+          expect(epic.reload.own_notes).to match_array([note1, note2])
+          expect(work_item.reload.own_notes).to match_array([note3])
+        end
+
+        it 'returns epic and epic work item notes queried by id' do
+          expect(epic.reload.notes.find(note1.id)).to eq(note1)
+          expect(work_item.reload.notes.find(note1.id)).to eq(note1)
+        end
+      end
+    end
+
+    context 'with label resource events' do
+      let_it_be(:label1) { create(:group_label, group: group, title: 'epic-label-1') }
+      let_it_be(:label2) { create(:group_label, group: group, title: 'epic-label-2') }
+      let_it_be(:epic) { create(:epic, group: group) }
+      let_it_be(:work_item) { epic.work_item }
+      let(:label_resource_event1) { create(:resource_label_event, epic: epic, label: label1) }
+      let(:label_resource_event2) { create(:resource_label_event, issue: work_item, label: label2) }
+
+      context 'when label resource events are fetched just from the epic itself' do
+        before do
+          stub_feature_flags(epic_and_work_item_notes_unification: false)
+        end
+
+        it 'returns only epic label events' do
+          expect(epic.reload.resource_label_events).to match_array([label_resource_event1])
+          expect(work_item.reload.resource_label_events).to match_array([label_resource_event2])
+          expect(epic.reload.own_resource_label_events).to match_array([label_resource_event1])
+          expect(work_item.reload.own_resource_label_events).to match_array([label_resource_event2])
+        end
+      end
+
+      context 'when label resource events are fetched from the epic and epic work item' do
+        before do
+          stub_feature_flags(epic_and_work_item_notes_unification: true)
+        end
+
+        it 'returns epic and epic work item label events' do
+          expect(epic.reload.resource_label_events).to match_array([label_resource_event1, label_resource_event2])
+          expect(work_item.reload.resource_label_events).to match_array([label_resource_event1, label_resource_event2])
+
+          expect(epic.reload.own_resource_label_events).to match_array([label_resource_event1])
+          expect(work_item.reload.own_resource_label_events).to match_array([label_resource_event2])
+        end
+
+        it 'returns epic and epic work item label events queried by id' do
+          expect(epic.reload.resource_label_events.find(label_resource_event1.id)).to eq(label_resource_event1)
+          expect(work_item.reload.resource_label_events.find(label_resource_event1.id)).to eq(label_resource_event1)
+        end
+      end
+    end
+
+    context 'with state resource events' do
+      let_it_be(:epic) { create(:epic, group: group) }
+      let_it_be(:work_item) { epic.work_item }
+      let(:state_resource_event1) { create(:resource_state_event, epic: epic, state: :closed) }
+      let(:state_resource_event2) { create(:resource_state_event, issue: work_item, state: :opened) }
+
+      context 'when state resource events are fetched just from the epic itself' do
+        before do
+          stub_feature_flags(epic_and_work_item_notes_unification: false)
+        end
+
+        it 'returns only epic state events' do
+          expect(epic.reload.resource_state_events).to match_array([state_resource_event1])
+          expect(work_item.reload.resource_state_events).to match_array([state_resource_event2])
+          expect(epic.reload.own_resource_state_events).to match_array([state_resource_event1])
+          expect(work_item.reload.own_resource_state_events).to match_array([state_resource_event2])
+        end
+      end
+
+      context 'when state resource events are fetched from the epic and epic work item' do
+        before do
+          stub_feature_flags(epic_and_work_item_notes_unification: true)
+        end
+
+        it 'returns epic and epic work item state events' do
+          expect(epic.reload.resource_state_events).to match_array([state_resource_event1, state_resource_event2])
+          expect(work_item.reload.resource_state_events).to match_array([state_resource_event1, state_resource_event2])
+
+          expect(epic.reload.own_resource_state_events).to match_array([state_resource_event1])
+          expect(work_item.reload.own_resource_state_events).to match_array([state_resource_event2])
+        end
+
+        it 'returns epic and epic work item state events queried by id' do
+          expect(epic.reload.resource_state_events.find(state_resource_event1.id)).to eq(state_resource_event1)
+          expect(work_item.reload.resource_state_events.find(state_resource_event1.id)).to eq(state_resource_event1)
+        end
+      end
+    end
+
     context 'with description versions' do
       let_it_be(:epic) { create(:epic, group: group) }
       let_it_be(:work_item) { epic.work_item }
