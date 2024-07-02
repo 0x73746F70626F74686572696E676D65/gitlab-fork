@@ -626,6 +626,32 @@ RSpec.shared_examples 'scan detected secrets' do
       end
     end
   end
+
+  it_behaves_like 'internal event tracking' do
+    let(:event) { "detect_secret_type_on_push" }
+    let(:namespace) { project.namespace }
+    let(:label) { "GitLab Personal Access Token" }
+    let(:category) { described_class.name }
+
+    before do
+      allow_next_instance_of(::Gitlab::SecretDetection::Scan) do |instance|
+        allow(instance).to receive(:secrets_scan)
+          .with(
+            [new_blob],
+            timeout: kind_of(Float)
+          )
+          .once
+          .and_return(successful_scan_response)
+          .and_call_original
+      end
+
+      allow(secret_detection_logger).to receive(:info)
+    end
+
+    subject do
+      expect { super().validate! }.to raise_error(::Gitlab::GitAccess::ForbiddenError)
+    end
+  end
 end
 
 RSpec.shared_examples 'scan detected secrets but some errors occured' do

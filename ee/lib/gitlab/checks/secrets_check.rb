@@ -247,6 +247,8 @@ module Gitlab
       def build_finding_message(finding, type)
         case finding.status
         when ::Gitlab::SecretDetection::Status::FOUND
+          track_secret_found(finding.description)
+
           case type
           when :commit
             build_commit_finding_message(finding)
@@ -272,6 +274,18 @@ module Gitlab
 
       def build_blob_finding_message(finding)
         format(LOG_MESSAGES[:finding_message], finding.to_h)
+      end
+
+      def track_secret_found(secret_type)
+        track_internal_event(
+          'detect_secret_type_on_push',
+          user: changes_access.user_access.user,
+          project: changes_access.project,
+          namespace: changes_access.project.namespace,
+          additional_properties: {
+            label: secret_type
+          }
+        )
       end
 
       def transform_findings(response)
