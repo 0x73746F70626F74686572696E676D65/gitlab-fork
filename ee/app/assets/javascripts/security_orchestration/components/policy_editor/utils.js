@@ -3,6 +3,7 @@ import { isValidCron } from 'cron-validator';
 import { sprintf, s__ } from '~/locale';
 import createPolicyProject from 'ee/security_orchestration/graphql/mutations/create_policy_project.mutation.graphql';
 import createScanExecutionPolicy from 'ee/security_orchestration/graphql/mutations/create_scan_execution_policy.mutation.graphql';
+import getFile from 'ee/security_orchestration/graphql/queries/get_file.query.graphql';
 import { gqClient } from 'ee/security_orchestration/utils';
 import createMergeRequestMutation from '~/graphql_shared/mutations/create_merge_request.mutation.graphql';
 
@@ -545,5 +546,29 @@ export const parseError = (error) => {
     return messages.map((e) => e.split(`'`)[1].split(`/`).splice(3, 3));
   } catch {
     return [];
+  }
+};
+
+/**
+ * Check if file exist on particular branch in particular project
+ * @param fullPath full path to a project
+ * @param ref branch name
+ * @param filePath full file name
+ * @returns {Promise<boolean>}
+ */
+export const doesFileExist = async ({ fullPath = {}, ref = null, filePath = '' } = {}) => {
+  try {
+    const { data } = await gqClient.query({
+      query: getFile,
+      variables: {
+        fullPath,
+        filePath,
+        ref,
+      },
+    });
+
+    return data?.project?.repository?.blobs?.nodes?.length > 0;
+  } catch {
+    return false;
   }
 };

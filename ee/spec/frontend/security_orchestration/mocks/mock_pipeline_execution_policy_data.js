@@ -44,6 +44,7 @@ content:
 export const mockPipelineExecutionManifest = `type: pipeline_execution_policy
 name: Include external file
 description: This policy enforces pipeline execution with configuration from external file
+pipeline_config_strategy: inject_ci
 enabled: false
 content:
    include:

@@ -1,7 +1,9 @@
 <script>
 import { GlEmptyState } from '@gitlab/ui';
+import { debounce } from 'lodash';
 import { joinPaths, setUrlFragment, visitUrl } from '~/lib/utils/url_utility';
 import { s__, __ } from '~/locale';
+import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import {
   ACTIONS_LABEL,
   EDITOR_MODE_RULE,
@@ -10,7 +12,7 @@ import {
   PARSING_ERROR_MESSAGE,
   SECURITY_POLICY_ACTIONS,
 } from '../constants';
-import { assignSecurityPolicyProject, modifyPolicy } from '../utils';
+import { assignSecurityPolicyProject, doesFileExist, modifyPolicy } from '../utils';
 import EditorLayout from '../editor_layout.vue';
 import DimDisableContainer from '../dim_disable_container.vue';
 import ActionSection from './action/action_section.vue';
@@ -77,6 +79,7 @@ export default {
         'pipeline-execution-policy-editor',
       ),
       hasParsingError,
+      disableSubmit: false,
       isCreatingMR: false,
       isRemovingPolicy: false,
       mode: EDITOR_MODE_RULE,
@@ -92,6 +95,32 @@ export default {
     strategy() {
       return this.policy.pipeline_config_strategy;
     },
+    content() {
+      return this.policy?.content;
+    },
+    disableSubmitButton() {
+      return this.disableSubmit || this.hasEmptyContent;
+    },
+    hasEmptyContent() {
+      const { project, file } = this.policy?.content?.include?.[0] || {};
+      return !project && !file;
+    },
+  },
+  watch: {
+    content(newVal) {
+      this.handleFileValidation(newVal);
+    },
+  },
+  mounted() {
+    if (this.existingPolicy) {
+      this.handleFileValidation(this.existingPolicy?.content);
+    }
+  },
+  created() {
+    this.handleFileValidation = debounce(this.doesFileExist, DEFAULT_DEBOUNCE_AND_THROTTLE_MS);
+  },
+  destroyed() {
+    this.handleFileValidation.cancel();
   },
   methods: {
     changeEditorMode(mode) {
@@ -137,6 +166,21 @@ export default {
         this.setLoadingFlag(action, false);
       }
     },
+    async doesFileExist(value) {
+      const { project, ref = null, file } = value?.include?.[0] || {};
+
+      try {
+        const exists = await doesFileExist({
+          fullPath: project,
+          filePath: file,
+          ref,
+        });
+
+        this.disableSubmit = !exists;
+      } catch {
+        this.disableSubmit = true;
+      }
+    },
     handleUpdateProperty(property, value) {
       this.policy[property] = value;
       this.updateYamlEditorValue(this.policy);
@@ -177,6 +221,7 @@ export default {
   <editor-layout
     v-if="!disableScanPolicyUpdate"
     :custom-save-button-text="$options.i18n.createMergeRequest"
+    :disable-update="disableSubmitButton"
     :has-parsing-error="hasParsingError"
     :is-editing="isEditing"
     :is-removing-policy="isRemovingPolicy"
@@ -217,6 +262,7 @@ export default {
         <action-section
           class="gl-mb-4 security-policies-bg-gray-10 gl-rounded-base gl-p-5"
           :action="policy.content"
+          :does-file-exist="!disableSubmit"
           :strategy="strategy"
           @changed="handleUpdateProperty"
         />

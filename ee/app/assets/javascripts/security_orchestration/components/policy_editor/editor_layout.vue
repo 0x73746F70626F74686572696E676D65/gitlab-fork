@@ -16,7 +16,6 @@ import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import SegmentedControlButtonGroup from '~/vue_shared/components/segmented_control_button_group.vue';
 import DimDisableContainer from 'ee/security_orchestration/components/policy_editor/dim_disable_container.vue';
 import ScopeSection from 'ee/security_orchestration/components/policy_editor/scope/scope_section.vue';
-import { isGroup } from 'ee/security_orchestration/components/utils';
 import { NAMESPACE_TYPES } from '../../constants';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
 import {
@@ -178,9 +177,6 @@ export default {
         hasPropertyChanged: this.hasEnabledPropertyChanged,
         initialValue: this.isInitiallyEnabled,
       });
-    },
-    isGroupLevel() {
-      return isGroup(this.namespaceType);
     },
     deleteModalTitle() {
       return sprintf(s__('SecurityOrchestration|Delete policy: %{policy}'), {

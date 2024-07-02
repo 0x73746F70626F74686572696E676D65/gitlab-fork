@@ -1,8 +1,4 @@
 <script>
-import { debounce } from 'lodash';
-import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
-import { getIdFromGraphQLId } from '~/graphql_shared/utils';
-import Api from 'ee/api';
 import { parseCustomFileConfiguration } from 'ee/security_orchestration/components/policy_editor/utils';
 import getProjectId from 'ee/security_orchestration/graphql/queries/get_project_id.query.graphql';
 import CodeBlockFilePath from '../../scan_execution/action/code_block_file_path.vue';
@@ -16,6 +12,11 @@ export default {
       type: Object,
       required: true,
     },
+    doesFileExist: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
     strategy: {
       type: String,
       required: true,
@@ -23,7 +24,6 @@ export default {
   },
   data() {
     return {
-      doesFileExist: true,
       selectedProject: undefined,
     };
   },
@@ -38,23 +38,6 @@ export default {
       return this.ciConfigurationPath.ref;
     },
   },
-  watch: {
-    filePath() {
-      this.resetValidation();
-      this.handleFileValidation();
-    },
-    selectedProject() {
-      this.resetValidation();
-      this.handleFileValidation();
-    },
-    selectedRef() {
-      this.resetValidation();
-      this.handleFileValidation();
-    },
-  },
-  created() {
-    this.handleFileValidation = debounce(this.validateFilePath, DEFAULT_DEBOUNCE_AND_THROTTLE_MS);
-  },
   async mounted() {
     const { project: selectedProject } = parseCustomFileConfiguration(this.action.include?.[0]);
 
@@ -62,13 +45,6 @@ export default {
       selectedProject.id = await this.getProjectId(selectedProject.fullPath);
       this.selectedProject = selectedProject;
     }
-
-    if (!this.selectedProject) {
-      this.validateFilePath();
-    }
-  },
-  destroyed() {
-    this.handleFileValidation.cancel();
   },
   methods: {
     async getProjectId(fullPath) {
@@ -80,14 +56,9 @@ export default {
           },
         });
 
-        return data.project?.id || '';
+        return data?.project?.id || '';
       } catch (e) {
         return '';
-      }
-    },
-    resetValidation() {
-      if (!this.doesFileExist) {
-        this.doesFileExist = true;
       }
     },
     setStrategy(strategy) {
@@ -116,29 +87,6 @@ export default {
     },
     updatedFilePath(path) {
       this.setCiConfigurationPath({ ...this.ciConfigurationPath, file: path });
-    },
-    async validateFilePath() {
-      const selectedProjectId = getIdFromGraphQLId(this.selectedProject?.id);
-      const ref = this.selectedRef || this.selectedProject?.repository?.rootRef;
-
-      // For when the id is removed or when selectedProject is set to null temporarily above
-      if (!selectedProjectId) {
-        this.doesFileExist = false;
-        return;
-      }
-
-      // For existing policies with existing project selected, rootRef will not be available
-      if (!ref) {
-        this.doesFileExist = true;
-        return;
-      }
-
-      try {
-        await Api.getFile(selectedProjectId, this.filePath, { ref });
-        this.doesFileExist = true;
-      } catch {
-        this.doesFileExist = false;
-      }
     },
     setCiConfigurationPath(pathConfig) {
       this.$emit('changed', 'content', { include: [pathConfig] });
