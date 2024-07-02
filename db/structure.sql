@@ -1329,6 +1329,22 @@ RETURN NEW;
 END
 $$;
 
+CREATE FUNCTION trigger_8d002f38bdef() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+IF NEW."group_id" IS NULL THEN
+  SELECT "group_id"
+  INTO NEW."group_id"
+  FROM "packages_debian_group_distributions"
+  WHERE "packages_debian_group_distributions"."id" = NEW."distribution_id";
+END IF;
+
+RETURN NEW;
+
+END
+$$;
+
 CREATE FUNCTION trigger_8d17725116fe() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -13955,6 +13971,7 @@ CREATE TABLE packages_debian_group_components (
     updated_at timestamp with time zone NOT NULL,
     distribution_id bigint NOT NULL,
     name text NOT NULL,
+    group_id bigint,
     CONSTRAINT check_a9bc7d85be CHECK ((char_length(name) <= 255))
 );
 
@@ -28112,6 +28129,8 @@ CREATE INDEX index_packages_conan_metadata_on_project_id ON packages_conan_metad
 
 CREATE INDEX index_packages_debian_group_component_files_on_component_id ON packages_debian_group_component_files USING btree (component_id);
 
+CREATE INDEX index_packages_debian_group_components_on_group_id ON packages_debian_group_components USING btree (group_id);
+
 CREATE INDEX index_packages_debian_group_distribution_keys_on_group_id ON packages_debian_group_distribution_keys USING btree (group_id);
 
 CREATE INDEX index_packages_debian_group_distributions_on_creator_id ON packages_debian_group_distributions USING btree (creator_id);
@@ -31530,6 +31549,8 @@ CREATE TRIGGER trigger_8a38ce2327de BEFORE INSERT OR UPDATE ON boards_epic_user_
 
 CREATE TRIGGER trigger_8ac78f164b2d BEFORE INSERT OR UPDATE ON design_management_repositories FOR EACH ROW EXECUTE FUNCTION trigger_8ac78f164b2d();
 
+CREATE TRIGGER trigger_8d002f38bdef BEFORE INSERT OR UPDATE ON packages_debian_group_components FOR EACH ROW EXECUTE FUNCTION trigger_8d002f38bdef();
+
 CREATE TRIGGER trigger_8d17725116fe BEFORE INSERT OR UPDATE ON merge_request_reviewers FOR EACH ROW EXECUTE FUNCTION trigger_8d17725116fe();
 
 CREATE TRIGGER trigger_8e66b994e8f0 BEFORE INSERT OR UPDATE ON audit_events_streaming_event_type_filters FOR EACH ROW EXECUTE FUNCTION trigger_8e66b994e8f0();
@@ -32936,6 +32957,9 @@ ALTER TABLE ONLY abuse_events
 
 ALTER TABLE ONLY user_preferences
     ADD CONSTRAINT fk_e5e029c10b FOREIGN KEY (home_organization_id) REFERENCES organizations(id) ON DELETE SET NULL;
+
+ALTER TABLE ONLY packages_debian_group_components
+    ADD CONSTRAINT fk_e63e8ee3b1 FOREIGN KEY (group_id) REFERENCES namespaces(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY merge_requests
     ADD CONSTRAINT fk_e719a85f8a FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE SET NULL;
