@@ -33,7 +33,7 @@ module GitlabSubscriptions
     scope :for_product_analytics, -> { where(subscription_add_on_id: AddOn.product_analytics.pick(:id)) }
     scope :for_user, ->(user) { where(namespace_id: user.billable_gitlab_duo_pro_root_group_ids) }
     scope :assigned_to_user, ->(user) do
-      active.for_user(user).joins(:assigned_users).merge(UserAddOnAssignment.by_user(user))
+      active.joins(:assigned_users).merge(UserAddOnAssignment.by_user(user))
     end
 
     scope :requiring_assigned_users_refresh, ->(limit) do
