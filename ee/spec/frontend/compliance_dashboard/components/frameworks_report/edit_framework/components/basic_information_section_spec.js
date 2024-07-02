@@ -14,7 +14,7 @@ describe('Basic information section', () => {
     color: null,
   };
 
-  const provideData = {
+  const defaultProvides = {
     featurePipelineMaintenanceModeEnabled: true,
     migratePipelineToPolicyPath: '/migratepipelinetopolicypath',
     pipelineConfigurationFullPathEnabled: true,
@@ -25,9 +25,12 @@ describe('Basic information section', () => {
   const invalidFeedback = (input) =>
     input.closest('[role=group].is-invalid').querySelector('.invalid-feedback').textContent;
 
-  function createComponent(props) {
+  function createComponent(props, provides) {
     return mountExtended(BasicInformationSection, {
-      provide: provideData,
+      provide: {
+        ...defaultProvides,
+        ...provides,
+      },
       propsData: {
         value: fakeFramework,
         ...props,
@@ -37,6 +40,7 @@ describe('Basic information section', () => {
       },
     });
   }
+  const findMaintenanceAlert = () => wrapper.findComponentByTestId('maintenance-mode-alert');
 
   beforeEach(() => {
     wrapper = createComponent();
@@ -75,5 +79,21 @@ describe('Basic information section', () => {
     wrapper = createComponent({ expandable: true });
 
     expect(wrapper.findComponent(EditSection).props('initiallyExpanded')).toBe(true);
+  });
+
+  it('renders the maintenance-mode-alert', () => {
+    const maintenanceAlert = findMaintenanceAlert();
+
+    expect(maintenanceAlert.exists()).toBe(true);
+    expect(maintenanceAlert.text()).toContain('Compliance pipelines are deprecated');
+  });
+
+  describe('when ff_compliance_pipeline_maintenance_mode feature flag is disabled', () => {
+    it('does not render the maintenance-mode-alert', () => {
+      wrapper = createComponent({}, { featurePipelineMaintenanceModeEnabled: false });
+      const maintenanceAlert = findMaintenanceAlert();
+
+      expect(maintenanceAlert.exists()).toBe(false);
+    });
   });
 });
