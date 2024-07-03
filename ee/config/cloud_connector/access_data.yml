@@ -58,3 +58,9 @@ services: # Cloud connector features (i.e. code_suggestions, duo_chat...)
           - summarize_issue_discussions
           - summarize_merge_request
           - summarize_review
+  resolve_vulnerability:
+    backend: 'gitlab-ai-gateway'
+    bundled_with:
+      duo_enterprise:
+        unit_primitives:
+          - resolve_vulnerability

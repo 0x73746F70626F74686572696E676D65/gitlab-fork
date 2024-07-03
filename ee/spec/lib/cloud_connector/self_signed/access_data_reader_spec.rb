@@ -45,6 +45,14 @@ RSpec.describe CloudConnector::SelfSigned::AccessDataReader, feature_category: :
       }
     end
 
+    let_it_be(:resolve_vulnerability_bundled_with) do
+      {
+        "duo_enterprise" => %i[
+          resolve_vulnerability
+        ]
+      }
+    end
+
     include_examples 'access data reader' do
       let_it_be(:available_service_data_class) { CloudConnector::SelfSigned::AvailableServiceData }
       let_it_be(:arguments_map) do
@@ -52,7 +60,9 @@ RSpec.describe CloudConnector::SelfSigned::AccessDataReader, feature_category: :
           code_suggestions: [cs_cut_off_date, cs_bundled_with, backend],
           duo_chat: [nil, duo_chat_bundled_with, backend],
           anthropic_proxy: [nil, anthropic_proxy_bundled_with, backend],
-          vertex_ai_proxy: [nil, vertex_ai_proxy_bundled_with, backend]
+          vertex_ai_proxy: [nil, vertex_ai_proxy_bundled_with, backend],
+          resolve_vulnerability: [nil, resolve_vulnerability_bundled_with,
+            backend]
         }
       end
     end
