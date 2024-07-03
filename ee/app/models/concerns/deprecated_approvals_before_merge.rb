@@ -9,6 +9,7 @@ module DeprecatedApprovalsBeforeMerge
   included do
     after_save do
       run_after_commit do
+        next if is_a?(MergeRequest) && merged?
         next unless saved_changes['approvals_before_merge']
 
         update_any_approver_rule

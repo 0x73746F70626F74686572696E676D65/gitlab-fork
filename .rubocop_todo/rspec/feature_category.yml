@@ -785,7 +785,6 @@ RSpec/FeatureCategory:
     - 'ee/spec/models/commit_spec.rb'
     - 'ee/spec/models/compliance_management/compliance_framework/project_settings_spec.rb'
     - 'ee/spec/models/concerns/approver_migrate_hook_spec.rb'
-    - 'ee/spec/models/concerns/deprecated_approvals_before_merge_spec.rb'
     - 'ee/spec/models/concerns/ee/issuable_spec.rb'
     - 'ee/spec/models/concerns/ee/milestoneable_spec.rb'
     - 'ee/spec/models/concerns/ee/noteable_spec.rb'
