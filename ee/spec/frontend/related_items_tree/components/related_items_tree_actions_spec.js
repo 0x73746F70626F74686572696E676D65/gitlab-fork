@@ -1,3 +1,4 @@
+import { GlButtonGroup } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
@@ -28,13 +29,19 @@ describe('RelatedItemsTree', () => {
   describe('RelatedItemsTreeActions', () => {
     let wrapper;
 
+    const findTreeViewButton = () => wrapper.findByTestId('tree-view-button');
+    const findRoadmapViewButton = () => wrapper.findByTestId('roadmap-view-button');
+    const findButtonGroup = () => wrapper.findComponent(GlButtonGroup);
+
     describe('template', () => {
       beforeEach(() => {
         wrapper = createComponent();
       });
 
       it('renders button group, tree view and roadmap view buttons', () => {
-        expect(wrapper.element).toMatchSnapshot();
+        expect(findButtonGroup().exists()).toBe(true);
+        expect(findTreeViewButton().exists()).toBe(true);
+        expect(findRoadmapViewButton().exists()).toBe(true);
       });
 
       it('does not render roadmap view button when subEpics are not present', async () => {

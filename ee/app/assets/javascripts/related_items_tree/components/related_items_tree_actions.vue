@@ -27,7 +27,7 @@ export default {
 
 <template>
   <div
-    class="card-header gl-display-flex gl-p-3 gl-pr-4 gl-flex-direction-column gl-sm-flex-direction-row gl-border-bottom-0 gl-bg-gray-10"
+    class="card-header gl-display-flex gl-p-3 gl-pr-4 gl-flex-direction-column gl-sm-flex-direction-row gl-border-bottom-0"
   >
     <div>
       <gl-button-group
