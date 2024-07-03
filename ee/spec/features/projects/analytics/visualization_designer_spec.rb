@@ -112,93 +112,36 @@ RSpec.describe 'Analytics Visualization Designer', :js, feature_category: :produ
     context 'when a custom dashboard project has been configured' do
       before do
         create(:analytics_dashboards_pointer, :project_based, project: project)
+        setup_valid_state
       end
 
-      context 'when "analytics_visualization_designer_filtering" is true' do
-        before do
-          stub_feature_flags(analytics_visualization_designer_filtering: true)
-          setup_valid_state
-        end
+      it_behaves_like 'valid visualization designer'
 
-        it_behaves_like 'valid visualization designer'
+      it 'renders the filtered search query builder' do
+        visit_page
 
-        it 'renders the filtered search query builder' do
-          visit_page
-
-          expect(page).to have_selector('[data-testid="visualization-filtered-search"]')
-        end
-
-        it 'does not render the measure selection' do
-          visit_page
-
-          expect(page).not_to have_content('What metric do you want to visualize?')
-        end
-
-        context 'with a measure selected' do
-          before do
-            visit_page
-            select_all_views_measure
-          end
-
-          it_behaves_like 'selected measure behavior'
-        end
-
-        def select_all_views_measure
-          find_by_testid('visualization-filtered-search').click
-          find_by_testid('filtered-search-suggestion', text: 'Measure').click
-          find_by_testid('filtered-search-suggestion', text: 'Tracked Events Count').click
-        end
+        expect(page).to have_selector('[data-testid="visualization-filtered-search"]')
       end
 
-      context 'when "analytics_visualization_designer_filtering" is false' do
+      it 'does not render the measure selection' do
+        visit_page
+
+        expect(page).not_to have_content('What metric do you want to visualize?')
+      end
+
+      context 'with a measure selected' do
         before do
-          stub_feature_flags(analytics_visualization_designer_filtering: false)
-          setup_valid_state
-        end
-
-        it_behaves_like 'valid visualization designer'
-
-        it 'renders the measure selection & preview panels' do
           visit_page
-
-          expect(page).to have_content('What metric do you want to visualize?')
-          expect(page).to have_content('Start by choosing a metric')
+          select_all_views_measure
         end
 
-        it 'does not render the filtered search query builder' do
-          visit_page
+        it_behaves_like 'selected measure behavior'
+      end
 
-          expect(page).not_to have_selector('[data-testid="visualization-filtered-search"]')
-        end
-
-        context 'with a measure selected' do
-          before do
-            visit_page
-            select_all_views_measure
-          end
-
-          it_behaves_like 'selected measure behavior'
-        end
-
-        context 'when data fails to load' do
-          it 'shows error when selecting a measure fails' do
-            visit_page
-
-            stub_request(:post, cube_dry_run_api_url)
-              .to_return(status: 200, body: query_response_with_error, headers: {})
-            stub_request(:post, cube_load_api_url)
-              .to_return(status: 200, body: query_response_with_error, headers: {})
-
-            select_all_views_measure
-
-            expect(page).to have_content('An error occurred while loading data')
-          end
-        end
-
-        def select_all_views_measure
-          click_button 'Events'
-          click_button 'All Events Compared'
-        end
+      def select_all_views_measure
+        find_by_testid('visualization-filtered-search').click
+        find_by_testid('filtered-search-suggestion', text: 'Measure').click
+        find_by_testid('filtered-search-suggestion', text: 'Tracked Events Count').click
       end
     end
 

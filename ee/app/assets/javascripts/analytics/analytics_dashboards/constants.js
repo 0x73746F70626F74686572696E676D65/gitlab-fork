@@ -3,10 +3,6 @@ import { helpPagePath } from '~/helpers/help_page_helper';
 
 export const EVENTS_TYPES = ['pageViews', 'linkClickEvents', 'events'];
 
-export function isRestrictedToEventType(eventType) {
-  return EVENTS_TYPES.includes(eventType);
-}
-
 export const PANEL_VISUALIZATION_HEIGHT = '600px';
 
 export const PANEL_DISPLAY_TYPES = {
@@ -27,144 +23,11 @@ export const PANEL_DISPLAY_TYPE_ITEMS = [
   },
 ];
 
-export const MEASURE_COLOR = '#00b140';
-export const DIMENSION_COLOR = '#c3e6cd';
-
 export const EVENTS_TABLE_NAME = 'TrackedEvents';
 export const SESSIONS_TABLE_NAME = 'Sessions';
 export const RETURNING_USERS_TABLE_NAME = 'ReturningUsers';
 
 export const TRACKED_EVENTS_KEY = 'trackedevents';
-
-export const ANALYTICS_FIELD_CATEGORIES = [
-  {
-    name: s__('Analytics|Pages'),
-    category: 'pages',
-  },
-  {
-    name: s__('Analytics|Users'),
-    category: 'users',
-  },
-  {
-    name: s__('Analytics|Link clicks'),
-    category: 'linkClicks',
-  },
-  {
-    name: s__('Analytics|Custom events'),
-    category: 'custom',
-  },
-];
-
-export const ANALYTICS_FIELDS = [
-  {
-    name: s__('Analytics|URL'),
-    category: 'pages',
-    dbField: 'pageUrl',
-    icon: 'documents',
-  },
-  {
-    name: s__('Analytics|Page Path'),
-    category: 'pages',
-    dbField: 'pageUrlpath',
-    icon: 'documents',
-  },
-  {
-    name: s__('Analytics|Page Title'),
-    category: 'pages',
-    dbField: 'pageTitle',
-    icon: 'documents',
-  },
-  {
-    name: s__('Analytics|Page Language'),
-    category: 'pages',
-    dbField: 'documentLanguage',
-    icon: 'documents',
-  },
-  {
-    name: s__('Analytics|Host'),
-    category: 'pages',
-    dbField: 'pageUrlhosts',
-    icon: 'documents',
-  },
-  {
-    name: s__('Analytics|Referer'),
-    category: 'users',
-    dbField: 'pageReferrer',
-    icon: 'user',
-  },
-  {
-    name: s__('Analytics|Language'),
-    category: 'users',
-    dbField: 'browserLanguage',
-    icon: 'user',
-  },
-  {
-    name: s__('Analytics|Viewport'),
-    category: 'users',
-    dbField: 'viewportSize',
-    icon: 'user',
-  },
-  {
-    name: s__('Analytics|Browser Family'),
-    category: 'users',
-    dbField: 'agentName',
-    icon: 'user',
-  },
-  {
-    name: s__('Analytics|Browser'),
-    category: 'users',
-    dbField: ['agentName', 'agentVersion'],
-    icon: 'user',
-  },
-  {
-    name: s__('Analytics|OS'),
-    category: 'users',
-    dbField: 'osName',
-    icon: 'user',
-  },
-  {
-    name: s__('Analytics|OS Version'),
-    category: 'users',
-    dbField: ['osName', 'osVersion'],
-    icon: 'user',
-  },
-  {
-    name: s__('Analytics|User Id'),
-    category: 'users',
-    dbField: 'userId',
-    icon: 'user',
-  },
-  {
-    name: s__('Analytics|Target URL'),
-    category: 'linkClicks',
-    dbField: ['targetUrl'],
-    icon: 'link',
-  },
-  {
-    name: s__('Analytics|Element ID'),
-    category: 'linkClicks',
-    dbField: ['elementId'],
-    icon: 'link',
-  },
-  {
-    name: s__('Analytics|Event Name'),
-    category: 'custom',
-    dbField: 'customEventName',
-    icon: 'documents',
-  },
-  {
-    name: s__('Analytics|Event Props'),
-    category: 'custom',
-    dbField: 'customEventProps',
-    icon: 'documents',
-  },
-  {
-    name: s__('Analytics|User Props'),
-    category: 'custom',
-    dbField: 'customUserProps',
-    icon: 'user',
-  },
-];
 
 export const DASHBOARD_SCHEMA_VERSION = '2';
 

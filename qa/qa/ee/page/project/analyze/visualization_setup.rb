@@ -15,12 +15,6 @@ module QA
               element 'visualization-save-btn'
             end
 
-            view 'ee/app/assets/javascripts/analytics/analytics_dashboards/components/visualization_designer/' \
-              'selectors/product_analytics/measure_selector.vue' do
-              element 'events-button'
-              element 'events-all-button'
-            end
-
             def set_visualization_title(title)
               fill_element 'visualization-title-input', title
             end

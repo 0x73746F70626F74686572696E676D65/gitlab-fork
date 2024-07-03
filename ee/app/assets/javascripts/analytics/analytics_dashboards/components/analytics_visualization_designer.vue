@@ -10,7 +10,6 @@ import { slugify } from '~/lib/utils/text_utility';
 import { HTTP_STATUS_CREATED } from '~/lib/utils/http_status';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { InternalEvents } from '~/tracking';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 
 import { createCubeApi } from 'ee/analytics/analytics_dashboards/data_sources/cube_analytics';
 import { getVisualizationOptions } from 'ee/analytics/analytics_dashboards/utils/visualization_designer_options';
@@ -26,8 +25,6 @@ import {
   DEFAULT_VISUALIZATION_TITLE,
   VISUALIZATION_TYPE_DATA_TABLE,
 } from '../constants';
-import MeasureSelector from './visualization_designer/selectors/product_analytics/measure_selector.vue';
-import DimensionSelector from './visualization_designer/selectors/product_analytics/dimension_selector.vue';
 import VisualizationPreview from './visualization_designer/analytics_visualization_preview.vue';
 import VisualizationTypeSelector from './visualization_designer/analytics_visualization_type_selector.vue';
 import AiCubeQueryGenerator from './visualization_designer/ai_cube_query_generator.vue';
@@ -43,13 +40,11 @@ export default {
     GlFormGroup,
     GlLink,
     GlSprintf,
-    MeasureSelector,
-    DimensionSelector,
     VisualizationFilteredSearch,
     VisualizationTypeSelector,
     VisualizationPreview,
   },
-  mixins: [InternalEvents.mixin(), glFeatureFlagsMixin()],
+  mixins: [InternalEvents.mixin()],
   inject: {
     aiGenerateCubeQueryEnabled: {
       type: Boolean,
@@ -121,12 +116,6 @@ export default {
     queryStateHasChanges() {
       return !isEqual({ ...this.queryState }, DEFAULT_VISUALIZATION_QUERY_STATE());
     },
-    showDimensionSelector() {
-      return Boolean(this.queryState.query?.measures?.length);
-    },
-    filteringUiEnabled() {
-      return this.glFeatures.analyticsVisualizationDesignerFiltering;
-    },
   },
   beforeDestroy() {
     this.alert?.dismiss();
@@ -158,10 +147,6 @@ export default {
     },
     onFilterChange(query) {
       this.queryState.query = { ...query };
-    },
-    measureUpdated(measureType, measureSubType) {
-      this.queryState.measureType = measureType;
-      this.queryState.measureSubType = measureSubType;
     },
     selectDisplayType(newType) {
       this.selectedDisplayType = newType;
@@ -394,27 +379,8 @@ export default {
         @queryStatus="onQueryStatusChange"
         @vizStateChange="onVizStateChange"
       >
-        <template
-          #builder="{
-            measures,
-            setMeasures,
-            dimensions,
-            addDimensions,
-            timeDimensions,
-            removeDimensions,
-            setTimeDimensions,
-            removeTimeDimensions,
-            filters,
-            setFilters,
-            addFilters,
-            setSegments,
-            availableMeasures,
-            availableDimensions,
-            availableTimeDimensions,
-          }"
-        >
+        <template #builder="{ availableMeasures, availableDimensions, availableTimeDimensions }">
           <visualization-filtered-search
-            v-if="filteringUiEnabled"
             :query="queryState.query"
             :available-measures="availableMeasures"
             :available-dimensions="availableDimensions"
@@ -423,32 +389,6 @@ export default {
             @input="onFilterChange"
             @submit="onFilterChange"
           />
-          <div v-else class="gl-pr-4 gl-pb-5 gl-border-r">
-            <measure-selector
-              :query="queryState.query"
-              :measures="measures"
-              :set-measures="setMeasures"
-              :filters="filters"
-              :set-filters="setFilters"
-              :add-filters="addFilters"
-              :set-segments="setSegments"
-              data-testid="panel-measure-selector"
-              @measureSelected="measureUpdated"
-            />
-
-            <dimension-selector
-              v-if="showDimensionSelector"
-              :measure-type="queryState.measureType"
-              :query="queryState.query"
-              :dimensions="dimensions"
-              :add-dimensions="addDimensions"
-              :remove-dimension="removeDimensions"
-              :time-dimensions="timeDimensions"
-              :set-time-dimensions="setTimeDimensions"
-              :remove-time-dimension="removeTimeDimensions"
-              data-testid="panel-dimension-selector"
-            />
-          </div>
         </template>
 
         <template #default="{ resultSet, isQueryPresent, loading }">
