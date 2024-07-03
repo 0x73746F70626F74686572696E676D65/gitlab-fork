@@ -1,9 +1,6 @@
 description: Submit survey response
 category: SurveyResponsesController
 action: submit_response
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 product_group: activation

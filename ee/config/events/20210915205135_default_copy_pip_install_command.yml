@@ -1,8 +1,6 @@
 description: "Copy pip install command"
 category: default
 action: copy_pip_install_command
-property_description: ""
-value_description: ""
 extra_properties:
 identifiers:
 product_group: package_registry

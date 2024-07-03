@@ -1,8 +1,6 @@
 description: Invite members to group
 category: GroupsController
 action: invite_members
-property_description:
-value_description:
 extra_properties:
 identifiers:
 product_group: activation

@@ -2,9 +2,6 @@
 description: Triggered when any Insights chart item is clicked.
 internal_events: true
 action: insights_chart_item_clicked
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 - project

@@ -1,9 +1,6 @@
 description: Search audit events
 category: ProfilesController
 action: search_audit_event
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 product_group: compliance

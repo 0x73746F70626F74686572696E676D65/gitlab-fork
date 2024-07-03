@@ -2,9 +2,6 @@
 description: Triggered from backend layer when Elasticsearch is used
 category: "EE:SearchController"
 action: i_search_advanced
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
   - project

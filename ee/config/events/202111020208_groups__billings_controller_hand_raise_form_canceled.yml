@@ -2,8 +2,6 @@
 description: Hand raise form cancelled
 category: default
 action: hand_raise_form_canceled
-property_description:
-value_description:
 extra_properties:
 identifiers:
 #- project

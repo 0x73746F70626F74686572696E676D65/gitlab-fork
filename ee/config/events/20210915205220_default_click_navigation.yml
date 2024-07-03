@@ -1,8 +1,6 @@
 description: "Click requirements page pagination"
 category: default
 action: click_navigation
-label_description: ""
-value_description: ""
 extra_properties:
 identifiers:
 product_group: product_planning

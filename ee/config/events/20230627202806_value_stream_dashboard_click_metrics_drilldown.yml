@@ -2,8 +2,6 @@
 description: "Click Value Stream Dashboard metric drill-down link in comparison table"
 category: default
 action: click_link
-property_description:
-value_description:
 extra_properties:
 identifiers:
 - project

@@ -2,9 +2,6 @@
 description: An issue's epic has been changed
 internal_events: true
 action: g_project_management_issue_changed_epic
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 - project

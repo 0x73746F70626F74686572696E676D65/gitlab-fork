@@ -2,9 +2,6 @@
 description: An epic has been set to visible
 internal_events: true
 action: g_project_management_users_setting_epic_visible
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 - project

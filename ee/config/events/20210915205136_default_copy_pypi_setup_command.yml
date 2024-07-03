@@ -1,8 +1,6 @@
 description: "Copy PyPI setup command"
 category: default
 action: copy_pypi_setup_command
-property_description: ""
-value_description: ""
 extra_properties:
 identifiers:
 product_group: package_registry

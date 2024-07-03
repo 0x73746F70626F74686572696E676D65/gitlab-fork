@@ -1,8 +1,6 @@
 description: "Show \"Paid feature highlight\" badge"
 category: default
 action: display_badge
-property_description: ""
-value_description: ""
 extra_properties:
 identifiers:
 product_group: acquisition

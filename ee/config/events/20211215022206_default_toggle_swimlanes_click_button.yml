@@ -1,7 +1,6 @@
 description: "Click load more epics button"
 category: default
 action: click_button
-value_description: ""
 extra_properties:
 identifiers:
 product_group: product_planning

@@ -2,8 +2,6 @@
 description: Clicks a date range button in audit events
 category: admin:audit_logs:index
 action: click_date_range_button
-property_description:
-value_description:
 extra_properties:
 identifiers:
 product_group: compliance

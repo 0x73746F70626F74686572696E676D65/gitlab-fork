@@ -1,8 +1,6 @@
 description: "Copy NPM setup command"
 category: default
 action: copy_npm_setup_command
-property_description: ""
-value_description: ""
 extra_properties:
 identifiers:
 product_group: package_registry

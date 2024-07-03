@@ -1,9 +1,6 @@
 description: Create release
 category: API::Releases
 action: create_release
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 product_group: environments

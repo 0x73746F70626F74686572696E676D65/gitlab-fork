@@ -1,8 +1,6 @@
 description: "Copy Maven xml"
 category: default
 action: copy_maven_xml
-property_description: ""
-value_description: ""
 extra_properties:
 identifiers:
 product_group: package_registry

@@ -1,9 +1,6 @@
 description: "Delete value stream"
 category: default
 action: delete_value_stream
-label_description: ""
-property_description: ""
-value_description: ""
 extra_properties:
   name:
   type: string

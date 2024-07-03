@@ -2,9 +2,6 @@
 description: An epic's labels have been changed'
 internal_events: true
 action: g_project_management_epic_users_changing_labels
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 - project

@@ -2,8 +2,6 @@
 description: Hand raise form viewed
 category: default
 action: hand_raise_form_viewed
-property_description:
-value_description:
 extra_properties:
 identifiers:
 #- project

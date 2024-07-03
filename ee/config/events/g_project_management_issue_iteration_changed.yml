@@ -2,9 +2,6 @@
 description: An issue's iteration has been changed
 internal_events: true
 action: g_project_management_issue_iteration_changed
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 - project

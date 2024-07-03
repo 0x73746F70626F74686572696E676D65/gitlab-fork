@@ -1,8 +1,6 @@
 description: "Toggle list content"
 category: default
 action: toggle_list
-property_description: ""
-value_description: ""
 extra_properties:
 identifiers:
 product_group: product_planning

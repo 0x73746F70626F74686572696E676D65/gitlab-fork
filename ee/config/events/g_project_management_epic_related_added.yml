@@ -2,9 +2,6 @@
 description: A related epic has been added
 internal_events: true
 action: g_project_management_epic_related_added
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 - project

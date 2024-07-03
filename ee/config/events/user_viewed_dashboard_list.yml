@@ -2,9 +2,6 @@
 description: User viewed the analytics dashboard list
 internal_events: true
 action: user_viewed_dashboard_list
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 - project

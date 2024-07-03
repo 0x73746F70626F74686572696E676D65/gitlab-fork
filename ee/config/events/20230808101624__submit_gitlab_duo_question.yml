@@ -2,8 +2,6 @@
 description: This event represents a successful submission of a GitLab Duo question by a user.
 category: default
 action: submit_gitlab_duo_question
-label_description:
-value_description:
 extra_properties:
 identifiers:
 - project

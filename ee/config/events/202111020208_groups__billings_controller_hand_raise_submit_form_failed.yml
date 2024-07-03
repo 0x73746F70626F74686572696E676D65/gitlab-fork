@@ -2,8 +2,6 @@
 description: Hand raise submit form failed
 category: default
 action: hand_raise_submit_form_failed
-property_description:
-value_description:
 extra_properties:
 identifiers:
 #- project

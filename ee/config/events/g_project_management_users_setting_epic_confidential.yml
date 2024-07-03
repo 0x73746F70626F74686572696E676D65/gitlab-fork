@@ -2,9 +2,6 @@
 description: An epic has been set to confidential
 internal_events: true
 action: g_project_management_users_setting_epic_confidential
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 - project

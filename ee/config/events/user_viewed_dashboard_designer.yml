@@ -2,9 +2,6 @@
 description: Triggered when a user visits the dashboard designer.
 internal_events: true
 action: user_viewed_dashboard_designer
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 - project

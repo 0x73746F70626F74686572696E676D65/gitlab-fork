@@ -1,9 +1,6 @@
 description: "Click path navigation"
 category: default
 action: click_path_navigation
-label_description: ""
-property_description: ""
-value_description: ""
 extra_properties:
   stage_id:
     type: integer
