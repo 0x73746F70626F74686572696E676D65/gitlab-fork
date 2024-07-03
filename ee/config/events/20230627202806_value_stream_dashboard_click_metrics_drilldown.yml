@@ -2,7 +2,6 @@
 description: "Click Value Stream Dashboard metric drill-down link in comparison table"
 category: default
 action: click_link
-label_description: "`[metric_identifier]_drilldown`"
 property_description:
 value_description:
 extra_properties:
@@ -18,4 +17,7 @@ distributions:
 tiers:
 #- premium
 - ultimate
+additional_properties:
+  label:
+    description: "`[metric_identifier]_drilldown`"
 

@@ -1,7 +1,6 @@
 description: "Copy Maven command"
 category: default
 action: copy_maven_command
-label_description: "`code_instruction`"
 property_description: ""
 value_description: ""
 extra_properties:
@@ -14,3 +13,6 @@ distributions:
 tiers:
 - premium
 - ultimate
+additional_properties:
+  label:
+    description: "`code_instruction`"

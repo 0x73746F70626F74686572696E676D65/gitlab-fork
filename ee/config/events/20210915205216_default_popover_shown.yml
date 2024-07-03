@@ -1,7 +1,6 @@
 description: "Show \"Paid feature highlight\" popover"
 category: default
 action: popover_shown
-label_description: "`feature_highlight_popover:[feature_name]`"
 property_description: ""
 value_description: ""
 extra_properties:
@@ -14,3 +13,6 @@ distributions:
 tiers:
 - premium
 - ultimate
+additional_properties:
+  label:
+    description: "`feature_highlight_popover:[feature_name]`"

@@ -2,7 +2,6 @@
 description: Hand raise form cancelled
 category: default
 action: hand_raise_form_canceled
-label_description: hand_raise_lead_form
 property_description:
 value_description:
 extra_properties:
@@ -18,3 +17,6 @@ distributions:
 tiers:
 - premium
 - ultimate
+additional_properties:
+  label:
+    description: hand_raise_lead_form

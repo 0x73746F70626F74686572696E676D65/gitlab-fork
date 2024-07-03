@@ -1,7 +1,6 @@
 description: "Set sort order"
 category: default
 action: click_button
-label_description: "`sort_[field]_[direction]`"
 property_description: ""
 value_description: ""
 extra_properties:
@@ -14,3 +13,6 @@ distributions:
 tiers:
 - premium
 - ultimate
+additional_properties:
+  label:
+    description: "`sort_[field]_[direction]`"

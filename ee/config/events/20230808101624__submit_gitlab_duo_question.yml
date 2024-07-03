@@ -3,7 +3,6 @@ description: This event represents a successful submission of a GitLab Duo quest
 category: default
 action: submit_gitlab_duo_question
 label_description:
-property_description: Ai Action request Id that can be used to connect this event to others that happen when request is resolved.
 value_description:
 extra_properties:
 identifiers:
@@ -18,4 +17,7 @@ distributions:
 tiers: 
 - premium
 - ultimate
+additional_properties:
+  property:
+    description: Ai Action request Id that can be used to connect this event to others that happen when request is resolved.
 

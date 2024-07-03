@@ -1,7 +1,6 @@
 description: Invite members to group
 category: GroupsController
 action: invite_members
-label_description: The string "new_group_form"
 property_description:
 value_description:
 extra_properties:
@@ -14,3 +13,6 @@ distributions:
 tiers:
 - premium
 - ultimate
+additional_properties:
+  label:
+    description: The string "new_group_form"

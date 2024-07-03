@@ -2,7 +2,6 @@ description: "Click issue sidebar weight edit button"
 category: default
 action: click_edit_button
 label_description: ""
-property_description: "`weight`"
 value_description: ""
 extra_properties:
 identifiers:
@@ -14,3 +13,6 @@ distributions:
 tiers:
 - premium
 - ultimate
+additional_properties:
+  property:
+    description: "`weight`"

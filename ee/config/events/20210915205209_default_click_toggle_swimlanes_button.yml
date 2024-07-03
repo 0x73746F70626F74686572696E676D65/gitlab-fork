@@ -1,7 +1,6 @@
 description: "Swimlanes activated"
 category: default
 action: click_toggle_swimlanes_button
-label_description: "`swimlanes_active`"
 property_description: ""
 value_description: ""
 extra_properties:
@@ -14,3 +13,6 @@ distributions:
 tiers:
 - premium
 - ultimate
+additional_properties:
+  label:
+    description: "`swimlanes_active`"

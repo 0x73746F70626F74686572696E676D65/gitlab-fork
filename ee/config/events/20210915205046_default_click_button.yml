@@ -1,7 +1,6 @@
 description: "Click remove list button"
 category: default
 action: click_button
-label_description: "`remove_list`"
 property_description: ""
 value_description: ""
 extra_properties:
@@ -14,3 +13,6 @@ distributions:
 tiers:
 - premium
 - ultimate
+additional_properties:
+  label:
+    description: "`remove_list`"

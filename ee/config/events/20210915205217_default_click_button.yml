@@ -1,7 +1,6 @@
 description: "Click \"Upgrade\" button"
 category: default
 action: click_button
-label_description: "`upgrade_to_ultimate`"
 property_description: ""
 value_description: ""
 extra_properties:
@@ -14,3 +13,6 @@ distributions:
 tiers:
 - premium
 - ultimate
+additional_properties:
+  label:
+    description: "`upgrade_to_ultimate`"

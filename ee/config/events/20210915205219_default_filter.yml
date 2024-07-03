@@ -2,7 +2,6 @@ description: "Filter requirements page"
 category: default
 action: filter
 label_description: ""
-property_description: "Filter payload as JSON"
 value_description: ""
 extra_properties:
 identifiers:
@@ -14,3 +13,6 @@ distributions:
 tiers:
 - premium
 - ultimate
+additional_properties:
+  property:
+    description: "Filter payload as JSON"
