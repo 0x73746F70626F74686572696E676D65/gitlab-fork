@@ -14,7 +14,7 @@ RSpec.describe GitlabSubscriptions::CodeSuggestionsHelper, feature_category: :se
       end
 
       it 'returns true' do
-        expect(helper.gitlab_duo_available?(namespace)).to be_truthy
+        expect(helper.gitlab_duo_available?).to be_truthy
       end
     end
 

@@ -42,7 +42,7 @@ module EE
         def enqueue_refresh_add_on_assignments_worker(link)
           namespace = link.shared_group.root_ancestor
 
-          return unless gitlab_com_subscription? && gitlab_duo_available?(namespace)
+          return unless gitlab_com_subscription?
 
           GitlabSubscriptions::AddOnPurchases::RefreshUserAssignmentsWorker
             .perform_async(namespace.id)

@@ -4,14 +4,14 @@ module GitlabSubscriptions
   module CodeSuggestionsHelper
     include GitlabSubscriptions::SubscriptionHelper
 
-    def gitlab_duo_available?(_namespace = nil)
+    def gitlab_duo_available?
       return true if gitlab_com_subscription?
 
       Feature.enabled?(:self_managed_code_suggestions)
     end
 
     def duo_pro_bulk_user_assignment_available?(namespace = nil)
-      return false unless gitlab_duo_available?(namespace)
+      return false unless gitlab_duo_available?
 
       if gitlab_com_subscription?
         Feature.enabled?(:gitlab_com_duo_pro_bulk_user_assignment, namespace)
