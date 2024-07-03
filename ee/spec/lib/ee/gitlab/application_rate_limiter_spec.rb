@@ -32,6 +32,11 @@ RSpec.describe EE::Gitlab::ApplicationRateLimiter do
         values = rate_limits[:code_suggestions_x_ray_scan]
         expect(values).to eq(threshold: 60, interval: 1.minute)
       end
+
+      it 'includes values for code_suggestions_x_ray_dependencies' do
+        values = rate_limits[:code_suggestions_x_ray_dependencies]
+        expect(values).to eq(threshold: 60, interval: 1.minute)
+      end
     end
 
     context 'when namespace-level rate limits are configured' do
