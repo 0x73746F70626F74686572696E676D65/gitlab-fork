@@ -89,12 +89,15 @@ export default {
       });
     },
     makeProfileTypeReactive(profileType) {
-      this.$set(this.profileTypes, profileType, {
-        profiles: [],
-        pageInfo: {},
-        errorMessage: '',
-        errorDetails: [],
-      });
+      this.profileTypes = {
+        ...this.profileTypes,
+        [profileType]: {
+          profiles: [],
+          pageInfo: {},
+          errorMessage: '',
+          errorDetails: [],
+        },
+      };
     },
     hasMoreProfiles(profileType) {
       return this.profileTypes[profileType]?.pageInfo?.hasNextPage;
