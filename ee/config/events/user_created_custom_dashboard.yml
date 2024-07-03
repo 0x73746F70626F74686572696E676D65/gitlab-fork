@@ -2,9 +2,6 @@
 description: Triggered when a user saves a new custom dashboard in the dashboard designer.
 internal_events: true
 action: user_created_custom_dashboard
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 - project

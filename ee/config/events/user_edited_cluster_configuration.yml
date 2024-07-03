@@ -2,9 +2,6 @@
 description: User edited analytics cluster configuration
 internal_events: true
 action: user_edited_cluster_configuration
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 - project

@@ -2,9 +2,6 @@
 description: An epic has been reopened
 internal_events: true
 action: g_project_management_epic_reopened
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 - project

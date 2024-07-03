@@ -2,9 +2,6 @@
 description: Triggered when a user visits any user defined custom dashboard.
 internal_events: true
 action: user_viewed_custom_dashboard
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 - project

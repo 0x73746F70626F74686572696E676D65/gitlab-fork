@@ -2,9 +2,6 @@
 description: Triggered when a user views the visualization designer.
 internal_events: true
 action: user_viewed_visualization_designer
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 - project

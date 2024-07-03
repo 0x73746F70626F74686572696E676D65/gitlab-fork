@@ -2,9 +2,6 @@
 description: An issue's weight has been changed
 internal_events: true
 action: g_project_management_issue_weight_changed
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 - project

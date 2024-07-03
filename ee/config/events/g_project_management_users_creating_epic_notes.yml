@@ -2,9 +2,6 @@
 description: A note has been added to an epic
 internal_events: true
 action: g_project_management_users_creating_epic_notes
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 - project

@@ -2,9 +2,6 @@
 description: An epic's start date has been set as fixed
 internal_events: true
 action: g_project_management_users_setting_epic_start_date_as_fixed
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 - user

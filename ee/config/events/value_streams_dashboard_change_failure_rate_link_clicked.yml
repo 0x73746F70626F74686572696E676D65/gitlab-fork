@@ -2,9 +2,6 @@
 description: Triggered when the Value Streams Dashboard's "Change Failure Rate" drill-down link is clicked.
 internal_events: true
 action: value_streams_dashboard_change_failure_rate_link_clicked
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 - project

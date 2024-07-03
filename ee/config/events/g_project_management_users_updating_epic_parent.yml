@@ -2,9 +2,6 @@
 description: An epic's parent has been updated
 internal_events: true
 action: g_project_management_users_updating_epic_parent
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 - project

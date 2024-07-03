@@ -1,9 +1,6 @@
 description: Show dependencies
 category: API::Dependencies
 action: view_dependencies
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 product_group: composition_analysis

@@ -2,9 +2,6 @@
 description: Triggered when any drill-down link on the Value Stream dashboard is clicked.
 internal_events: true
 action: value_streams_dashboard_metric_link_clicked
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 - project

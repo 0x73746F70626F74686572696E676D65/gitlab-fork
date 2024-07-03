@@ -1,7 +1,6 @@
 description: "Activate project URL dropdown form input"
 category: default
 action: activate_form_input
-value_description: ""
 extra_properties:
 identifiers:
 product_group: product_planning

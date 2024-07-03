@@ -1,8 +1,6 @@
 description: "Drag issue card on the board"
 category: default
 action: drag_card
-property_description: ""
-value_description: ""
 extra_properties:
 identifiers:
 product_group: product_planning

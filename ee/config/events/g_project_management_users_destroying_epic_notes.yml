@@ -2,9 +2,6 @@
 description: An epic's note has been removed
 internal_events: true
 action: g_project_management_users_destroying_epic_notes
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 - project

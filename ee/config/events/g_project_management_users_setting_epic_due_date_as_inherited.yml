@@ -2,9 +2,6 @@
 description: An epic's due date has been set as inherited
 internal_events: true
 action: g_project_management_users_setting_epic_due_date_as_inherited
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 - user

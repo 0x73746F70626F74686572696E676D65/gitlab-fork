@@ -2,9 +2,6 @@
 description: A blocked epic has been added
 internal_events: true
 action: g_project_management_epic_blocked_added
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 - project

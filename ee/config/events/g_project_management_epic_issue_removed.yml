@@ -2,9 +2,6 @@
 description: An issue has been removed from an epic
 internal_events: true
 action: g_project_management_epic_issue_removed
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 - project

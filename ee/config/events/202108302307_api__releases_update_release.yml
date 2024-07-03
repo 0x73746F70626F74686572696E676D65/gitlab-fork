@@ -1,9 +1,6 @@
 description: Update release
 category: API::Releases
 action: update_release
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 product_group: environments

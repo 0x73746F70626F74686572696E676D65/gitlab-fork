@@ -1,8 +1,6 @@
 description: "Click issue sidebar weight edit button"
 category: default
 action: click_edit_button
-label_description: ""
-value_description: ""
 extra_properties:
 identifiers:
 product_group: product_planning

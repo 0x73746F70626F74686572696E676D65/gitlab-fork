@@ -2,9 +2,6 @@
 description: Triggered when the Value Streams Dashboard's "Lead Time for Changes" drill-down link is clicked.
 internal_events: true
 action: value_streams_dashboard_lead_time_for_changes_link_clicked
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 - project

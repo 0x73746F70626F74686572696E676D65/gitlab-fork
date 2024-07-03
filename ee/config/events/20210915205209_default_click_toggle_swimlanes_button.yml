@@ -1,8 +1,6 @@
 description: "Swimlanes activated"
 category: default
 action: click_toggle_swimlanes_button
-property_description: ""
-value_description: ""
 extra_properties:
 identifiers:
 product_group: product_planning

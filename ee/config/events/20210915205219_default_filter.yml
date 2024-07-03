@@ -1,8 +1,6 @@
 description: "Filter requirements page"
 category: default
 action: filter
-label_description: ""
-value_description: ""
 extra_properties:
 identifiers:
 product_group: product_planning

@@ -2,9 +2,6 @@
 description: User looked at the compliance report
 internal_events: true
 action: g_compliance_dashboard
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 - project

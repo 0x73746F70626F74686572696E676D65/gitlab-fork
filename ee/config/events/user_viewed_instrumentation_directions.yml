@@ -2,9 +2,6 @@
 description: User viewed analytics instrumentation directions
 internal_events: true
 action: user_viewed_instrumentation_directions
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 - project

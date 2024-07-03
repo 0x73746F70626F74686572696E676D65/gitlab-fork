@@ -2,9 +2,6 @@
 description: Clicks the streams tab in group audit events
 category: groups:audit_events:index
 action: click_tab
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 #- project

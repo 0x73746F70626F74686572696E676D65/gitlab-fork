@@ -1,7 +1,6 @@
 description: "Slide security discover carousel"
 category: default
 action: click_button
-value_description: ""
 extra_properties:
 identifiers:
 product_group: acquisition

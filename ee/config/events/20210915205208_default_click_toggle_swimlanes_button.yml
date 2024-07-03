@@ -1,7 +1,6 @@
 description: "Toggle swimlanes"
 category: default
 action: click_toggle_swimlanes_button
-value_description: ""
 extra_properties:
 identifiers:
 product_group: product_planning

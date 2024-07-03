@@ -2,9 +2,6 @@
 description: Triggered when the Value Streams Dashboard's "Deployment Frequency" drill-down link is clicked.
 internal_events: true
 action: value_streams_dashboard_deployment_frequency_link_clicked
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 - project

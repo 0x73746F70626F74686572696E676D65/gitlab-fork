@@ -1,8 +1,6 @@
 description: "Show \"Paid feature highlight\" popover"
 category: default
 action: popover_shown
-property_description: ""
-value_description: ""
 extra_properties:
 identifiers:
 product_group: acquisition
