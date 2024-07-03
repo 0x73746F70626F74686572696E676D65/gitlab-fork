@@ -129,7 +129,7 @@ module Gitlab
 
           def request_body_chat_2(prompt:, options: {})
             option_params = {
-              chat_history: "",
+              chat_history: options[:conversation],
               agent_scratchpad: {
                 agent_type: "react",
                 steps: options[:agent_scratchpad]

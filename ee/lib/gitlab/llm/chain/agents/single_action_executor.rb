@@ -126,31 +126,11 @@ module Gitlab
             )
           end
 
-          # agent_version is deprecated, Chat conversation doesn't have this param anymore
-          def last_conversation
-            ChatStorage.new(context.current_user, nil).last_conversation
-          end
-          strong_memoize_attr :last_conversation
-
           def conversation
-            # include only messages with successful response and reorder
-            # messages so each question is followed by its answer
-            by_request = last_conversation
-              .reject { |message| message.errors.present? }
-              .group_by(&:request_id)
-              .select { |_uuid, messages| messages.size > 1 }
-
-            c = by_request.values.sort_by { |messages| messages.first.timestamp }.flatten
-
-            return [] if c.blank?
-
-            c = c.last(50).map do |message, _|
-              { role: message.role.to_sym, content: message.content }
-            end
-
-            c.to_s
+            Utils::ChatConversation.new(context.current_user)
+              .truncated_conversation_list
+              .join(", ")
           end
-          strong_memoize_attr :conversation
 
           # TODO: remove issue condition when next issue is implemented
           # https://gitlab.com/gitlab-org/gitlab/-/issues/468905

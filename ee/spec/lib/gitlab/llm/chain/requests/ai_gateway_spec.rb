@@ -223,6 +223,7 @@ RSpec.describe Gitlab::Llm::Chain::Requests::AiGateway, feature_category: :duo_c
         {
           agent_scratchpad: [],
           single_action_agent: true,
+          conversation: "{:role=>:user, :content=>\"previous question\"}",
           current_resource_type: "issue",
           current_resource_content: "string"
         }
@@ -232,7 +233,7 @@ RSpec.describe Gitlab::Llm::Chain::Requests::AiGateway, feature_category: :duo_c
         {
           prompt: user_prompt,
           options: {
-            chat_history: "",
+            chat_history: "{:role=>:user, :content=>\"previous question\"}",
             agent_scratchpad: {
               agent_type: "react",
               steps: []
@@ -256,7 +257,8 @@ RSpec.describe Gitlab::Llm::Chain::Requests::AiGateway, feature_category: :duo_c
       let(:options) do
         {
           agent_scratchpad: [],
-          single_action_agent: true
+          single_action_agent: true,
+          conversation: ""
         }
       end
 
