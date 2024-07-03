@@ -7,47 +7,42 @@ module LicenseMonitoringHelper
     return if ::Gitlab.com?
     return unless admin_section?
     return if user_dismissed?(Users::CalloutsHelper::ACTIVE_USER_COUNT_THRESHOLD)
-    return if license_not_available_or_trial?
+    return if current_license.nil?
 
     current_user&.can_admin_all_resources? && current_license.active_user_count_threshold_reached?
   end
 
   def users_over_license
-    strong_memoize(:users_over_license) do
-      license_is_over_capacity? ? current_license_overage : 0
-    end
+    license_overage_available? ? current_license_overage : 0
   end
+  strong_memoize_attr :users_over_license
 
   private
 
-  def license_is_over_capacity?
+  def license_overage_available?
     return if ::Gitlab.com?
-    return if license_not_available_or_trial?
+    return if current_license.nil?
 
     current_license_overage > 0
   end
 
-  def license_not_available_or_trial?
-    current_license.nil? || current_license.trial?
-  end
-
   def current_license
-    strong_memoize(:current_license) { License.current }
+    License.current
   end
+  strong_memoize_attr :current_license
 
   def current_license_overage
-    strong_memoize(:current_license_overage) { current_license.overage_with_historical_max }
+    current_license.overage_with_historical_max
   end
-
-  def active_user_count_threshold
-    strong_memoize(:active_user_count_threshold) { current_license.active_user_count_threshold }
-  end
+  strong_memoize_attr :current_license_overage
 
   def total_user_count
-    strong_memoize(:total_user_count) { current_license.restricted_user_count }
+    current_license.restricted_user_count
   end
+  strong_memoize_attr :total_user_count
 
   def remaining_user_count
-    strong_memoize(:remaining_user_count) { current_license.remaining_user_count }
+    current_license.remaining_user_count
   end
+  strong_memoize_attr :remaining_user_count
 end
