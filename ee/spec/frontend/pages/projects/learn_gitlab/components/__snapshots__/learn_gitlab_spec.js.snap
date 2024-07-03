@@ -16,7 +16,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
       <p
         class="gl-mb-0 gl-text-gray-700"
       >
-        Ready to get started with GitLab? Follow these steps to set up your workspace, plan and commit changes, and deploy your project.
+        Follow these steps to get familiar with the GitLab workflow.
       </p>
     </div>
     <div
@@ -40,7 +40,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
     <h2
       class="gl-font-bold gl-font-size-h2"
     >
-      1. Add code to your project
+      Get started
     </h2>
   </div>
   <div
@@ -61,7 +61,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
           <h2
             class="gl-font-lg gl-mb-3"
           >
-            Add code
+            Set up your code
           </h2>
           <p
             class="gl-mb-6 gl-text-gray-700"
@@ -76,7 +76,30 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
             class="gl-mb-2"
           >
             <div
-              class="flex gl-align-items-center"
+              class="gl-flex gl-items-center"
+            >
+              <span
+                class="gl-text-green-500"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="gl-fill-current gl-icon s16"
+                  data-testid="completed-icon"
+                  role="img"
+                >
+                  <use
+                    href="file-mock#check-circle-filled"
+                  />
+                </svg>
+                Create a repository
+              </span>
+            </div>
+          </div>
+          <div
+            class="gl-mb-2"
+          >
+            <div
+              class="gl-flex gl-items-center"
             >
               <span
                 class="gl-text-green-500"
@@ -105,7 +128,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
     <h2
       class="gl-font-bold gl-font-size-h2"
     >
-      2. Build
+      Next steps
     </h2>
   </div>
   <div
@@ -126,7 +149,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
           <h2
             class="gl-font-lg gl-mb-3"
           >
-            Set up your workspace
+            Configure your project
           </h2>
           <p
             class="gl-mb-6 gl-text-gray-700"
@@ -141,7 +164,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
             class="gl-mb-2"
           >
             <div
-              class="flex gl-align-items-center"
+              class="gl-flex gl-items-center"
             >
               <span
                 class="gl-text-green-500"
@@ -164,30 +187,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
             class="gl-mb-2"
           >
             <div
-              class="flex gl-align-items-center"
-            >
-              <span
-                class="gl-text-green-500"
-              >
-                <svg
-                  aria-hidden="true"
-                  class="gl-fill-current gl-icon s16"
-                  data-testid="completed-icon"
-                  role="img"
-                >
-                  <use
-                    href="file-mock#check-circle-filled"
-                  />
-                </svg>
-                Create a repository
-              </span>
-            </div>
-          </div>
-          <div
-            class="gl-mb-2"
-          >
-            <div
-              class="flex gl-align-items-center"
+              class="gl-flex gl-items-center"
             >
               <div>
                 <a
@@ -207,7 +207,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
             class="gl-mb-2"
           >
             <div
-              class="flex gl-align-items-center"
+              class="gl-flex gl-items-center"
             >
               <div>
                 <a
@@ -228,7 +228,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
             class="gl-mb-2"
           >
             <div
-              class="flex gl-align-items-center"
+              class="gl-flex gl-items-center"
             >
               <div>
                 <a
@@ -255,7 +255,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
             class="gl-mb-2"
           >
             <div
-              class="flex gl-align-items-center"
+              class="gl-flex gl-items-center"
             >
               <div>
                 <a
@@ -296,12 +296,12 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
           <h2
             class="gl-font-lg gl-mb-3"
           >
-            Deploy
+            Secure your deployment
           </h2>
           <p
             class="gl-mb-6 gl-text-gray-700"
           >
-            Use your new GitLab workflow to deploy your application, monitor its health, and keep it secure:
+            Use GitLab to deploy your application, monitor its health, and keep it secure:
           </p>
         </div>
         <div
@@ -311,7 +311,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
             class="gl-mb-2"
           >
             <div
-              class="flex gl-align-items-center"
+              class="gl-flex gl-items-center"
             >
               <div>
                 <a
@@ -338,7 +338,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
             class="gl-mb-2"
           >
             <div
-              class="flex gl-align-items-center"
+              class="gl-flex gl-items-center"
             >
               <div>
                 <a
@@ -365,7 +365,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
             class="gl-mb-2"
           >
             <div
-              class="flex gl-align-items-center"
+              class="gl-flex gl-items-center"
             >
               <div>
                 <a
@@ -406,12 +406,12 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
           <h2
             class="gl-font-lg gl-mb-3"
           >
-            Plan and execute
+            Plan and execute work together
           </h2>
           <p
             class="gl-mb-6 gl-text-gray-700"
           >
-            Create a workflow for your new workspace, and learn how GitLab features work together:
+            Create a workflow, and learn how GitLab features work together:
           </p>
         </div>
         <div
@@ -421,7 +421,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
             class="gl-mb-2"
           >
             <div
-              class="flex gl-align-items-center"
+              class="gl-flex gl-items-center"
             >
               <div>
                 <a
@@ -441,7 +441,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
             class="gl-mb-2"
           >
             <div
-              class="flex gl-align-items-center"
+              class="gl-flex gl-items-center"
             >
               <div>
                 <a
