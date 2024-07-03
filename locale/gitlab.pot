@@ -15074,9 +15074,6 @@ msgstr ""
 msgid "Copy environment"
 msgstr ""
 
-msgid "Copy epic URL"
-msgstr ""
-
 msgid "Copy evidence SHA"
 msgstr ""
 
@@ -15090,9 +15087,6 @@ msgid "Copy file path"
 msgstr ""
 
 msgid "Copy image URL"
-msgstr ""
-
-msgid "Copy issue URL"
 msgstr ""
 
 msgid "Copy issue URL to clipboard"
@@ -15111,9 +15105,6 @@ msgid "Copy link"
 msgstr ""
 
 msgid "Copy link URL"
-msgstr ""
-
-msgid "Copy merge request URL"
 msgstr ""
 
 msgid "Copy reference"
@@ -20782,9 +20773,6 @@ msgstr ""
 msgid "Epic Boards"
 msgstr ""
 
-msgid "Epic ID"
-msgstr ""
-
 msgid "Epic actions"
 msgstr ""
 
@@ -20806,13 +20794,7 @@ msgstr ""
 msgid "Epic not found for given params"
 msgstr ""
 
-msgid "Epic summary"
-msgstr ""
-
 msgid "Epic swimlanes"
-msgstr ""
-
-msgid "Epic title"
 msgstr ""
 
 msgid "Epics"
@@ -28781,9 +28763,6 @@ msgstr ""
 msgid "Issue Boards"
 msgstr ""
 
-msgid "Issue ID"
-msgstr ""
-
 msgid "Issue Type"
 msgstr ""
 
@@ -28830,12 +28809,6 @@ msgid "Issue or merge request ID is required"
 msgstr ""
 
 msgid "Issue published on status page."
-msgstr ""
-
-msgid "Issue summary"
-msgstr ""
-
-msgid "Issue title"
 msgstr ""
 
 msgid "Issue type"
@@ -32612,9 +32585,6 @@ msgstr ""
 msgid "Merge request %{mr_link} was reviewed by %{mr_author}"
 msgstr ""
 
-msgid "Merge request ID"
-msgstr ""
-
 msgid "Merge request actions"
 msgstr ""
 
@@ -32658,12 +32628,6 @@ msgid "Merge request reports"
 msgstr ""
 
 msgid "Merge request status"
-msgstr ""
-
-msgid "Merge request summary"
-msgstr ""
-
-msgid "Merge request title"
 msgstr ""
 
 msgid "Merge request was set to auto-merge"
@@ -43977,9 +43941,6 @@ msgstr ""
 msgid "Remove email participants"
 msgstr ""
 
-msgid "Remove epic reference"
-msgstr ""
-
 msgid "Remove exclusion for %{name}"
 msgstr ""
 
@@ -44005,9 +43966,6 @@ msgid "Remove icon"
 msgstr ""
 
 msgid "Remove identity verification exemption"
-msgstr ""
-
-msgid "Remove issue reference"
 msgstr ""
 
 msgid "Remove iteration"
@@ -44037,9 +43995,6 @@ msgstr ""
 msgid "Remove member"
 msgstr ""
 
-msgid "Remove merge request reference"
-msgstr ""
-
 msgid "Remove milestone"
 msgstr ""
 
@@ -44050,6 +44005,9 @@ msgid "Remove parent epic from an epic"
 msgstr ""
 
 msgid "Remove priority"
+msgstr ""
+
+msgid "Remove reference"
 msgstr ""
 
 msgid "Remove reviewer"
