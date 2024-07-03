@@ -23,7 +23,9 @@ module EE
 
       state_machine :status do
         after_transition any => :running do |deployment|
-          ::Environments::Deployments::AuditService.new(deployment).execute
+          deployment.run_after_commit do
+            ::Environments::Deployments::AuditService.new(self).execute
+          end
         end
       end
     end
