@@ -119,6 +119,7 @@ module GitlabSubscriptions
       group_allowed_email_domains
       group_coverage_reports
       group_forking_protection
+      group_level_compliance_dashboard
       group_milestone_project_releases
       group_project_templates
       group_repository_analytics
@@ -211,7 +212,8 @@ module GitlabSubscriptions
       ai_generate_cube_query
       git_abuse_rate_limit
       group_ci_cd_analytics
-      group_level_compliance_dashboard
+      group_level_compliance_adherence_report
+      group_level_compliance_violations_report
       group_level_analytics_dashboard
       incident_management
       inline_codequality

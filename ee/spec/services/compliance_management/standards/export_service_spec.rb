@@ -29,6 +29,10 @@ RSpec.describe ComplianceManagement::Standards::ExportService, feature_category:
         group.add_owner(user)
       end
 
+      before do
+        stub_licensed_features(group_level_compliance_adherence_report: true)
+      end
+
       context 'with no standards adherences' do
         it 'exports a CSV payload without standards adherences' do
           expect(executed).to be_success

@@ -18,7 +18,10 @@ RSpec.describe 'Compliance Dashboard', :js, feature_category: :compliance_manage
   let(:compliance_framework_ff) { false }
 
   before do
-    stub_licensed_features(group_level_compliance_dashboard: true)
+    stub_licensed_features(
+      group_level_compliance_dashboard: true,
+      group_level_compliance_adherence_report: true,
+      group_level_compliance_violations_report: true)
     group.add_owner(user)
     sign_in(user)
   end

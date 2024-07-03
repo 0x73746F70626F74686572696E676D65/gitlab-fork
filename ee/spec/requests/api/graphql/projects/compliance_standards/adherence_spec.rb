@@ -100,6 +100,10 @@ RSpec.describe 'getting the project compliance standards adherence for a group',
     )
   end
 
+  before do
+    stub_licensed_features(group_level_compliance_dashboard: true, group_level_compliance_adherence_report: true)
+  end
+
   shared_examples 'returns nil' do
     it do
       post_graphql(query, current_user: current_user)

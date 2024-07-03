@@ -24,6 +24,10 @@ RSpec.describe ComplianceManagement::Frameworks::ExportService, feature_category
     create :project, :repository, namespace: sub_sub_group, name: 'sub_sub_group_project', path: 'sub_sub_group_project'
   end
 
+  before do
+    stub_licensed_features(group_level_compliance_dashboard: true)
+  end
+
   describe "#execute" do
     context 'with a authorized user' do
       before_all do

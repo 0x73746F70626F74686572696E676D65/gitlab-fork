@@ -80,6 +80,7 @@ RSpec.describe 'getting the compliance violations for a group', feature_category
   let(:compliance_violations) { graphql_data_at(:group, :merge_request_violations, :nodes) }
 
   before do
+    stub_licensed_features(group_level_compliance_dashboard: true, group_level_compliance_violations_report: true)
     merge_request.metrics.update!(merged_at: 3.days.ago)
     merge_request2.metrics.update!(merged_at: 1.day.ago)
   end

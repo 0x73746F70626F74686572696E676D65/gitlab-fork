@@ -179,6 +179,14 @@ module EE
         @subject.feature_available?(:group_level_compliance_dashboard)
       end
 
+      condition(:group_level_compliance_adherence_report_enabled, scope: :subject) do
+        @subject.feature_available?(:group_level_compliance_adherence_report)
+      end
+
+      condition(:group_level_compliance_violations_report_enabled, scope: :subject) do
+        @subject.feature_available?(:group_level_compliance_violations_report)
+      end
+
       condition(:service_accounts_available, scope: :subject) do
         @subject.feature_available?(:service_accounts)
       end
@@ -303,10 +311,6 @@ module EE
       rule { auditor & group_ci_cd_analytics_available }.policy do
         enable :view_group_ci_cd_analytics
         enable :read_group_release_stats
-      end
-
-      rule { group_level_compliance_dashboard_enabled & auditor }.policy do
-        enable :read_group_compliance_dashboard
       end
 
       rule { owner }.policy do
@@ -554,6 +558,14 @@ module EE
         enable :read_group_compliance_dashboard
       end
 
+      rule { custom_role_enables_admin_compliance_framework & group_level_compliance_adherence_report_enabled }.policy do
+        enable :read_group_compliance_adherence_report
+      end
+
+      rule { custom_role_enables_admin_compliance_framework & group_level_compliance_violations_report_enabled }.policy do
+        enable :read_group_compliance_violations_report
+      end
+
       rule { custom_role_enables_remove_group & has_parent }.policy do
         enable :remove_group
       end
@@ -613,10 +625,21 @@ module EE
       rule { admin | owner }.policy do
         enable :owner_access
         enable :read_billable_member
-        enable :read_group_compliance_dashboard
         enable :read_group_credentials_inventory
         enable :admin_group_credentials_inventory
         enable :admin_ci_minutes
+      end
+
+      rule { (admin | owner | auditor) & group_level_compliance_dashboard_enabled }.policy do
+        enable :read_group_compliance_dashboard
+      end
+
+      rule { (admin | owner | auditor) & group_level_compliance_adherence_report_enabled }.policy do
+        enable :read_group_compliance_adherence_report
+      end
+
+      rule { (admin | owner | auditor) & group_level_compliance_violations_report_enabled }.policy do
+        enable :read_group_compliance_violations_report
       end
 
       rule { (admin | owner) & group_merge_request_approval_settings_enabled }.policy do

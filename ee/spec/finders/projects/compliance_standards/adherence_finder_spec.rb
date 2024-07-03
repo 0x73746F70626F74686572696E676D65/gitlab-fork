@@ -17,7 +17,7 @@ RSpec.describe Projects::ComplianceStandards::AdherenceFinder, feature_category:
     end
 
     before do
-      stub_licensed_features(group_level_compliance_dashboard: true)
+      stub_licensed_features(group_level_compliance_adherence_report: true)
     end
 
     subject { finder.execute }

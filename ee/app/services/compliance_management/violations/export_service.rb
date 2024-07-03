@@ -33,7 +33,7 @@ module ComplianceManagement
       attr_reader :user, :namespace, :filters, :sort
 
       def allowed?
-        Ability.allowed?(user, :read_group_compliance_dashboard, namespace)
+        Ability.allowed?(user, :read_group_compliance_violations_report, namespace)
       end
 
       def csv_builder
