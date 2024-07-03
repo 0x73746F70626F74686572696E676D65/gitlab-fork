@@ -3,12 +3,12 @@
 module CodeSuggestions
   module Prompts
     module CodeCompletion
-      class CodeGemmaMessages < AiGatewayCodeCompletionMessage
+      class CodestralMessages < AiGatewayCodeCompletionMessage
         private
 
         def prompt
           <<~PROMPT.strip
-            <|fim_prefix|>#{pick_prefix}<|fim_suffix|>#{pick_suffix}<|fim_middle|>
+              <s>[SUFFIX]#{pick_suffix}[PREFIX]#{pick_prefix}
           PROMPT
         end
       end
