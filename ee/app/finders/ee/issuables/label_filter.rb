@@ -19,12 +19,19 @@ module EE
       end
 
       override :target_label_links_query
-      def target_label_links_query(target_model, label_ids)
+      def target_label_links_query(target_model, base_target_model, label_ids)
         return super if project.present?
-        return super unless %w[Epic Issue].include?(target_model.name)
+        # Note that this is only correct for as long as we do not show issues/work items of type Epic
+        # in issues list pages, otherwise this will resul in returning incomplete results when filtering by labels as
+        # for Epic WorkItems labels can be linked either to legacy Epic records or Epic WorkItem records, by the
+        # label_links.target_type for Epic WorkItems is set to `Issue`.
+        # to be cleaned-up after we have:
+        # - labels writes delegated from epic to epic work item: https://gitlab.com/gitlab-org/gitlab/-/issues/465725
+        # - back-fill epic label links to work item label links: https://gitlab.com/groups/gitlab-org/-/epics/13021
+        return super unless %w[Epic WorkItem].include?(target_model.name)
         return super unless group&.epic_and_work_item_labels_unification_enabled?
 
-        multi_target_label_links_query(target_model, label_ids)
+        multi_target_label_links_query(base_target_model, label_ids)
       end
 
       def extract_scoped_label_wildcards(label_names)
