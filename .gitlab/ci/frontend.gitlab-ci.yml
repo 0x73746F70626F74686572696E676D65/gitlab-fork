@@ -92,7 +92,6 @@ update-assets-compile-production-cache:
     - .update-cache-base
     - .assets-compile-cache-push
     - .shared:rules:update-cache
-  stage: prepare
   artifacts: {}  # This job's purpose is only to update the cache.
 
 update-assets-compile-test-cache:
@@ -101,7 +100,6 @@ update-assets-compile-test-cache:
     - .update-cache-base
     - .assets-compile-cache-push
     - .shared:rules:update-cache
-  stage: prepare
   artifacts: {}  # This job's purpose is only to update the cache.
 
 update-storybook-yarn-cache:
@@ -240,7 +238,7 @@ graphql-schema-dump:
   before_script:
     - !reference [.default-before_script, before_script]
     - yarn_install_script
-  stage: test
+  stage: test-frontend
 
 jest-build-cache:
   extends:
@@ -440,7 +438,7 @@ webpack-dev-server:
     - .yarn-cache
     - .repo-from-artifacts
     - .frontend:rules:default-frontend-jobs
-  stage: test
+  stage: test-frontend
   variables:
     WEBPACK_MEMORY_TEST: "true"
     WEBPACK_VENDOR_DLL: "true"
@@ -454,32 +452,12 @@ webpack-dev-server:
     paths:
       - webpack-dev-server.json
 
-bundle-size-review:
-  extends:
-    - .default-retry
-    - .default-utils-before_script
-    - .assets-compile-cache
-    - .repo-from-artifacts
-    - .frontend:rules:bundle-size-review
-  image: ${REGISTRY_HOST}/${REGISTRY_GROUP}/gitlab-build-images:danger
-  stage: test
-  needs:
-    - !reference [.repo-from-artifacts, needs]
-  script:
-    - yarn_install_script
-    - scripts/bundle_size_review
-  artifacts:
-    when: always
-    name: bundle-size-review
-    expire_in: 31d
-    paths:
-      - bundle-size-review/
-
 compile-storybook:
   extends:
     - .frontend-test-base
     - .storybook-yarn-cache
     - .frontend:rules:compile-storybook
+  stage: pages
   needs:
     - !reference [.repo-from-artifacts, needs]
     - !reference [.with-fixtures-needs, needs]
