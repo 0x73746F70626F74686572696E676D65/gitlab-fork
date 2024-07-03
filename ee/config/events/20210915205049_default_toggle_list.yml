@@ -1,7 +1,6 @@
 description: "Toggle list content"
 category: default
 action: toggle_list
-label_description: "`closed`"
 property_description: ""
 value_description: ""
 extra_properties:
@@ -14,3 +13,6 @@ distributions:
 tiers:
 - premium
 - ultimate
+additional_properties:
+  label:
+    description: "`closed`"

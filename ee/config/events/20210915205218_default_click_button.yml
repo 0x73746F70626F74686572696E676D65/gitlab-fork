@@ -1,7 +1,6 @@
 description: "Click \"Compare\" button"
 category: default
 action: click_button
-label_description: "`compare_all_plans`"
 property_description: ""
 value_description: ""
 extra_properties:
@@ -14,3 +13,6 @@ distributions:
 tiers:
 - premium
 - ultimate
+additional_properties:
+  label:
+    description: "`compare_all_plans`"

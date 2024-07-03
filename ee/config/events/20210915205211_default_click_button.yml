@@ -1,9 +1,6 @@
 description: "Close trial status popover"
 category: default
 action: click_button
-label_description: "`close_popover`"
-property_description: "`[forced | voluntary]`"
-value_description: "Remaining trial days"
 extra_properties:
 identifiers:
 product_group: acquisition
@@ -14,3 +11,10 @@ distributions:
 tiers:
 - premium
 - ultimate
+additional_properties:
+  label:
+    description: "`close_popover`"
+  property:
+    description: "`[forced | voluntary]`"
+  value:
+    description: "Remaining trial days"

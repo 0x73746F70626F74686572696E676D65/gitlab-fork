@@ -1,7 +1,6 @@
 description: "Submit value stream form"
 category: default
 action: submit_form
-label_description: "`[edit_value_stream | create_value_stream]`"
 property_description: ""
 value_description: ""
 extra_properties:
@@ -14,3 +13,6 @@ distributions:
 tiers:
 - premium
 - ultimate
+additional_properties:
+  label:
+    description: "`[edit_value_stream | create_value_stream]`"

@@ -1,9 +1,7 @@
 description: Show repository analytics
 category: Groups::Analytics::RepositoryAnalyticsController
 action: show
-label_description: The string "Group ID"
 property_description:
-value_description: ID of the group
 extra_properties:
 identifiers:
 product_group: pipeline_execution
@@ -14,3 +12,8 @@ distributions:
 tiers:
 - premium
 - ultimate
+additional_properties:
+  label:
+    description: The string "Group ID"
+  value:
+    description: ID of the group

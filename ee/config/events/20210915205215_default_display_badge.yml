@@ -1,7 +1,6 @@
 description: "Show \"Paid feature highlight\" badge"
 category: default
 action: display_badge
-label_description: "`feature_highlight_badge`"
 property_description: ""
 value_description: ""
 extra_properties:
@@ -14,3 +13,6 @@ distributions:
 tiers:
 - premium
 - ultimate
+additional_properties:
+  label:
+    description: "`feature_highlight_badge`"

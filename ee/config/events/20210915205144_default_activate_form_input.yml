@@ -1,8 +1,6 @@
 description: "Activate project URL dropdown form input"
 category: default
 action: activate_form_input
-label_description: "`[cicd_for_external_repo | create_from_template | import_project | blank_project]`"
-property_description: "`project_path`"
 value_description: ""
 extra_properties:
 identifiers:
@@ -14,3 +12,8 @@ distributions:
 tiers:
 - premium
 - ultimate
+additional_properties:
+  label:
+    description: "`[cicd_for_external_repo | create_from_template | import_project | blank_project]`"
+  property:
+    description: "`project_path`"

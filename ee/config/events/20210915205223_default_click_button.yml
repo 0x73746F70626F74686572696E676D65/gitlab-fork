@@ -1,8 +1,6 @@
 description: "Slide security discover carousel"
 category: default
 action: click_button
-label_description: "`security-discover-carousel`"
-property_description: "Slide index"
 value_description: ""
 extra_properties:
 identifiers:
@@ -14,3 +12,8 @@ distributions:
 tiers:
 - premium
 - ultimate
+additional_properties:
+  label:
+    description: "`security-discover-carousel`"
+  property:
+    description: "Slide index"

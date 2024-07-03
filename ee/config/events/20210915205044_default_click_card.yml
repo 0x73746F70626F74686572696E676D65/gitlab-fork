@@ -1,7 +1,6 @@
 description: "Click right sidebar cards"
 category: default
 action: click_card
-label_description: "`right_sidebar`"
 property_description: ""
 value_description: ""
 extra_properties:
@@ -14,3 +13,6 @@ distributions:
 tiers:
 - premium
 - ultimate
+additional_properties:
+  label:
+    description: "`right_sidebar`"
