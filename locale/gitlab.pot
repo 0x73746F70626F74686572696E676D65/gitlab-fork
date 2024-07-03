@@ -1115,6 +1115,9 @@ msgstr ""
 msgid "%{project_name}"
 msgstr ""
 
+msgid "%{project_name} project members"
+msgstr ""
+
 msgid "%{project_path} is a project that you can use to add a README to your GitLab profile. Create a public project and initialize the repository with a README to get started. %{help_link_start}Learn more%{help_link_end}."
 msgstr ""
 
@@ -41072,9 +41075,6 @@ msgstr ""
 msgid "Project import requests"
 msgstr ""
 
-msgid "Project info:"
-msgstr ""
-
 msgid "Project information"
 msgstr ""
 
@@ -41133,9 +41133,6 @@ msgid "Project was created and assigned as security policy project, but failed a
 msgstr ""
 
 msgid "Project was not found or you do not have permission to add this project to Security Dashboards."
-msgstr ""
-
-msgid "Project: %{name}"
 msgstr ""
 
 msgid "Project:Branches: %{source_project_path}:%{source_branch} to %{target_project_path}:%{target_branch}"
@@ -62908,9 +62905,6 @@ msgstr ""
 msgid "group access tokens"
 msgstr ""
 
-msgid "group members"
-msgstr ""
-
 msgid "groups"
 msgstr ""
 
@@ -63863,9 +63857,6 @@ msgid "project bots cannot be added to other groups / projects"
 msgstr ""
 
 msgid "project is read-only"
-msgstr ""
-
-msgid "project members"
 msgstr ""
 
 msgid "project name"
