@@ -8,7 +8,7 @@ RSpec.describe ::Ci::Runners::SetRunnerAssociatedProjectsService, '#execute', fe
   end
 
   let_it_be(:owner_project) { create(:project) }
-  let_it_be(:new_project) { create(:project) }
+  let_it_be(:new_project) { create(:project, organization: owner_project.organization) }
   let_it_be(:project_runner) { create(:ci_runner, :project, projects: [owner_project]) }
 
   before do
