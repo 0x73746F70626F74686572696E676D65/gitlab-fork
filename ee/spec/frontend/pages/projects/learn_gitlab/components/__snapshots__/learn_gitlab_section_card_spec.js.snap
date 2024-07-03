@@ -13,7 +13,7 @@ exports[`Learn GitLab Section Card renders correctly 1`] = `
     <h2
       class="gl-font-lg gl-mb-3"
     >
-      Set up your workspace
+      Configure your project
     </h2>
     <p
       class="gl-mb-6 gl-text-gray-700"
@@ -25,7 +25,7 @@ exports[`Learn GitLab Section Card renders correctly 1`] = `
     class="gl-card-body gl-pt-0"
   >
     <learn-gitlab-section-link-stub
-      action="codeAdded"
+      action="gitWrite"
       value="[object Object]"
     />
     <learn-gitlab-section-link-stub
@@ -37,7 +37,7 @@ exports[`Learn GitLab Section Card renders correctly 1`] = `
       value="[object Object]"
     />
     <learn-gitlab-section-link-stub
-      action="gitWrite"
+      action="codeAdded"
       value="[object Object]"
     />
     <learn-gitlab-section-link-stub

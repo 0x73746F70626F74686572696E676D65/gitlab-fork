@@ -5,7 +5,7 @@ export const ACTION_LABELS = {
     title: s__('LearnGitLab|Add code'),
     trackLabel: 'add_code',
     section: 'code',
-    position: 0,
+    position: 1,
     openInNewTab: true,
   },
   gitWrite: {
@@ -13,8 +13,8 @@ export const ACTION_LABELS = {
     actionLabel: s__('LearnGitLab|Create a repository'),
     description: s__('LearnGitLab|Create or import your first repository into your new project.'),
     trackLabel: 'create_a_repository',
-    section: 'workspace',
-    position: 1,
+    section: 'code',
+    position: 0,
   },
   userAdded: {
     title: s__('LearnGitLab|Invite your colleagues'),
@@ -108,27 +108,25 @@ export const ACTION_LABELS = {
 
 export const ACTION_SECTIONS = {
   code: {
-    title: s__('LearnGitLab|Add code'),
+    title: s__('LearnGitLab|Set up your code'),
     description: s__(
       'LearnGitLab|Use the built-in editor, WebIDE, or upload code using your preferred method.',
     ),
   },
   workspace: {
-    title: s__('LearnGitLab|Set up your workspace'),
+    title: s__('LearnGitLab|Configure your project'),
     description: s__(
       "LearnGitLab|Complete these tasks first so you can enjoy GitLab's features to their fullest:",
     ),
   },
   plan: {
-    title: s__('LearnGitLab|Plan and execute'),
-    description: s__(
-      'LearnGitLab|Create a workflow for your new workspace, and learn how GitLab features work together:',
-    ),
+    title: s__('LearnGitLab|Plan and execute work together'),
+    description: s__('LearnGitLab|Create a workflow, and learn how GitLab features work together:'),
   },
   deploy: {
-    title: s__('LearnGitLab|Deploy'),
+    title: s__('LearnGitLab|Secure your deployment'),
     description: s__(
-      'LearnGitLab|Use your new GitLab workflow to deploy your application, monitor its health, and keep it secure:',
+      'LearnGitLab|Use GitLab to deploy your application, monitor its health, and keep it secure:',
     ),
   },
 };

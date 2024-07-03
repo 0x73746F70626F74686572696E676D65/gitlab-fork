@@ -19,15 +19,13 @@ export default {
   },
   i18n: {
     title: s__('LearnGitLab|Learn GitLab'),
-    description: s__(
-      'LearnGitLab|Ready to get started with GitLab? Follow these steps to set up your workspace, plan and commit changes, and deploy your project.',
-    ),
+    description: s__('LearnGitLab|Follow these steps to get familiar with the GitLab workflow.'),
     percentageCompleted: s__(`LearnGitLab|%{percentage}%{percentSymbol} completed`),
     successfulInvitations: s__(
       "LearnGitLab|Your team is growing! You've successfully invited new team members to the %{projectName} project.",
     ),
-    addCodeBlockTitle: s__('LearnGitLab|1. Add code to your project'),
-    buildBlockTitle: s__('LearnGitLab|2. Build'),
+    addCodeBlockTitle: s__('LearnGitLab|Get started'),
+    buildBlockTitle: s__('LearnGitLab|Next steps'),
   },
   props: {
     actions: {
