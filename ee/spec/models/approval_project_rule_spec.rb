@@ -276,12 +276,12 @@ RSpec.describe ApprovalProjectRule, feature_category: :compliance_management do
   end
 
   describe '#protected_branches' do
-    let_it_be(:group) { create(:group) }
-    let_it_be(:project) { create(:project, group: group) }
-    let_it_be(:rule_protected_branch) { create(:protected_branch) }
-    let_it_be(:rule) { create(:approval_project_rule, protected_branches: [rule_protected_branch], project: project) }
-    let_it_be(:protected_branches) { create_list(:protected_branch, 3, project: project) }
-    let_it_be(:group_protected_branches) { create_list(:protected_branch, 2, project: nil, group: group) }
+    let(:group) { create(:group) }
+    let(:project) { create(:project, group: group) }
+    let(:rule_protected_branch) { create(:protected_branch) }
+    let(:protected_branches) { create_list(:protected_branch, 3, project: project) }
+    let(:group_protected_branches) { create_list(:protected_branch, 2, project: nil, group: group) }
+    let(:rule) { create(:approval_project_rule, protected_branches: [rule_protected_branch], project: project) }
 
     subject { rule.protected_branches }
 
@@ -292,8 +292,7 @@ RSpec.describe ApprovalProjectRule, feature_category: :compliance_management do
 
       context 'when feature flag `group_protected_branches` disabled' do
         before do
-          stub_feature_flags(group_protected_branches: false)
-          stub_feature_flags(allow_protected_branches_for_group: false)
+          stub_feature_flags(group_protected_branches: false, allow_protected_branches_for_group: false)
         end
 
         it 'returns a collection of all protected branches belonging to the project' do
@@ -303,8 +302,7 @@ RSpec.describe ApprovalProjectRule, feature_category: :compliance_management do
 
       context 'when feature flag `group_protected_branches` enabled' do
         before do
-          stub_feature_flags(group_protected_branches: true)
-          stub_feature_flags(allow_protected_branches_for_group: true)
+          stub_feature_flags(group_protected_branches: true, allow_protected_branches_for_group: true)
         end
 
         it 'returns a collection of all protected branches belonging to the project and the group', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/470326' do
