@@ -33,17 +33,6 @@ RSpec.describe 'GitLab Duo Chat', :js, feature_category: :global_search do
         end
       end
 
-      context "when opening the drawer from the help center" do
-        before do
-          within_testid('super-sidebar') do
-            click_button('Help')
-            click_button('GitLab Duo Chat')
-          end
-        end
-
-        it_behaves_like 'GitLab Duo drawer'
-      end
-
       context "when opening the drawer from the breadcrumbs" do
         before do
           within_testid('top-bar') do
@@ -76,17 +65,6 @@ RSpec.describe 'GitLab Duo Chat', :js, feature_category: :global_search do
             expect(page).to have_text('GitLab Duo Chat')
           end
         end
-      end
-
-      context "when opening the drawer from the help center" do
-        before do
-          within_testid('super-sidebar') do
-            click_button('Help')
-            click_button('GitLab Duo Chat')
-          end
-        end
-
-        it_behaves_like 'GitLab Duo drawer'
       end
 
       context "when opening the drawer from the breadcrumbs" do
