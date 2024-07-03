@@ -1,4 +1,3 @@
-import Vue from 'vue';
 import { s__ } from '~/locale';
 import CEMutations from '~/members/store/mutations';
 import { findMember } from '~/members/store/utils';
@@ -21,7 +20,7 @@ export default {
       return;
     }
 
-    Vue.set(member, 'isOverridden', override);
+    member.isOverridden = override;
   },
   [types.RECEIVE_LDAP_OVERRIDE_ERROR](state, override) {
     state.errorMessage = override
