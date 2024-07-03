@@ -25,7 +25,8 @@ module Search
         pending: 0,
         in_progress: 1,
         initializing: 2,
-        ready: 10
+        ready: 10,
+        reallocating: 20
       }
 
       scope :for_node, ->(node) do
