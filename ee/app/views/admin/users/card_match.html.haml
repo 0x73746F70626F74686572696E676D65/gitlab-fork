@@ -32,7 +32,11 @@
             %td
               = link_to(user.username, admin_user_path(user))
               - if user == @user
-                = _('(this user)')
+                = render Pajamas::BadgeComponent.new(_('This user'), variant: 'muted')
+              - if user.banned?
+                = render Pajamas::BadgeComponent.new(_('Banned'), variant: 'danger')
+              - elsif user.blocked?
+                = render Pajamas::BadgeComponent.new(_('Blocked'), variant: 'danger')
             %td
               = user.name
             %td.gl-text-right
