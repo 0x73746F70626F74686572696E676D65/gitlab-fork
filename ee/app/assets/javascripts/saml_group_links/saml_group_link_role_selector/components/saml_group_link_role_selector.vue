@@ -5,6 +5,16 @@ export default {
   components: {
     RoleSelector,
   },
+  props: {
+    baseAccessLevelInputName: {
+      type: String,
+      required: true,
+    },
+    memberRoleIdInputName: {
+      type: String,
+      required: true,
+    },
+  },
   data() {
     return {
       selectedStandardRoleValue: null,
@@ -25,13 +35,13 @@ export default {
     <input
       data-testid="selected-standard-role"
       type="hidden"
-      name="saml_group_link[access_level]"
+      :name="baseAccessLevelInputName"
       :value="selectedStandardRoleValue"
     />
     <input
       data-testid="selected-custom-role"
       type="hidden"
-      name="saml_group_link[member_role_id]"
+      :name="memberRoleIdInputName"
       :value="selectedCustomRoleValue"
     />
     <role-selector @onSelect="onSelect" />

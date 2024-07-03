@@ -5,7 +5,7 @@
 
     - if ldap_group_link.config
       .light
-        = s_("LDAP|As %{human_access} on %{provider_label} server") % { human_access: ldap_group_link.human_access, provider_label: ldap_group_link.provider_label }
+        = s_("LDAP|As %{human_access} on %{provider_label} server") % { human_access: saml_group_link_role_name(ldap_group_link), provider_label: ldap_group_link.provider_label }
     - else
       .cred
         = sprite_icon('warning-solid')

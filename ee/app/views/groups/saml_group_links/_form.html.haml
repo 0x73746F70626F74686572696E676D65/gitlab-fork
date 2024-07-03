@@ -13,7 +13,7 @@
         .col-sm-2.col-form-label
           = f.label :access_level, "Access Level"
         .col-sm-10
-          .js-saml-group-link-role-selector{ data: { saml_group_link_role_selector_data: saml_group_link_role_selector_data(group, current_user).to_json } }
+          .js-saml-group-link-role-selector{ data: { saml_group_link_role_selector_data: saml_group_link_role_selector_data(group, current_user).to_json }.merge(saml_group_link_input_names) }
           .form-text.text-muted
             = s_('GroupSAML|Role to assign members of this SAML group.')
 

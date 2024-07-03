@@ -51,6 +51,16 @@ describe('RoleSelector', () => {
   const selectListboxItem = (value) => findListBox().vm.$emit('select', value);
 
   describe('dropdown', () => {
+    describe('on creation', () => {
+      beforeEach(() => {
+        createComponent({ currentStandardRole: null, currentCustomRoleId: null });
+      });
+
+      it('sets toggle-text as the placeholder', () => {
+        expect(findListBox().props('toggleText')).toBe('Select a role');
+      });
+    });
+
     describe('when a custom role is set', () => {
       beforeEach(() => {
         createComponent();
@@ -63,6 +73,10 @@ describe('RoleSelector', () => {
       it('sets the correct initial value', () => {
         expect(findSelected()).toBe('Custom Role');
       });
+
+      it('sets toggle-text as the custom role name', () => {
+        expect(findListBox().props('toggleText')).toBe('Custom Role');
+      });
     });
 
     describe('when a custom role is not set', () => {
@@ -72,6 +86,10 @@ describe('RoleSelector', () => {
 
       it('sets the correct initial value', () => {
         expect(findSelected()).toBe('Developer');
+      });
+
+      it('sets toggle-text as the role name', () => {
+        expect(findListBox().props('toggleText')).toBe('Developer');
       });
     });
 

@@ -46,8 +46,8 @@
       .form-group.row
         .col-sm-2.col-form-label
           = f.label :group_access, s_("LDAP|LDAP access")
-        .col-sm-10
-          = f.select :group_access, options_for_select(GroupMember.access_level_roles), {}, class: 'form-control'
+        .col-sm-10{ data: { testid: 'ldap-access-field' } }
+          .js-saml-group-link-role-selector{ data: { saml_group_link_role_selector_data: saml_group_link_role_selector_data(group, current_user).to_json }.merge(ldap_group_link_input_names) }
           .form-text.text-muted
             = s_("LDAP|Default, minimum permission level for LDAP group members of %{group_name}.") % { group_name: group.name }
             %br

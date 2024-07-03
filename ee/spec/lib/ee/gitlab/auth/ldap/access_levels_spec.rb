@@ -16,14 +16,16 @@ RSpec.describe EE::Gitlab::Auth::Ldap::AccessLevels do
 
     context 'when access_levels is empty' do
       before do
-        access_levels.set(dns, to: Gitlab::Access::DEVELOPER)
+        access_levels.set(dns, to: { base_access_level: Gitlab::Access::DEVELOPER, member_role_id: nil })
       end
 
       it do
         is_expected
           .to eq({
-            'uid=janedoe,ou=users,dc=example,dc=com' => Gitlab::Access::DEVELOPER,
-            'uid=johndoe,ou=users,dc=example,dc=com' => Gitlab::Access::DEVELOPER
+            'uid=janedoe,ou=users,dc=example,dc=com' => { base_access_level: Gitlab::Access::DEVELOPER,
+                                                          member_role_id: nil },
+            'uid=johndoe,ou=users,dc=example,dc=com' => { base_access_level: Gitlab::Access::DEVELOPER,
+                                                          member_role_id: nil }
           })
       end
     end
@@ -44,16 +46,19 @@ RSpec.describe EE::Gitlab::Auth::Ldap::AccessLevels do
       end
 
       before do
-        access_levels.set(master_dns, to: Gitlab::Access::MAINTAINER)
-        access_levels.set(developer_dns, to: Gitlab::Access::DEVELOPER)
+        access_levels.set(master_dns, to: { base_access_level: Gitlab::Access::MAINTAINER, member_role_id: nil })
+        access_levels.set(developer_dns, to: { base_access_level: Gitlab::Access::DEVELOPER, member_role_id: nil })
       end
 
       it 'keeps the higher of all access values' do
         is_expected
           .to eq({
-            'uid=janedoe,ou=users,dc=example,dc=com' => Gitlab::Access::MAINTAINER,
-            'uid=johndoe,ou=users,dc=example,dc=com' => Gitlab::Access::MAINTAINER,
-            'uid=jamesdoe,ou=users,dc=example,dc=com' => Gitlab::Access::DEVELOPER
+            'uid=janedoe,ou=users,dc=example,dc=com' => { base_access_level: Gitlab::Access::MAINTAINER,
+                                                          member_role_id: nil },
+            'uid=johndoe,ou=users,dc=example,dc=com' => { base_access_level: Gitlab::Access::MAINTAINER,
+                                                          member_role_id: nil },
+            'uid=jamesdoe,ou=users,dc=example,dc=com' => { base_access_level: Gitlab::Access::DEVELOPER,
+                                                           member_role_id: nil }
           })
       end
     end

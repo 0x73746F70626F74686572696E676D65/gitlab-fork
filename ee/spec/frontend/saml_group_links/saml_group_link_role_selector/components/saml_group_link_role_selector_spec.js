@@ -6,13 +6,18 @@ describe('SamlGroupLinkRoleSelector', () => {
   let wrapper;
 
   const createComponent = () => {
-    wrapper = shallowMountExtended(SamlGroupLinkRoleSelector);
+    wrapper = shallowMountExtended(SamlGroupLinkRoleSelector, {
+      propsData: {
+        baseAccessLevelInputName: 'mock_group_link[access_level]',
+        memberRoleIdInputName: 'mock_group_link[member_role_id]',
+      },
+    });
   };
 
-  const findStandardRoleInputElement = () => wrapper.findByTestId('selected-standard-role').element;
-  const findCustomRoleInputElement = () => wrapper.findByTestId('selected-custom-role').element;
-  const findSelectedStandardRole = () => findStandardRoleInputElement().value;
-  const findSelectedCustomRole = () => findCustomRoleInputElement().value;
+  const findStandardRoleInputElement = () => wrapper.findByTestId('selected-standard-role');
+  const findCustomRoleInputElement = () => wrapper.findByTestId('selected-custom-role');
+  const findSelectedStandardRole = () => findStandardRoleInputElement().element.value;
+  const findSelectedCustomRole = () => findCustomRoleInputElement().element.value;
   const findRoleSelector = () => wrapper.findComponent(RoleSelector);
 
   describe('component', () => {
@@ -24,6 +29,15 @@ describe('SamlGroupLinkRoleSelector', () => {
       it('sets the correct initial value', () => {
         expect(findSelectedStandardRole()).toBe('');
         expect(findSelectedCustomRole()).toBe('');
+      });
+
+      it('sets the correct name attr for input fields', () => {
+        expect(findStandardRoleInputElement().attributes('name')).toBe(
+          'mock_group_link[access_level]',
+        );
+        expect(findCustomRoleInputElement().attributes('name')).toBe(
+          'mock_group_link[member_role_id]',
+        );
       });
     });
 

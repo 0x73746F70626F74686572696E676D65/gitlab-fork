@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import initSamlGroupLinkRoleSelector from 'ee/saml_group_links/saml_group_link_role_selector';
 import GroupSelect from './components/group_select.vue';
 
 export default () => {
@@ -18,3 +19,5 @@ export default () => {
     },
   });
 };
+
+initSamlGroupLinkRoleSelector();

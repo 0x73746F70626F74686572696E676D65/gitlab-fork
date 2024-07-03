@@ -16,7 +16,7 @@
             %code= ldap_group_link.cn ? "cn: #{ldap_group_link.cn}" : "filter: #{ldap_group_link.filter}"
             %br
             are given
-            %code= ldap_group_link.human_access
+            %code= saml_group_link_role_name(ldap_group_link)
             access.
     - if can?(current_user, :admin_group, @group)
       - c.with_actions do
