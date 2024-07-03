@@ -337,7 +337,7 @@ RSpec.describe GitlabSubscriptions::AddOnPurchase, feature_category: :plan_provi
         create(
           :gitlab_subscription_user_add_on_assignment,
           user: user,
-          add_on_purchase: active_gitlab_duo_pro_purchase_unrelated
+          add_on_purchase: active_gitlab_duo_pro_purchase_as_guest
         )
         create(
           :gitlab_subscription_user_add_on_assignment,
@@ -355,10 +355,11 @@ RSpec.describe GitlabSubscriptions::AddOnPurchase, feature_category: :plan_provi
 
       include_context 'with add-on purchases'
 
-      it 'returns all the non-guest purchases related to the user top level namespaces' do
+      it 'returns all active purchases related to the user add-on assignments' do
         expect(user_purchases).to match_array(
           [
-            active_gitlab_duo_pro_purchase_as_developer
+            active_gitlab_duo_pro_purchase_as_developer,
+            active_gitlab_duo_pro_purchase_as_guest
           ]
         )
       end
