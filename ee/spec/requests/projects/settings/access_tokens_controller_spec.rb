@@ -109,7 +109,7 @@ RSpec.describe Projects::Settings::AccessTokensController, :saas, feature_catego
         it 'can revoke token successfully' do
           request
 
-          expect(resource.reload.bots).not_to include(access_token_user)
+          expect(resource_access_token.reload).to be_revoked
         end
       end
 
@@ -121,7 +121,7 @@ RSpec.describe Projects::Settings::AccessTokensController, :saas, feature_catego
         it 'still can revoke token successfully' do
           request
 
-          expect(resource.reload.bots).not_to include(access_token_user)
+          expect(resource_access_token.reload).to be_revoked
         end
       end
     end

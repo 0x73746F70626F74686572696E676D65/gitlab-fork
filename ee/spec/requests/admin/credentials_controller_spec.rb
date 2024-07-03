@@ -198,14 +198,34 @@ RSpec.describe Admin::CredentialsController, type: :request, feature_category: :
         put admin_credential_resource_revoke_path(credential_id: project_access_token.id, resource_id: project.id, resource_type: 'Project')
 
         expect(response).to redirect_to(admin_credentials_path)
-        expect(flash[:notice]).to eq "Access token #{project_access_token.name} has been revoked and the bot user has been scheduled for deletion."
+        expect(flash[:notice]).to eq "Access token #{project_access_token.name} has been revoked."
       end
 
       it :aggregate_failures do
         put admin_credential_resource_revoke_path(credential_id: group_access_token.id, resource_id: group.id, resource_type: 'Group')
 
         expect(response).to redirect_to(admin_credentials_path)
-        expect(flash[:notice]).to eq "Access token #{group_access_token.name} has been revoked and the bot user has been scheduled for deletion."
+        expect(flash[:notice]).to eq "Access token #{group_access_token.name} has been revoked."
+      end
+
+      context 'when retain_bot_user feature flag is disabled' do
+        before do
+          stub_feature_flags(retain_resource_access_token_user_after_revoke: false)
+        end
+
+        it :aggregate_failures do
+          put admin_credential_resource_revoke_path(credential_id: project_access_token.id, resource_id: project.id, resource_type: 'Project')
+
+          expect(response).to redirect_to(admin_credentials_path)
+          expect(flash[:notice]).to eq "Access token #{project_access_token.name} has been revoked and the bot user has been scheduled for deletion."
+        end
+
+        it :aggregate_failures do
+          put admin_credential_resource_revoke_path(credential_id: group_access_token.id, resource_id: group.id, resource_type: 'Group')
+
+          expect(response).to redirect_to(admin_credentials_path)
+          expect(flash[:notice]).to eq "Access token #{group_access_token.name} has been revoked and the bot user has been scheduled for deletion."
+        end
       end
     end
 
