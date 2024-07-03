@@ -4467,9 +4467,6 @@ msgstr ""
 msgid "AdminUsers|Skype"
 msgstr ""
 
-msgid "AdminUsers|Sort by"
-msgstr ""
-
 msgid "AdminUsers|Stop monitoring %{username} for possible spam?"
 msgstr ""
 
@@ -12917,6 +12914,9 @@ msgid "CodeownersValidation|Unparsable sections"
 msgstr ""
 
 msgid "CodeownersValidation|Zero owners"
+msgstr ""
+
+msgid "Cohorts"
 msgstr ""
 
 msgid "Cohorts|Active users"
