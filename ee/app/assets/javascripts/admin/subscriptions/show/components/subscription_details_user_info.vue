@@ -1,7 +1,7 @@
 <script>
 import { GlCard, GlLink, GlSprintf } from '@gitlab/ui';
 import { helpPagePath } from '~/helpers/help_page_helper';
-import { s__, n__, __ } from '~/locale';
+import { n__, __ } from '~/locale';
 import { PROMO_URL } from 'jh_else_ce/lib/utils/url_utility';
 
 export const billableUsersURL = helpPagePath('subscriptions/self_managed/index', {
@@ -12,20 +12,20 @@ export const trueUpURL = `${PROMO_URL}/pricing/licensing-faq/#what-does-users-ov
 export const usersInSubscriptionUnlimited = __('Unlimited');
 
 export const i18n = Object.freeze({
-  billableUsersTitle: s__('SuperSonics|Billable users'),
-  maximumUsersTitle: s__('SuperSonics|Maximum users'),
-  usersOverSubscriptionTitle: s__('SuperSonics|Users over subscription'),
-  billableUsersText: s__(
-    'SuperSonics|This is the number of %{billableUsersLinkStart}billable users%{billableUsersLinkEnd} on your installation, and this is the minimum number you need to purchase when you renew your license.',
+  billableUsersTitle: __('Billable users'),
+  maximumUsersTitle: __('Maximum users'),
+  usersOverSubscriptionTitle: __('Users over subscription'),
+  billableUsersText: __(
+    'This is the number of %{billableUsersLinkStart}billable users%{billableUsersLinkEnd} on your installation, and this is the minimum number you need to purchase when you renew your license.',
   ),
-  maximumUsersText: s__(
-    'SuperSonics|This is the highest peak of users on your installation since the license started.',
+  maximumUsersText: __(
+    'This is the highest peak of users on your installation since the license started.',
   ),
-  usersInSubscriptionText: s__(
-    `SuperSonics|Users with a Guest role or those who don't belong to a Project or Group will not use a seat from your license.`,
+  usersInSubscriptionText: __(
+    `Users with a Guest role or those who don't belong to a Project or Group will not use a seat from your license.`,
   ),
-  usersOverSubscriptionText: s__(
-    `SuperSonics|You'll be charged for %{trueUpLinkStart}users over license%{trueUpLinkEnd} on a quarterly or annual basis, depending on the terms of your agreement.`,
+  usersOverSubscriptionText: __(
+    `You'll be charged for %{trueUpLinkStart}users over license%{trueUpLinkEnd} on a quarterly or annual basis, depending on the terms of your agreement.`,
   ),
 });
 
@@ -65,13 +65,13 @@ export default {
     usersInSubscriptionTitle() {
       if (this.subscription.usersInLicenseCount) {
         return n__(
-          'SuperSonics|User in subscription',
-          'SuperSonics|Users in subscription',
+          'User in subscription',
+          'Users in subscription',
           this.subscription.usersInLicenseCount,
         );
       }
 
-      return s__('SuperSonics|Users in subscription');
+      return __('Users in subscription');
     },
   },
   i18n,

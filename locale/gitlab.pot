@@ -8199,6 +8199,9 @@ msgstr ""
 msgid "Billable Users"
 msgstr ""
 
+msgid "Billable users"
+msgstr ""
+
 msgid "Billing"
 msgstr ""
 
@@ -32058,6 +32061,9 @@ msgstr ""
 msgid "Maximum unauthenticated web requests per rate limit period per IP"
 msgstr ""
 
+msgid "Maximum users"
+msgstr ""
+
 msgid "May"
 msgstr ""
 
@@ -51971,9 +51977,6 @@ msgstr ""
 msgid "SuperSonics|An error occurred while adding your subscription"
 msgstr ""
 
-msgid "SuperSonics|Billable users"
-msgstr ""
-
 msgid "SuperSonics|Buy subscription"
 msgstr ""
 
@@ -52005,9 +52008,6 @@ msgid "SuperSonics|Learn more about %{activationLinkStart}activating your subscr
 msgstr ""
 
 msgid "SuperSonics|Licensed to"
-msgstr ""
-
-msgid "SuperSonics|Maximum users"
 msgstr ""
 
 msgid "SuperSonics|Offline license"
@@ -52055,27 +52055,7 @@ msgstr ""
 msgid "SuperSonics|There is a connectivity issue"
 msgstr ""
 
-msgid "SuperSonics|This is the highest peak of users on your installation since the license started."
-msgstr ""
-
-msgid "SuperSonics|This is the number of %{billableUsersLinkStart}billable users%{billableUsersLinkEnd} on your installation, and this is the minimum number you need to purchase when you renew your license."
-msgstr ""
-
 msgid "SuperSonics|To activate your subscription, your instance needs to connect to GitLab. %{learnMoreLinkStart}Learn more%{learnMoreLinkEnd}."
-msgstr ""
-
-msgid "SuperSonics|User in subscription"
-msgid_plural "SuperSonics|Users in subscription"
-msgstr[0] ""
-msgstr[1] ""
-
-msgid "SuperSonics|Users in subscription"
-msgstr ""
-
-msgid "SuperSonics|Users over subscription"
-msgstr ""
-
-msgid "SuperSonics|Users with a Guest role or those who don't belong to a Project or Group will not use a seat from your license."
 msgstr ""
 
 msgid "SuperSonics|You can %{purchaseSubscriptionLinkStart}purchase a new subscription%{purchaseSubscriptionLinkEnd} and try again. If you need further assistance, please %{supportLinkStart}contact GitLab Support%{supportLinkEnd}."
@@ -52103,9 +52083,6 @@ msgid "SuperSonics|You have successfully added a license that activates on %{dat
 msgstr ""
 
 msgid "SuperSonics|You may have entered an expired or ineligible activation code. To request a new activation code, %{purchaseSubscriptionLinkStart}purchase a new subscription%{purchaseSubscriptionLinkEnd} or %{supportLinkStart}contact GitLab Support%{supportLinkEnd} for further assistance."
-msgstr ""
-
-msgid "SuperSonics|You'll be charged for %{trueUpLinkStart}users over license%{trueUpLinkEnd} on a quarterly or annual basis, depending on the terms of your agreement."
 msgstr ""
 
 msgid "SuperSonics|Your %{subscriptionEntryName} cannot be displayed at the moment. Please refresh the page to try again."
@@ -52890,7 +52867,7 @@ msgstr ""
 msgid "The %{plan_name} is no longer available to purchase. For more information about how this will impact you, check our %{faq_link_start}frequently asked questions%{faq_link_end}."
 msgstr ""
 
-msgid "The %{true_up_start}true-up model%{true_up_end} allows having more users, and additional users will incur a retroactive charge on renewal."
+msgid "The %{trueUpLinkStart}true-up model%{trueUpLinkEnd} allows having more users, and additional users will incur a retroactive charge on renewal."
 msgstr ""
 
 msgid "The %{type} contains the following error:"
@@ -54223,6 +54200,9 @@ msgid "This is really just a warning"
 msgstr ""
 
 msgid "This is the highest peak of users on your installation since the license started."
+msgstr ""
+
+msgid "This is the number of %{billableUsersLinkStart}billable users%{billableUsersLinkEnd} on your installation, and this is the minimum number you need to purchase when you renew your license."
 msgstr ""
 
 msgid "This is the number of %{billable_users_link_start}billable users%{billable_users_link_end} on your installation, and this is the minimum number you need to purchase when you renew your license."
@@ -57374,6 +57354,11 @@ msgstr ""
 msgid "User identity was successfully updated."
 msgstr ""
 
+msgid "User in subscription"
+msgid_plural "Users in subscription"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "User is blocked"
 msgstr ""
 
@@ -57821,10 +57806,16 @@ msgstr ""
 msgid "Users in License"
 msgstr ""
 
+msgid "Users in subscription"
+msgstr ""
+
 msgid "Users or groups set as approvers in the project's or merge request's settings."
 msgstr ""
 
 msgid "Users over License"
+msgstr ""
+
+msgid "Users over subscription"
 msgstr ""
 
 msgid "Users requesting access to"
@@ -60756,6 +60747,9 @@ msgstr ""
 msgid "You are trying to upload something other than an image. Please upload a .png, .jpg, .jpeg, .gif, .bmp, .tiff or .ico."
 msgstr ""
 
+msgid "You are using a trial license. When you use a paid subscription, you'll be charged for %{trueUpLinkStart}users over license%{trueUpLinkEnd}."
+msgstr ""
+
 msgid "You can %{gitlabLinkStart}resolve conflicts on GitLab%{gitlabLinkEnd} or %{resolveLocallyStart}resolve them locally%{resolveLocallyEnd}."
 msgstr ""
 
@@ -61305,7 +61299,7 @@ msgstr ""
 msgid "You will receive notifications only for comments in which you were @mentioned"
 msgstr ""
 
-msgid "You'll be charged for %{true_up_start}users over license%{true_up_end} on a quarterly or annual basis, depending on the terms of your agreement."
+msgid "You'll be charged for %{trueUpLinkStart}users over license%{trueUpLinkEnd} on a quarterly or annual basis, depending on the terms of your agreement."
 msgstr ""
 
 msgid "You're about to leave GitLab"

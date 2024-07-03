@@ -2,165 +2,95 @@
 
 require 'spec_helper'
 
-RSpec.describe LicenseMonitoringHelper do
-  describe '#show_active_user_count_threshold_banner?' do
-    let_it_be(:admin) { create(:admin) }
-    let_it_be(:user) { create(:user) }
-    let_it_be(:license_seats_limit) { 10 }
-    let_it_be(:license) do
-      create(:license, data: build(:gitlab_license, restrictions: { active_user_count: license_seats_limit }).export)
-    end
+RSpec.describe LicenseMonitoringHelper, feature_category: :plan_provisioning do
+  using RSpec::Parameterized::TableSyntax
 
+  let(:user) { build_stubbed(:user) }
+  let(:license) { build_stubbed(:gitlab_license) }
+
+  describe '#show_active_user_count_threshold_banner?' do
     subject { helper.show_active_user_count_threshold_banner? }
 
-    shared_examples 'banner hidden when below the threshold' do
-      before do
-        allow(license).to receive(:active_user_count_threshold_reached?).and_return(false)
-      end
-
-      it { is_expected.to be_falsey }
+    where(
+      :dot_com,
+      :admin_section,
+      :user_dismissed_callout,
+      :license_nil,
+      :user_can_admin_all_resources,
+      :license_active_user_count_threshold_reached,
+      :should_render
+    ) do
+      false | true  | false | false | true  | true  | true # Happy Path
+      true  | true  | false | false | true  | true  | nil # ::Gitlab.com? is true
+      false | false | false | false | true  | true  | nil # admin_section is false
+      false | true  | true  | false | true  | true  | nil # user_dismissed_callout is true
+      false | true  | false | true  | true  | true  | nil # license is nil
+      false | true  | false | false | false | true  | false # user_can_admin_all_resources is false
+      false | true  | false | false | true  | false | false # license_active_user_count_threshold_reached is false
     end
 
-    context 'on GitLab.com' do
+    with_them do
       before do
-        allow(Gitlab).to receive(:com?).and_return(true)
-      end
+        allow(Gitlab).to receive(:com?).and_return(dot_com)
+        allow(helper).to receive(:admin_section?).and_return(admin_section)
+        allow(helper).to receive(:user_dismissed?)
+          .with(Users::CalloutsHelper::ACTIVE_USER_COUNT_THRESHOLD).and_return(user_dismissed_callout)
 
-      it { is_expected.to be_falsey }
-    end
+        allow(user).to receive(:can_admin_all_resources?).and_return(user_can_admin_all_resources)
+        allow(helper).to receive(:current_user).and_return(user)
 
-    context 'on self-managed instance' do
-      before do
-        allow(Gitlab).to receive(:com?).and_return(false)
-      end
-
-      context 'when callout dismissed' do
-        before do
-          allow(helper).to receive(:user_dismissed?).with(Users::CalloutsHelper::ACTIVE_USER_COUNT_THRESHOLD).and_return(true)
-        end
-
-        it { is_expected.to be_falsey }
-      end
-
-      context 'when license' do
-        context 'is not available' do
-          before do
-            allow(License).to receive(:current).and_return(nil)
-          end
-
-          it { is_expected.to be_falsey }
-        end
-
-        context 'is trial' do
-          before do
-            allow(license).to receive(:trial?).and_return(true)
-            allow(License).to receive(:current).and_return(license)
-          end
-
-          it { is_expected.to be_falsey }
-        end
-      end
-
-      context 'when current active user count greater than total user count' do
-        before do
-          allow(license).to receive(:restricted_user_count).and_return(license_seats_limit)
-          allow(license).to receive(:daily_billable_users_count).and_return(license_seats_limit + 1)
+        if license_nil
+          allow(License).to receive(:current).and_return(nil)
+        else
+          allow(license).to receive(:active_user_count_threshold_reached?)
+            .and_return(license_active_user_count_threshold_reached)
           allow(License).to receive(:current).and_return(license)
         end
-
-        it { is_expected.to be_falsey }
       end
 
-      context 'when logged in as an admin user' do
-        before do
-          allow(helper).to receive(:current_user).and_return(admin)
-          allow(helper).to receive(:admin_section?).and_return(true)
-        end
-
-        context 'when above the threshold' do
-          before do
-            allow(license).to receive(:active_user_count_threshold_reached?).and_return(license_seats_limit + 1)
-            allow(License).to receive(:current).and_return(license)
-          end
-
-          context 'when admin mode setting is disabled', :do_not_mock_admin_mode_setting do
-            it { is_expected.to be_truthy }
-          end
-
-          context 'when admin mode setting is enabled' do
-            context 'when in admin mode', :enable_admin_mode do
-              it { is_expected.to be_truthy }
-            end
-
-            context 'when not in admin mode' do
-              it { is_expected.to be_falsey }
-            end
-          end
-        end
-
-        it_behaves_like 'banner hidden when below the threshold'
-      end
-
-      context 'when logged in as a regular user' do
-        before do
-          allow(helper).to receive(:current_user).and_return(user)
-        end
-
-        it_behaves_like 'banner hidden when below the threshold'
-      end
-
-      context 'when not logged in' do
-        before do
-          allow(helper).to receive(:current_user).and_return(nil)
-        end
-
-        it_behaves_like 'banner hidden when below the threshold'
-      end
+      it { is_expected.to be should_render }
     end
   end
 
   describe '#users_over_license' do
-    let(:now) { Date.current }
+    subject { helper.users_over_license }
 
-    def setup_license(starts_at:, expires_at:, max_users:)
-      license = build(
-        :license,
-        starts_at: starts_at,
-        expires_at: expires_at,
-        restrictions: { active_user_count: max_users }
-      )
+    before do
+      allow(Gitlab).to receive(:com?).and_return(false)
       allow(License).to receive(:current).and_return(license)
-
-      license
+      allow(license).to receive(:overage_with_historical_max).and_return(10)
     end
 
-    it 'shows overage as a number when there is an overage' do
-      license = setup_license(starts_at: now - 3.months, expires_at: now + 9.months, max_users: 10)
-      create(:historical_data, recorded_at: license.starts_at + 1.month, active_user_count: 15)
+    it { is_expected.to eq(10) }
 
-      expect(helper.users_over_license).to eq(5)
+    context 'when in GitLab.com' do
+      before do
+        allow(Gitlab).to receive(:com?).and_return(true)
+      end
+
+      it 'returns 0 overage' do
+        is_expected.to eq(0)
+      end
     end
 
-    it 'shows overage as a number when there is not an overage' do
-      setup_license(starts_at: now - 3.months, expires_at: now + 9.months, max_users: 10)
+    context 'when license is not available' do
+      before do
+        allow(License).to receive(:current).and_return(nil)
+      end
 
-      expect(helper.users_over_license).to eq(0)
+      it 'returns 0 overage' do
+        is_expected.to eq(0)
+      end
     end
 
-    it 'reports overage for a license of 6 months in duration' do
-      license = setup_license(starts_at: now - 3.months, expires_at: now + 3.months, max_users: 15)
-      create(:historical_data, recorded_at: license.starts_at - 2.months, active_user_count: 45)
-      create(:historical_data, recorded_at: license.starts_at + 1.month, active_user_count: 25)
+    context 'when there is no overage' do
+      before do
+        allow(license).to receive(:overage_with_historical_max).and_return(0)
+      end
 
-      expect(helper.users_over_license).to eq(10)
-    end
-
-    it 'reports overage when the most recent billable user count is higher than the historical max active users' do
-      license = setup_license(starts_at: now - 3.months, expires_at: now + 9.months, max_users: 40)
-      create(:historical_data, recorded_at: license.expires_at - 2.months, active_user_count: 45)
-      create(:usage_trends_measurement, recorded_at: now - 1.day, identifier: :billable_users, count: 70)
-
-      expect(helper.users_over_license).to eq(30)
+      it 'returns 0 overage' do
+        is_expected.to eq(0)
+      end
     end
   end
 end
