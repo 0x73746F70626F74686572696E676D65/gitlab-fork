@@ -931,8 +931,10 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
         response = {
           success: true,
           data: {
-            'billingAccount' => {
-              'zuoraAccountName' => 'sample-account-name'
+            'data' => {
+              'billingAccount' => {
+                'zuoraAccountName' => 'sample-account-name'
+              }
             }
           },
           'errors' => []
@@ -941,14 +943,14 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
         expect(client).to receive(:http_post).with('graphql', headers, { query: expected_query }).and_return(response)
 
         expect(subject).to eq(success: true,
-          response: { "billingAccount" => { "zuoraAccountName" => "sample-account-name" } })
+          billing_account_details: { "billingAccount" => { "zuoraAccountName" => "sample-account-name" } })
       end
     end
 
     context 'when the response contains an error' do
       it 'returns a failure response and logs the error' do
         response = {
-          success: false,
+          success: true,
           data: {
             "errors" => [
               {
@@ -960,12 +962,6 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
             ]
           }
         }
-
-        expect(Gitlab::ErrorTracking).to receive(:track_and_raise_for_dev_exception).with(
-          a_kind_of(Gitlab::SubscriptionPortal::Client::ResponseError),
-          query: expected_query,
-          response: response[:data]
-        )
 
         expect(client).to receive(:http_post).with('graphql', headers, { query: expected_query }).and_return(response)
 

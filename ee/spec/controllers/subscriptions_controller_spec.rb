@@ -32,6 +32,8 @@ RSpec.describe SubscriptionsController, feature_category: :subscription_manageme
         let_it_be(:sub_group) { create(:group, parent: owned_group) }
         let_it_be(:maintainer_group) { create(:group) }
         let_it_be(:developer_group) { create(:group) }
+        let_it_be(:redirect_path) { '/-/path/to/redirect' }
+        let(:service) { instance_double(GitlabSubscriptions::PurchaseUrlBuilder) }
 
         before do
           owned_group.add_owner(user)
@@ -48,6 +50,10 @@ RSpec.describe SubscriptionsController, feature_category: :subscription_manageme
               instance_double(ServiceResponse, success?: true, payload: [{ namespace: owned_group, account_id: nil }])
             )
           end
+
+          allow(GitlabSubscriptions::PurchaseUrlBuilder).to receive(:new).and_return(service)
+          allow(service).to receive(:customers_dot_flow?).and_return(false)
+          allow(service).to receive(:build).and_return(redirect_path)
         end
 
         it 'assigns the eligible groups for the subscription' do
@@ -64,12 +70,12 @@ RSpec.describe SubscriptionsController, feature_category: :subscription_manageme
           end
         end
 
-        context 'request does not specify namespace' do
-          it 'falls back to users namespace' do
-            get_new
-
-            expect(assigns(:namespace)).to eq(user.namespace)
+        context 'when eligible to be redirected to the CustomersDot purchase flow' do
+          before do
+            allow(service).to receive(:customers_dot_flow?).and_return(true)
           end
+
+          it { is_expected.to redirect_to(redirect_path) }
         end
       end
 

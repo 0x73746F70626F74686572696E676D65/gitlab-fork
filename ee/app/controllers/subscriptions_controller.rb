@@ -16,25 +16,17 @@ class SubscriptionsController < ApplicationController
   # this point and becomes true only after the user completes the verification
   # process.
   before_action :authenticate_user!, except: :new, unless: :identity_verification_request?
+  before_action :ensure_registered!, only: :new
 
   before_action :load_eligible_groups, only: :new
+
+  before_action :send_to_customers_dot_flow, only: :new, if: :redirect_to_customers_dot?
 
   feature_category :subscription_management
   urgency :low
 
   def new
-    if current_user
-      @namespace =
-        if params[:namespace_id]
-          namespace_id = params[:namespace_id].to_i
-          @eligible_groups.find { |n| n.id == namespace_id }
-        else
-          current_user.namespace
-        end
-    else
-      store_location_for(:user, request.fullpath)
-      redirect_to new_user_registration_path
-    end
+    @namespace = get_namespace
   end
 
   def buy_minutes
@@ -217,6 +209,23 @@ class SubscriptionsController < ApplicationController
     (result.payload || []).map { |h| h.dig(:namespace) }
   end
 
+  def ensure_registered!
+    return if current_user.present?
+
+    store_location_for(:user, request.fullpath)
+
+    redirect_to new_user_registration_path
+  end
+
+  def get_namespace
+    return if params[:namespace_id].blank?
+
+    strong_memoize(:get_namespace) do
+      namespace_id = params[:namespace_id].to_i
+      @eligible_groups.find { |n| n.id == namespace_id }
+    end
+  end
+
   def identity_verification_request?
     # true only for actions used to verify a user's credit card
     return false unless %w[payment_form validate_payment_method].include?(action_name)
@@ -227,6 +236,24 @@ class SubscriptionsController < ApplicationController
   def identity_verification_user
     strong_memoize(:identity_verification_user) do
       User.find_by_id(session[:verification_user_id])
+    end
+  end
+
+  def redirect_to_customers_dot?
+    purchase_url_builder.customers_dot_flow?
+  end
+
+  def send_to_customers_dot_flow
+    redirect_to purchase_url_builder.build
+  end
+
+  def purchase_url_builder
+    strong_memoize(:purchase_url_builder) do
+      GitlabSubscriptions::PurchaseUrlBuilder.new(
+        current_user: current_user,
+        plan_id: params[:plan_id],
+        namespace: get_namespace
+      )
     end
   end
 end
