@@ -46,7 +46,7 @@ RSpec.describe 'Duo Chat', :js, :saas, :clean_gitlab_redis_cache, feature_catego
       visit root_path
     end
 
-    it 'returns response after asking a question' do
+    it 'returns response after asking a question', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/462444' do
       open_chat
       chat_request(question)
 
