@@ -24,6 +24,7 @@ module EE
             code_suggestions_api_endpoint: { threshold: 60, interval: 1.minute },
             code_suggestions_direct_access: { threshold: 50, interval: 1.minute },
             code_suggestions_x_ray_scan: { threshold: 60, interval: 1.minute },
+            code_suggestions_x_ray_dependencies: { threshold: 60, interval: 1.minute },
             soft_phone_verification_transactions_limit: { threshold: 16_000, interval: 1.day },
             hard_phone_verification_transactions_limit: { threshold: 20_000, interval: 1.day },
             container_scanning_for_registry_scans: { threshold: 50, interval: 1.day }

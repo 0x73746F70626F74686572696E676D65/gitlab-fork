@@ -81,6 +81,35 @@ module API
                 header(*workhorse_headers)
                 status :ok
               end
+
+              desc 'Updates list of dependencies for a programming language'
+              params do
+                requires :id, type: Integer, desc: %q(Job's ID)
+                requires :token, type: String, desc: %q(Job's authentication token)
+                requires :scanner_version, type: String, desc: %(The version of X-Ray scanner)
+                requires :language, type: String,
+                  values: ::CodeSuggestions::ProgrammingLanguage::SUPPORTED_LANGUAGES.keys,
+                  desc: %q(The programming language of dependencies)
+                requires :dependencies, type: Array[String],
+                  coerce_with: ::API::Validations::Types::CommaSeparatedToArray.coerce,
+                  desc: 'The list of dependencies'
+              end
+              post ':id/x_ray/dependencies' do
+                check_rate_limit!(:code_suggestions_x_ray_dependencies, scope: current_job.project)
+
+                service_response = ::CodeSuggestions::Xray::StoreDependenciesService.new(
+                  current_job.project,
+                  params[:language],
+                  params[:dependencies],
+                  params[:scanner_version]
+                ).execute
+
+                if service_response.success?
+                  accepted!
+                else
+                  unprocessable_entity!(service_response.message)
+                end
+              end
             end
           end
         end
