@@ -2976,6 +2976,9 @@ msgstr ""
 msgid "Active project access tokens"
 msgstr ""
 
+msgid "Active tab: %{tab}"
+msgstr ""
+
 msgid "Activity"
 msgstr ""
 
@@ -14685,6 +14688,9 @@ msgid "Continuous Integration and Deployment"
 msgstr ""
 
 msgid "Contribute to GitLab"
+msgstr ""
+
+msgid "Contributed"
 msgstr ""
 
 msgid "Contribution"
@@ -38237,6 +38243,9 @@ msgstr ""
 msgid "Permissions and project features"
 msgstr ""
 
+msgid "Personal"
+msgstr ""
+
 msgid "Personal Access Token"
 msgstr ""
 
@@ -42198,9 +42207,6 @@ msgid "Projects help you organize your work. They contain your file repository, 
 msgstr ""
 
 msgid "Projects in this group can use Git LFS"
-msgstr ""
-
-msgid "Projects list"
 msgstr ""
 
 msgid "Projects shared with %{group_name}"
@@ -51225,6 +51231,9 @@ msgid "Star count"
 msgstr ""
 
 msgid "Star labels to start sorting by priority."
+msgstr ""
+
+msgid "Starred"
 msgstr ""
 
 msgid "Starred Projects"
