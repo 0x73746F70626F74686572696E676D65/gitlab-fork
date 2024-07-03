@@ -55277,9 +55277,6 @@ msgstr ""
 msgid "To personalize your GitLab experience, we'd like to know a bit more about you. We won't share this information with anyone."
 msgstr ""
 
-msgid "To proceed with the transfer, type %{phrase_code}:"
-msgstr ""
-
 msgid "To protect this issue's confidentiality, %{linkStart}fork this project%{linkEnd} and set the fork's visibility to private."
 msgstr ""
 
