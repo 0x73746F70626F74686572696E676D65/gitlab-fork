@@ -1,8 +1,6 @@
 description: "Submit Docker form"
 category: default
 action: submit_form
-property_description: ""
-value_description: ""
 extra_properties:
 identifiers:
 product_group: container_registry

@@ -1,9 +1,6 @@
 description: Delete project tag in bulk
 category: Projects::Registry::TagsController
 action: delete_tag_bulk
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 product_group: package_registry

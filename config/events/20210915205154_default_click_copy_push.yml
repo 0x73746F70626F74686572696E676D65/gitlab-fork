@@ -1,8 +1,6 @@
 description: "Copy quickstart dropdown push"
 category: default
 action: click_copy_push
-property_description: ""
-value_description: ""
 extra_properties:
 identifiers:
 product_group: container_registry

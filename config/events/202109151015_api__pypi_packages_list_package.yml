@@ -1,9 +1,6 @@
 description: List PyPI packages
 category: API::PypiPackages
 action: list_package
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 product_group: package_registry

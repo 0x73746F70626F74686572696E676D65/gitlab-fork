@@ -1,8 +1,6 @@
 description: "Copy quickstart dropdown build"
 category: default
 action: click_copy_build
-property_description: ""
-value_description: ""
 extra_properties:
 identifiers:
 product_group: container_registry

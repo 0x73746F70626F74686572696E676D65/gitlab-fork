@@ -1,9 +1,6 @@
 description: List group repositories
 category: API::GroupContainerRepositories
 action: list_repositories
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 product_group: container_registry

@@ -1,9 +1,6 @@
 description: List project repositories
 category: API::ProjectContainerRepositories
 action: list_repositories
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 product_group: container_registry
