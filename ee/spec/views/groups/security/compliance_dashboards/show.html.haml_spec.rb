@@ -16,6 +16,10 @@ RSpec.describe "groups/security/compliance_dashboards/show", type: :view, featur
 
   before do
     allow(view).to receive(:current_user).and_return(user)
+    allow(Ability).to receive(:allowed?).and_call_original
+    allow(Ability).to receive(:allowed?).with(user, :read_group_compliance_adherence_report, group).and_return(true)
+    allow(Ability).to receive(:allowed?).with(user, :read_group_compliance_violations_report, group).and_return(true)
+
     assign(:group, group)
   end
 
@@ -34,7 +38,6 @@ RSpec.describe "groups/security/compliance_dashboards/show", type: :view, featur
     expect(rendered).to have_selector("[data-feature-adherence-report-enabled='true']")
     expect(rendered).to have_selector("[data-feature-violations-report-enabled='true']")
     expect(rendered).to have_selector("[data-feature-frameworks-report-enabled='true']")
-    expect(rendered).to have_selector("[data-feature-adherence-report-enabled='true']")
     expect(rendered).to have_selector("[data-feature-security-policies-enabled='false']")
   end
 

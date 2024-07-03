@@ -144,7 +144,7 @@ module EE
           null: true,
           description: 'Compliance violations reported on merge requests merged within the group.',
           resolver: ::Resolvers::ComplianceManagement::MergeRequests::ComplianceViolationResolver,
-          authorize: :read_group_compliance_dashboard
+          authorize: :read_group_compliance_violations_report
 
         field :allow_stale_runner_pruning,
           ::GraphQL::Types::Boolean,
@@ -202,7 +202,7 @@ module EE
           null: true,
           description: 'Compliance standards adherence for the projects in a group and its subgroups.',
           resolver: ::Resolvers::Projects::ComplianceStandards::AdherenceResolver,
-          authorize: :read_group_compliance_dashboard
+          authorize: :read_group_compliance_adherence_report
 
         field :value_stream_dashboard_usage_overview,
           ::Types::Analytics::ValueStreamDashboard::CountType,

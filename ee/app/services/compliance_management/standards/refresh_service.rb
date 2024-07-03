@@ -24,7 +24,7 @@ module ComplianceManagement
       private
 
       def allowed?
-        Ability.allowed?(current_user, :read_group_compliance_dashboard, group)
+        Ability.allowed?(current_user, :read_group_compliance_adherence_report, group)
       end
     end
   end

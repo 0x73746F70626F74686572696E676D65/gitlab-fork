@@ -12,6 +12,10 @@ RSpec.describe ComplianceManagement::FrameworkExportMailerWorker, feature_catego
       namespace.add_owner user
     end
 
+    before do
+      stub_licensed_features(group_level_compliance_dashboard: true)
+    end
+
     subject(:worker) { described_class.new.perform user.id, namespace.id }
 
     it 'schedules mail for delivery' do

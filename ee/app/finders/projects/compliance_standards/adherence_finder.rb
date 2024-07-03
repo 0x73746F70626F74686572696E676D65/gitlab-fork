@@ -31,7 +31,7 @@ module Projects
       def allowed?
         return true if params[:skip_authorization].present?
 
-        Ability.allowed?(current_user, :read_group_compliance_dashboard, group)
+        Ability.allowed?(current_user, :read_group_compliance_adherence_report, group)
       end
 
       def init_collection

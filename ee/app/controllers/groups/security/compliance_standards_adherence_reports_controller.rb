@@ -5,7 +5,9 @@ module Groups
     class ComplianceStandardsAdherenceReportsController < Groups::ApplicationController
       include Groups::SecurityFeaturesHelper
 
-      before_action :authorize_compliance_dashboard!
+      before_action do
+        render_404 unless can?(current_user, :read_group_compliance_adherence_report, group)
+      end
 
       feature_category :compliance_management
 

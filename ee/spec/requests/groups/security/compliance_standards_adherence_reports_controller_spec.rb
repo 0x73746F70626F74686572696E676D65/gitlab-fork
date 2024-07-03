@@ -30,7 +30,7 @@ RSpec.describe Groups::Security::ComplianceStandardsAdherenceReportsController,
       end
 
       before do
-        stub_licensed_features group_level_compliance_dashboard: true
+        stub_licensed_features(group_level_compliance_dashboard: true, group_level_compliance_adherence_report: true)
       end
 
       it 'defers email generation and redirects with message on following page' do

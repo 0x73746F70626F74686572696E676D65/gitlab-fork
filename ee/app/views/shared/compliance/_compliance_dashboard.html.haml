@@ -1,9 +1,12 @@
 - group = local_assigns[:group]
 
+- adherence_report_enabled = can?(current_user, :read_group_compliance_adherence_report, group)
+- violations_report_enabled = can?(current_user, :read_group_compliance_violations_report, group)
+
 #js-compliance-report{ data: {
-  violations_csv_export_path: group_security_compliance_violation_reports_path(group, format: :csv),
+  violations_csv_export_path: violations_report_enabled && group_security_compliance_violation_reports_path(group, format: :csv),
   project_frameworks_csv_export_path: group_security_compliance_project_framework_reports_path(group, format: :csv),
-  adherences_csv_export_path: group_security_compliance_standards_adherence_reports_path(group, format: :csv),
+  adherences_csv_export_path: adherence_report_enabled && group_security_compliance_standards_adherence_reports_path(group, format: :csv),
   frameworks_csv_export_path: group_security_compliance_framework_reports_path(group, format: :csv),
   merge_commits_csv_export_path: group_security_merge_commit_reports_path(group),
   group_path: group.full_path,
@@ -19,8 +22,8 @@
   disable_scan_policy_update: !can_modify_security_policy?(group).to_s,
 
   feature_pipeline_maintenance_mode_enabled: Feature.enabled?(:ff_compliance_pipeline_maintenance_mode, group).to_s,
-  feature_adherence_report_enabled: true.to_s,
-  feature_violations_report_enabled: true.to_s,
+  feature_adherence_report_enabled: adherence_report_enabled.to_s,
+  feature_violations_report_enabled: violations_report_enabled.to_s,
   feature_frameworks_report_enabled: true.to_s,
   feature_projects_report_enabled: true.to_s,
   feature_security_policies_enabled: can?(current_user, :read_security_orchestration_policies, group).to_s

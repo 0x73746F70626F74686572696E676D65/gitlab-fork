@@ -10,6 +10,10 @@ RSpec.describe ComplianceManagement::Standards::RefreshService, feature_category
   subject(:service) { described_class.new(group: group, current_user: user) }
 
   describe '#execute' do
+    before do
+      stub_licensed_features(group_level_compliance_adherence_report: true)
+    end
+
     context 'for user namespace' do
       let_it_be(:group) { create(:namespace, owner: user) }
 

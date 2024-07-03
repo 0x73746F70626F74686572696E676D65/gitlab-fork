@@ -12,6 +12,10 @@ RSpec.describe ComplianceManagement::StandardsAdherenceExportMailerWorker, featu
       namespace.add_owner user
     end
 
+    before do
+      stub_licensed_features(group_level_compliance_adherence_report: true)
+    end
+
     subject(:worker) { described_class.new.perform user.id, namespace.id }
 
     it 'schedules mail for delivery' do

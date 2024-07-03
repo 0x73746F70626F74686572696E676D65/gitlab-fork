@@ -32,7 +32,7 @@ RSpec.describe 'Refresh adherence checks', feature_category: :compliance_managem
 
   context 'when feature is licensed' do
     before do
-      stub_licensed_features(group_level_compliance_dashboard: true)
+      stub_licensed_features(group_level_compliance_dashboard: true, group_level_compliance_adherence_report: true)
     end
 
     context 'when current user is a group owner', :freeze_time, :sidekiq_inline do

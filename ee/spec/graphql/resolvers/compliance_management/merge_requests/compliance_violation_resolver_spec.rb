@@ -35,6 +35,7 @@ RSpec.describe Resolvers::ComplianceManagement::MergeRequests::ComplianceViolati
   end
 
   before do
+    stub_licensed_features(group_level_compliance_violations_report: true, group_level_compliance_dashboard: true)
     merge_request.metrics.update!(merged_at: 3.days.ago)
     merge_request2.metrics.update!(merged_at: 1.day.ago)
   end

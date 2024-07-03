@@ -2972,29 +2972,63 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
     end
   end
 
-  describe 'group level compliance dashboard' do
-    context 'feature enabled' do
-      before do
-        stub_licensed_features(group_level_compliance_dashboard: true)
+  describe 'group level compliance features' do
+    shared_examples 'group level compliance feature' do |feature, permission|
+      context 'when enabled' do
+        before do
+          stub_licensed_features({ feature => true })
+        end
+
+        context 'when user is eligible for access' do
+          where(role: %w[owner auditor])
+
+          with_them do
+            let(:current_user) { public_send(role) }
+
+            it { is_expected.to be_allowed(permission) }
+          end
+        end
+
+        context 'allows admin', :enable_admin_mode do
+          let(:current_user) { admin }
+
+          it { is_expected.to be_allowed(permission) }
+        end
       end
 
-      context 'auditor' do
-        let(:current_user) { auditor }
+      context 'when disabled' do
+        before do
+          stub_licensed_features({ feature => false })
+        end
 
-        it { is_expected.to be_allowed(:read_group_compliance_dashboard) }
+        context 'when user is eligible for access' do
+          where(role: %w[owner auditor])
+
+          with_them do
+            let(:current_user) { public_send(role) }
+
+            it { is_expected.to be_disallowed(permission) }
+          end
+        end
+
+        context 'disallows admin', :enable_admin_mode do
+          let(:current_user) { admin }
+
+          it { is_expected.to be_disallowed(permission) }
+        end
       end
     end
 
-    context 'feature disabled' do
-      before do
-        stub_licensed_features(group_level_compliance_dashboard: false)
-      end
+    describe 'group level compliance dashboard' do
+      it_behaves_like 'group level compliance feature', :group_level_compliance_dashboard, :read_group_compliance_dashboard
+    end
 
-      context 'auditor' do
-        let(:current_user) { auditor }
+    describe 'group level compliance adherence report' do
+      it_behaves_like 'group level compliance feature', :group_level_compliance_adherence_report, :read_group_compliance_adherence_report
+    end
 
-        it { is_expected.to be_disallowed(:read_group_compliance_dashboard) }
-      end
+    describe 'group level compliance violations report' do
+      it_behaves_like 'group level compliance feature', :group_level_compliance_violations_report, :read_group_compliance_violations_report
     end
   end
 
