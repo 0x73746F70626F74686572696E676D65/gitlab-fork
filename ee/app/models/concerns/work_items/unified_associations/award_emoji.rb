@@ -54,6 +54,8 @@ module WorkItems
       end
 
       class_methods do
+        extend ::Gitlab::Utils::Override
+
         # Used to batch load unified award emoji on GraphQL
         def grouped_union_of_award_emojis(objects_relation, sync_objects_relation)
           ::AwardEmoji.from_union(
@@ -65,6 +67,75 @@ module WorkItems
 
         def union_preloads
           { awardable: [:work_item_type, :namespace, :group, :author] }
+        end
+
+        override :awarded
+        def awarded(user, opts = {})
+          return super unless apply_unified_emoji_association?(opts[:group])
+
+          inner_query = inner_filter_query(user, opts)
+
+          inner_query =
+            if self == Epic
+              opts[:base_class_name] = 'Issue'
+              opts[:awardable_id_column] = Epic.arel_table[:issue_id]
+              inner_query.exists.or(inner_filter_query(user, opts).exists)
+            else
+              epics = ::Epic.arel_table
+              emojis = ::AwardEmoji.arel_table
+              issues = ::Issue.arel_table
+              join_clause = emojis[:awardable_id].eq(epics[:id])
+              opts[:awardable_id_column] = epics[:id]
+              opts[:base_class_name] = 'Epic'
+
+              inner_query
+                .exists
+                .or(
+                  inner_filter_query(user, opts)
+                  .join(epics).on(join_clause)
+                  .where(issues[:id].eq(epics[:issue_id]))
+                  .exists
+                )
+            end
+
+          where(inner_query)
+        end
+
+        override :not_awarded
+        def not_awarded(user, opts = {})
+          return super unless apply_unified_emoji_association?(opts[:group])
+
+          inner_query = inner_filter_query(user, opts)
+
+          inner_query =
+            if self == Epic
+              opts[:base_class_name] = 'Issue'
+              opts[:awardable_id_column] = Epic.arel_table[:issue_id]
+              inner_query.exists.not.and(inner_filter_query(user, opts).exists.not)
+            else
+              epics = ::Epic.arel_table
+              emojis = ::AwardEmoji.arel_table
+              issues = ::Issue.arel_table
+              join_clause = emojis[:awardable_id].eq(epics[:id])
+              opts[:awardable_id_column] = epics[:id]
+              opts[:base_class_name] = 'Epic'
+
+              inner_query
+                .exists.not
+                .and(
+                  inner_filter_query(user, opts)
+                  .join(epics).on(join_clause)
+                  .where(issues[:id].eq(epics[:issue_id]))
+                  .exists.not
+                )
+            end
+
+          where(inner_query)
+        end
+
+        def apply_unified_emoji_association?(group)
+          group&.epic_and_work_item_associations_unification_enabled? &&
+            [WorkItem, Epic].include?(self)
         end
       end
 

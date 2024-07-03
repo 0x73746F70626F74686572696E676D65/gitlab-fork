@@ -201,5 +201,14 @@ RSpec.describe WorkItems::WorkItemsFinder, feature_category: :team_planning do
         end
       end
     end
+
+    context 'when emojis are present on its associated legacy epic' do
+      let_it_be(:object1) { create(:work_item, :epic_with_legacy_epic, namespace: group) }
+      let_it_be(:object2) { create(:work_item, :epic_with_legacy_epic, namespace: group) }
+      let_it_be(:object3) { create(:work_item, :epic_with_legacy_epic, namespace: group) }
+      let_it_be(:object4) { create(:work_item, :epic_with_legacy_epic, namespace: group) }
+
+      it_behaves_like 'filter by unified emoji association'
+    end
   end
 end
