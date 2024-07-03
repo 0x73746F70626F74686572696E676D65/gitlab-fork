@@ -16,10 +16,6 @@ module EE
           @subject.protected_branch.supports_unprotection_restrictions?
         end
 
-        # These are project level branch rules so we can set this condition to
-        # false to disable the rule
-        condition(:can_maintainer_access_group) { false }
-
         rule { unprotect_restrictions_enabled & ~can_unprotect }.policy do
           prevent :create_branch_rule
           prevent :update_branch_rule
