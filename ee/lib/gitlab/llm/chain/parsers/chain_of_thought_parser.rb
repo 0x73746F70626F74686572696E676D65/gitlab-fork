@@ -8,7 +8,9 @@ module Gitlab
           attr_reader :action, :action_input, :thought, :final_answer
 
           def parse
-            @output = Utils::TextProcessing.text_before_stop_word(output) || output
+            unless duo_chat_feature_setting&.self_hosted?
+              @output = Utils::TextProcessing.text_before_stop_word(output) || output
+            end
 
             parse_action
             parse_action_input
@@ -70,6 +72,10 @@ module Gitlab
             return if answer.empty?
 
             @final_answer = answer
+          end
+
+          def duo_chat_feature_setting
+            ::Ai::FeatureSetting.find_by_feature(:duo_chat)
           end
         end
       end

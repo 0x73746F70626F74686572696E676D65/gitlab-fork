@@ -15,6 +15,21 @@ RSpec.describe Gitlab::Llm::Chain::Parsers::ChainOfThoughtParser, feature_catego
   subject(:parser) { described_class.new(output: output) }
 
   describe '#parse' do
+    context 'with a self-hosted model used for Duo chat' do
+      let(:model) { create(:ai_self_hosted_model, api_token: 'test_token') }
+
+      before do
+        create(:ai_feature_setting, self_hosted_model: model, feature: :duo_chat)
+      end
+
+      it 'does not call TextProcessing' do
+        expect(Gitlab::Llm::Chain::Utils::TextProcessing)
+          .not_to receive(:text_before_stop_word)
+
+        parser.parse
+      end
+    end
+
     it 'parses input for instructions' do
       expect(Gitlab::Llm::Chain::Utils::TextProcessing)
         .to receive(:text_before_stop_word)
