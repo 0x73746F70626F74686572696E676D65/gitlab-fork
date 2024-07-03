@@ -100,6 +100,21 @@ RSpec.describe EpicsFinder, feature_category: :team_planning do
 
             expect(epics(my_reaction_emoji: 'star')).to contain_exactly(epic3)
           end
+
+          context 'when emojis are present on its associated work item' do
+            let_it_be(:group) { create(:group) }
+
+            let_it_be(:object1) { create(:epic, group: group) }
+            let_it_be(:object2) { create(:epic, group: group) }
+            let_it_be(:object3) { create(:epic, group: group) }
+            let_it_be(:object4) { create(:epic, group: group) }
+
+            before do
+              group.add_developer(user)
+            end
+
+            it_behaves_like 'filter by unified emoji association'
+          end
         end
 
         context 'by author' do

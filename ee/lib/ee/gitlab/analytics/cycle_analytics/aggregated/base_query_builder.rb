@@ -115,23 +115,25 @@ module EE::Gitlab::Analytics::CycleAnalytics::Aggregated::BaseQueryBuilder
   def filter_by_my_reaction_emoji(query)
     return query unless issue_filter_present?(:my_reaction_emoji)
 
-    query.awarded(
-      params[:current_user],
-      params[:my_reaction_emoji],
-      ::Issue.name,
-      :issue_id
-    )
+    opts = {
+      name: params[:my_reaction_emoji],
+      base_class_name: ::Issue.name,
+      awardable_id_column: stage_event_model.arel_table[:issue_id]
+    }
+
+    query.awarded(params[:current_user], opts)
   end
 
   def filter_by_negated_my_reaction_emoji(query)
     return query unless negated_issue_filter_present?(:my_reaction_emoji)
 
-    query.not_awarded(
-      params[:current_user],
-      params[:not][:my_reaction_emoji],
-      ::Issue.name,
-      :issue_id
-    )
+    opts = {
+      name: params[:not][:my_reaction_emoji],
+      base_class_name: ::Issue.name,
+      awardable_id_column: stage_event_model.arel_table[:issue_id]
+    }
+
+    query.not_awarded(params[:current_user], opts)
   end
 
   def issue_filter_present?(filter_name)
