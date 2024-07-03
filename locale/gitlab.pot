@@ -6148,6 +6148,9 @@ msgstr ""
 msgid "Analytics|Tables"
 msgstr ""
 
+msgid "Analytics|The visualization preview displays only the last 7 days. Dashboard visualizations can display the entire date range."
+msgstr ""
+
 msgid "Analytics|There was a problem generating your query. Please try again."
 msgstr ""
 

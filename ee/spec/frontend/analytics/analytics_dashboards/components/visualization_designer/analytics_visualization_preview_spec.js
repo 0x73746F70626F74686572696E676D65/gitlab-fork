@@ -1,6 +1,8 @@
+import { GlIcon } from '@gitlab/ui';
 import { safeDump } from 'js-yaml';
 import AnalyticsVisualizationPreview from 'ee/analytics/analytics_dashboards/components/visualization_designer/analytics_visualization_preview.vue';
 import AiCubeQueryFeedback from 'ee/analytics/analytics_dashboards/components/visualization_designer/ai_cube_query_feedback.vue';
+import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 
 import {
   PANEL_DISPLAY_TYPES,
@@ -20,6 +22,7 @@ describe('AnalyticsVisualizationPreview', () => {
   const findVisualizationButton = () => wrapper.findByTestId('select-visualization-button');
   const findCodeButton = () => wrapper.findByTestId('select-code-button');
   const findAiCubeQueryFeedback = () => wrapper.findComponent(AiCubeQueryFeedback);
+  const findHelpIcon = () => wrapper.findComponent(GlIcon);
 
   const selectDisplayType = jest.fn();
 
@@ -27,6 +30,9 @@ describe('AnalyticsVisualizationPreview', () => {
 
   const createWrapper = (props = {}) => {
     wrapper = shallowMountExtended(AnalyticsVisualizationPreview, {
+      directives: {
+        GlTooltip: createMockDirective('gl-tooltip'),
+      },
       propsData: {
         selectedVisualizationType: '',
         displayType: '',
@@ -47,6 +53,10 @@ describe('AnalyticsVisualizationPreview', () => {
 
     it('should render measurement headline', () => {
       expect(wrapper.findByTestId('measurement-hl').text()).toBe('Start by choosing a metric');
+    });
+
+    it('should not render the help icon', () => {
+      expect(findHelpIcon().exists()).toBe(false);
     });
   });
 
@@ -83,6 +93,17 @@ describe('AnalyticsVisualizationPreview', () => {
       it('should be able to select code section', () => {
         findCodeButton().vm.$emit('click');
         expect(wrapper.emitted('selectedDisplayType')).toEqual([[PANEL_DISPLAY_TYPES.CODE]]);
+      });
+
+      it('should show an icon with a tooltip explaining the preview date range', () => {
+        const helpIcon = findHelpIcon();
+        const tooltip = getBinding(helpIcon.element, 'gl-tooltip');
+
+        expect(helpIcon.props('name')).toBe('information-o');
+        expect(helpIcon.attributes('title')).toBe(
+          'The visualization preview displays only the last 7 days. Dashboard visualizations can display the entire date range.',
+        );
+        expect(tooltip).toBeDefined();
       });
     });
 

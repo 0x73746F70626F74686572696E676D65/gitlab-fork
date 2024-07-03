@@ -1,5 +1,5 @@
 <script>
-import { GlButton, GlButtonGroup, GlLoadingIcon } from '@gitlab/ui';
+import { GlButton, GlButtonGroup, GlLoadingIcon, GlIcon, GlTooltipDirective } from '@gitlab/ui';
 import { safeDump } from 'js-yaml';
 import { createAlert } from '~/alert';
 import { s__, sprintf } from '~/locale';
@@ -21,7 +21,11 @@ export default {
     GlButton,
     GlButtonGroup,
     GlLoadingIcon,
+    GlIcon,
     AnalyticsDashboardPanel,
+  },
+  directives: {
+    GlTooltip: GlTooltipDirective,
   },
   props: {
     selectedVisualizationType: {
@@ -98,17 +102,29 @@ export default {
       <div
         class="gl-m-5 gl-gap-5 gl-display-flex gl-flex-wrap-reverse gl-justify-content-space-between gl-align-items-center"
       >
-        <gl-button-group>
-          <gl-button
-            v-for="buttonDisplayType in $options.PANEL_DISPLAY_TYPE_ITEMS"
-            :key="buttonDisplayType.type"
-            :selected="displayType === buttonDisplayType.type"
-            :icon="buttonDisplayType.icon"
-            :data-testid="`select-${buttonDisplayType.type}-button`"
-            @click="$emit('selectedDisplayType', buttonDisplayType.type)"
-            >{{ buttonDisplayType.title }}</gl-button
-          >
-        </gl-button-group>
+        <div class="gl-display-flex gl-gap-3">
+          <gl-button-group>
+            <gl-button
+              v-for="buttonDisplayType in $options.PANEL_DISPLAY_TYPE_ITEMS"
+              :key="buttonDisplayType.type"
+              :selected="displayType === buttonDisplayType.type"
+              :icon="buttonDisplayType.icon"
+              :data-testid="`select-${buttonDisplayType.type}-button`"
+              @click="$emit('selectedDisplayType', buttonDisplayType.type)"
+              >{{ buttonDisplayType.title }}</gl-button
+            >
+          </gl-button-group>
+          <gl-icon
+            v-gl-tooltip
+            :title="
+              s__(
+                'Analytics|The visualization preview displays only the last 7 days. Dashboard visualizations can display the entire date range.',
+              )
+            "
+            name="information-o"
+            class="gl-align-self-end gl-mb-3 gl-text-gray-500 gl-min-w-5"
+          />
+        </div>
         <ai-cube-query-feedback
           v-if="aiPromptCorrelationId"
           :correlation-id="aiPromptCorrelationId"
