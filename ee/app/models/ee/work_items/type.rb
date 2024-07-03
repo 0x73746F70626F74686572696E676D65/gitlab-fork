@@ -22,15 +22,17 @@ module EE
       override :widgets
       def widgets(resource_parent)
         strong_memoize_with(:widgets, resource_parent) do
-          super - unlicensed_widgets(resource_parent)
+          unlicensed_classes = unlicensed_widget_classes(resource_parent)
+
+          super.reject { |widget_def| unlicensed_classes.include?(widget_def.widget_class) }
         end
       end
 
       private
 
-      def unlicensed_widgets(resource_parent)
-        LICENSED_WIDGETS.flat_map do |licensed_feature, widgets|
-          widgets unless resource_parent.licensed_feature_available?(licensed_feature)
+      def unlicensed_widget_classes(resource_parent)
+        LICENSED_WIDGETS.flat_map do |licensed_feature, widget_class|
+          widget_class unless resource_parent.licensed_feature_available?(licensed_feature)
         end.compact
       end
     end

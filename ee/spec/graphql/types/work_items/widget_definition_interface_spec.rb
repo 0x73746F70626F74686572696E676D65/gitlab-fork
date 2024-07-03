@@ -7,7 +7,7 @@ RSpec.describe Types::WorkItems::WidgetDefinitionInterface, feature_category: :t
     subject { described_class.resolve_type(object, {}) }
 
     context 'for labels widget' do
-      let(:object) { WorkItems::Widgets::Labels }
+      let(:object) { build(:widget_definition, widget_type: 'labels') }
 
       it { is_expected.to eq(Types::WorkItems::WidgetDefinitions::LabelsType) }
     end
