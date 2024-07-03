@@ -84,7 +84,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::SingleActionExecutor, feature_categor
             prompt: user_input,
             options: {
               agent_scratchpad: [],
-              conversation: [],
+              conversation: "",
               single_action_agent: true,
               current_resource_type: "issue",
               current_resource_content: "issue description"
@@ -145,7 +145,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::SingleActionExecutor, feature_categor
             prompt: user_input,
             options: {
               agent_scratchpad: [],
-              conversation: [],
+              conversation: "",
               single_action_agent: true,
               current_resource_type: nil,
               current_resource_content: nil
