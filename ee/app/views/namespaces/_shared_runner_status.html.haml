@@ -1,9 +1,10 @@
 - namespace = local_assigns.fetch(:namespace)
 - minutes_usage = namespace.ci_minutes_usage
+- list_item_classes = '!gl-grid md:gl-grid-cols-3 gl-gap-x-3'
 - minutes_usage_presenter = Ci::Minutes::UsagePresenter.new(minutes_usage)
 
 - if minutes_usage_presenter.display_shared_runners_data?
-  %li{ class: '!gl-grid md:gl-grid-cols-3 gl-gap-x-3' }
+  %li{ class: list_item_classes }
     %span.gl-text-secondary= _('Compute quota:')
     .gl-col-span-2
       %strong

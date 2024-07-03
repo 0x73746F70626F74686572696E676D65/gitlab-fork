@@ -1,14 +1,15 @@
 - namespace = local_assigns.fetch(:namespace)
+- list_item_classes = '!gl-grid md:gl-grid-cols-3 gl-gap-x-3'
 - return unless Gitlab::CurrentSettings.should_check_namespace_plan? && namespace
 
-%li{ class: '!gl-grid md:gl-grid-cols-3 gl-gap-x-3' }
+%li{ class: list_item_classes }
   %span.gl-text-secondary Plan:
   .gl-col-span-2
     - if namespace.actual_plan&.paid?
-      %strong.plan-badge.inline{ data: { plan: namespace.actual_plan_name, testid: 'group-plan-content' } }
+      %strong.plan-badge.gl-inline{ data: { plan: namespace.actual_plan_name, testid: 'group-plan-content' } }
         = custom_icon('icon_premium')
         = namespace.actual_plan.title
     - else
-      %strong.plan-badge.inline{ data: { testid: 'group-plan-content' } }
+      %strong.plan-badge.gl-inline{ data: { testid: 'group-plan-content' } }
         = custom_icon('icon_premium')
         No Plan

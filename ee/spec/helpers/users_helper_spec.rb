@@ -217,8 +217,16 @@ RSpec.describe UsersHelper, feature_category: :user_profile do
         )
       end
 
-      it 'display' do
-        expect(user_enterprise_group_text(user_detail_with_group.user)).not_to be_nil
+      it 'displays enterprise group information' do
+        html_content = user_enterprise_group_text(user_detail_with_group.user)
+        expect(html_content).to include("Enterprise user of:")
+        expect(html_content).to include(group.name)
+        expect(html_content).to include("(#{group.id})")
+      end
+
+      it 'displays enterprise group associated date' do
+        html_content = user_enterprise_group_text(user_detail_with_group.user)
+        expect(html_content).to include(user_detail_with_group.enterprise_group_associated_at.to_fs(:medium))
       end
     end
   end
