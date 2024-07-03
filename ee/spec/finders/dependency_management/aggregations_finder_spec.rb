@@ -184,5 +184,43 @@ RSpec.describe DependencyManagement::AggregationsFinder, feature_category: :depe
         end
       end
     end
+
+    describe 'filtering by license' do
+      using RSpec::Parameterized::TableSyntax
+
+      let_it_be(:occurrence_apache_2) { create(:sbom_occurrence, :apache_2, project: target_projects.first) }
+      let_it_be(:occurrence_mit) { create(:sbom_occurrence, :mit, project: target_projects.first) }
+      let_it_be(:occurrence_mpl_2) { create(:sbom_occurrence, :mpl_2, project: target_projects.first) }
+      let_it_be(:occurrence_apache_2_mpl_2) do
+        create(:sbom_occurrence, :apache_2, :mpl_2, project: target_projects.first)
+      end
+
+      let_it_be(:unknown_1) { target_occurrences.first }
+      let_it_be(:unknown_2) { target_occurrences.second }
+
+      let(:params) { { licenses: input } }
+
+      where(:input, :expected_occurrences) do
+        %w[MIT MPL-2.0]     | [ref(:occurrence_mit), ref(:occurrence_mpl_2)]
+        %w[MPL-2.0 unknown] | [ref(:occurrence_mpl_2), ref(:unknown_1), ref(:unknown_2)]
+        %w[Apache-2.0]      | [ref(:occurrence_apache_2), ref(:occurrence_apache_2_mpl_2)]
+        %w[unknown]         | [ref(:unknown_1), ref(:unknown_2)]
+        []                  | [ref(:occurrence_apache_2), ref(:occurrence_mit), ref(:occurrence_mpl_2),
+          ref(:occurrence_apache_2_mpl_2), ref(:unknown_1), ref(:unknown_2)]
+      end
+
+      with_them do
+        it 'returns expected output for each input' do
+          expected = expected_occurrences.map do |occurrence|
+            an_object_having_attributes(
+              component_id: occurrence.component_id,
+              component_version_id: occurrence.component_version_id
+            )
+          end
+
+          expect(execute.to_a).to match_array(expected)
+        end
+      end
+    end
   end
 end

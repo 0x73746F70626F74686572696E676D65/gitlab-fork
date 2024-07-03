@@ -76,11 +76,22 @@ module DependencyManagement
     end
 
     def inner_occurrences
-      Sbom::Occurrence.where('sbom_occurrences.traversal_ids = namespaces.traversal_ids::bigint[]')
+      relation = Sbom::Occurrence
+        .where('sbom_occurrences.traversal_ids = namespaces.traversal_ids::bigint[]')
         .unarchived
+
+      relation = filter_by_licences(relation)
+
+      relation
         .order(inner_order)
         .select(distinct(on: distinct_columns))
         .keyset_paginate(cursor: cursor, per_page: page_size)
+    end
+
+    def filter_by_licences(relation)
+      return relation unless params[:licenses].present?
+
+      relation.by_primary_license(params[:licenses])
     end
 
     def inner_order

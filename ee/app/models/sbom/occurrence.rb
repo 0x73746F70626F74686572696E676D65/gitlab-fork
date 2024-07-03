@@ -77,6 +77,18 @@ module Sbom
       where(query_parts.join(' OR '), licenses: Array(ids))
     end
 
+    scope :by_primary_license, ->(license_ids) do
+      return none if license_ids.blank?
+
+      license_ids.map do |id|
+        if id.casecmp('unknown') == 0
+          where("licenses = '[]'")
+        else
+          where("(licenses -> 0 ->> 'spdx_identifier')::text = ?", id)
+        end
+      end.reduce(:or)
+    end
+
     scope :unarchived, -> { where(archived: false) }
     scope :by_project_ids, ->(project_ids) { where(project_id: project_ids) }
     scope :by_uuids, ->(uuids) { where(uuid: uuids) }

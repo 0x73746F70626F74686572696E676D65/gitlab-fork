@@ -364,6 +364,58 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
                 end
               end
 
+              context 'when filtered by licenses' do
+                let(:params) do
+                  {
+                    group_id: group.to_param,
+                    licenses: ['Apache-2.0']
+                  }
+                end
+
+                it 'returns a filtered list' do
+                  subject
+
+                  expect(json_response['dependencies'].count).to eq(1)
+                  expect(json_response['dependencies'].pluck('name')).to eq([sbom_occurrence_bundler.name])
+                end
+              end
+
+              context 'when filtered by unknown licenses' do
+                let_it_be(:sbom_occurrence_unknown) { create(:sbom_occurrence, project: project) }
+
+                let(:params) do
+                  {
+                    group_id: group.to_param,
+                    licenses: ['unknown']
+                  }
+                end
+
+                it 'returns a filtered list' do
+                  subject
+
+                  expect(json_response['dependencies'].pluck('occurrence_id')).to eq([sbom_occurrence_unknown.id])
+                end
+              end
+
+              context 'when filtered by multiple licenses' do
+                let_it_be(:sbom_occurrence_unknown) { create(:sbom_occurrence, project: project) }
+
+                let(:params) do
+                  {
+                    group_id: group.to_param,
+                    licenses: ['Apache-2.0', 'unknown']
+                  }
+                end
+
+                it 'returns a filtered list' do
+                  subject
+
+                  expect(json_response['dependencies'].pluck('occurrence_id')).to match_array([
+                    sbom_occurrence_bundler.id, sbom_occurrence_unknown.id
+                  ])
+                end
+              end
+
               context 'when trying to search for too many projects' do
                 let(:params) { { project_ids: (1..11).to_a } }
 
