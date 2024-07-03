@@ -67,6 +67,9 @@ describe('WorkItemRolledupDates component', () => {
         workItemType: 'Epic',
         workItem: updateWorkItemMutationResponse.data.workItemUpdate.workItem,
       },
+      provide: {
+        isGroup: false,
+      },
       stubs: {
         GlDatepicker: stubComponent(GlDatepicker, {
           methods: {

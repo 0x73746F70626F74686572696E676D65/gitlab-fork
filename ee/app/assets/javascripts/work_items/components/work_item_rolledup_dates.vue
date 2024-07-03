@@ -7,6 +7,7 @@ import {
   GlFormRadio,
 } from '@gitlab/ui';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
+import { newWorkItemId } from '~/work_items/utils';
 import { getDateWithUTC, newDateAsLocaleTime } from '~/lib/utils/datetime/date_calculation_utility';
 import { s__ } from '~/locale';
 import Tracking from '~/tracking';
@@ -20,6 +21,7 @@ import {
   WIDGET_TYPE_ROLLEDUP_DATES,
 } from '~/work_items/constants';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
+import updateNewWorkItemMutation from '~/work_items/graphql/update_new_work_item.mutation.graphql';
 
 const nullObjectDate = new Date(0);
 
@@ -47,6 +49,7 @@ export default {
     Outside,
   },
   mixins: [Tracking.mixin()],
+  inject: ['isGroup'],
   props: {
     canUpdate: {
       type: Boolean,
@@ -89,6 +92,10 @@ export default {
     },
     workItem: {
       type: Object,
+      required: true,
+    },
+    fullPath: {
+      type: String,
       required: true,
     },
   },
@@ -221,6 +228,26 @@ export default {
 
       this.track('updated_rollup_type');
 
+      if (this.workItemId === newWorkItemId(this.workItemType)) {
+        this.$apollo.mutate({
+          mutation: updateNewWorkItemMutation,
+          variables: {
+            input: {
+              isGroup: this.isGroup,
+              workItemType: this.workItemType,
+              fullPath: this.fullPath,
+              rolledUpDates: {
+                dueDateIsFixed: this.rollupType === ROLLUP_TYPE_FIXED,
+                startDateIsFixed: this.rollupType === ROLLUP_TYPE_FIXED,
+              },
+            },
+          },
+        });
+
+        this.isUpdating = false;
+        return;
+      }
+
       this.$apollo
         .mutate({
           mutation: updateWorkItemMutation,
@@ -258,6 +285,28 @@ export default {
 
       this.isUpdating = true;
       this.rollupType = ROLLUP_TYPE_FIXED;
+
+      if (this.workItemId === newWorkItemId(this.workItemType)) {
+        this.$apollo.mutate({
+          mutation: updateNewWorkItemMutation,
+          variables: {
+            input: {
+              isGroup: this.isGroup,
+              workItemType: this.workItemType,
+              fullPath: this.fullPath,
+              rolledUpDates: {
+                dueDateIsFixed: true,
+                startDateIsFixed: true,
+                dueDateFixed: this.dirtyDueDate,
+                startDateFixed: this.dirtyStartDate,
+              },
+            },
+          },
+        });
+
+        this.isUpdating = false;
+        return;
+      }
 
       this.$apollo
         .mutate({
