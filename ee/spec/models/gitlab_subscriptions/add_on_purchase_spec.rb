@@ -294,6 +294,27 @@ RSpec.describe GitlabSubscriptions::AddOnPurchase, feature_category: :plan_provi
       end
     end
 
+    describe '.for_duo_enterprise' do
+      subject(:duo_enterprise_add_on_purchases) { described_class.for_duo_enterprise }
+
+      it { expect(duo_enterprise_add_on_purchases).to be_empty }
+
+      context 'with duo_enterprise purchase' do
+        let!(:duo_enterprise_add_on) { create(:gitlab_subscription_add_on_purchase, :duo_enterprise) }
+
+        it { expect(duo_enterprise_add_on_purchases).to eq [duo_enterprise_add_on] }
+      end
+
+      context 'with other purchases' do
+        let!(:duo_enterprise_add_on) { create(:gitlab_subscription_add_on_purchase, :duo_enterprise) }
+        let!(:code_suggestions_add_on) { create(:gitlab_subscription_add_on_purchase, :gitlab_duo_pro) }
+
+        it 'returns only duo_enterprise add-ons' do
+          expect(duo_enterprise_add_on_purchases).to eq [duo_enterprise_add_on]
+        end
+      end
+    end
+
     describe '.for_user', :saas do
       subject(:user_purchases) { described_class.for_user(user) }
 

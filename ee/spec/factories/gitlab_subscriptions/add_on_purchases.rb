@@ -42,6 +42,10 @@ FactoryBot.define do
       add_on { association(:gitlab_subscription_add_on, :product_analytics) }
     end
 
+    trait :duo_enterprise do
+      add_on { association(:gitlab_subscription_add_on, :duo_enterprise) }
+    end
+
     trait :self_managed do
       namespace { nil }
     end
