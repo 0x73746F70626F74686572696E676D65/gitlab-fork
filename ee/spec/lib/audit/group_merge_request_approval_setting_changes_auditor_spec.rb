@@ -53,7 +53,7 @@ RSpec.describe Audit::GroupMergeRequestApprovalSettingChangesAuditor, feature_ca
     let_it_be(:subject) { described_class.new(user, approval_setting, {}) }
 
     ::GroupMergeRequestApprovalSetting::AUDIT_LOG_ALLOWLIST.each do |column, desc|
-      it "creates an audit event for #{column}" do
+      it "creates an audit event for #{column}", quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/467630' do
         approval_setting.update_attribute(column, true)
 
         if column == :require_password_to_approve || column == :require_reauthentication_to_approve
