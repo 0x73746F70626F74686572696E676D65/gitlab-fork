@@ -30,11 +30,11 @@ module Security
       end
 
       def scan_execution_policies_with_latest_templates?
-        Feature.enabled?(:scan_execution_policies_with_latest_templates, project, type: :gitlab_com_derisk) ||
+        Feature.enabled?(:scan_execution_policies_with_latest_templates, project, type: :beta) ||
           Feature.enabled?(
             :scan_execution_policies_with_latest_templates_group,
             project.group,
-            type: :gitlab_com_derisk
+            type: :beta
           )
       end
     end
