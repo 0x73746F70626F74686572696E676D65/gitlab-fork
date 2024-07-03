@@ -72,6 +72,16 @@ module SubscriptionPortalHelpers
       }.to_json)
   end
 
+  def stub_get_billing_account_details(account_name: nil)
+    stub_full_request(graphql_url, method: :post)
+      .with(body: /getBillingAccount/)
+      .to_return(status: 200, body: {
+        data: {
+          zuoraAccountName: account_name
+        }
+      }.to_json, headers: { 'Content-Type' => 'application/json' })
+  end
+
   def stub_subscription_permissions_data(namespace_id, can_add_seats: true, can_add_duo_pro_seats: true, can_renew: true, community_plan: false, reason: 'MANAGED_BY_RESELLER')
     stub_full_request(graphql_url, method: :post)
       .with(

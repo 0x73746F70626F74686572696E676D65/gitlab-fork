@@ -9,7 +9,8 @@ module GitlabSubscriptions
     end
 
     def customers_dot_flow?
-      Feature.enabled?(:migrate_purchase_flows_for_existing_customers, current_user)
+      Feature.enabled?(:migrate_purchase_flows_for_existing_customers, current_user) &&
+        namespace.present? && valid_billing_account?
     end
 
     def build(params = {})
@@ -46,6 +47,11 @@ module GitlabSubscriptions
       # the GitLab flow requires the user to already have a last name.
       # This can be removed once https://gitlab.com/gitlab-org/gitlab/-/issues/298715 is complete.
       current_user.last_name.present? && namespace.group_namespace?
+    end
+
+    def valid_billing_account?
+      response = Gitlab::SubscriptionPortal::Client.get_billing_account_details(current_user)
+      response[:success] && response.dig(:billing_account_details, "billingAccount", "zuoraAccountName").present?
     end
   end
 end

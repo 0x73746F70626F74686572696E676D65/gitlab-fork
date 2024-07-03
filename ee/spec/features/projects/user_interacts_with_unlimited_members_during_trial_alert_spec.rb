@@ -3,10 +3,16 @@
 require 'spec_helper'
 
 RSpec.describe 'Project > Unlimited members alert', :js, :saas, feature_category: :groups_and_projects do
+  include SubscriptionPortalHelpers
+
   let(:alert_selector) { '[data-testid="unlimited-members-during-trial-alert"]' }
   let_it_be(:group) { create(:group, :private, name: 'unlimited-members-during-trial-alert-group') }
   let_it_be(:project) { create(:project, group: group) }
   let_it_be(:user) { create(:user) }
+
+  before do
+    stub_get_billing_account_details
+  end
 
   context 'when group not in trial' do
     it 'does not display alert' do

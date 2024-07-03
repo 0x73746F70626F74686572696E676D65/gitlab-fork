@@ -12,6 +12,7 @@ RSpec.describe 'Show trial banner', :js, feature_category: :subscription_managem
 
   before do
     stub_signing_key
+    stub_get_billing_account_details
     stub_application_setting(check_namespace_plan: true)
     allow(Gitlab).to receive(:com?).and_return(true).at_least(:once)
     stub_billing_plans(nil)

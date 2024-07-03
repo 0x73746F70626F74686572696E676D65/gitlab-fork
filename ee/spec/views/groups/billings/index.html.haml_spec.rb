@@ -10,6 +10,8 @@ RSpec.describe 'groups/billings/index', :saas, :aggregate_failures, feature_cate
   let_it_be(:plans_data) { billing_plans_data.map { |plan| Hashie::Mash.new(plan) } }
 
   before do
+    stub_signing_key
+    stub_get_billing_account_details
     allow(view).to receive(:current_user).and_return(user)
     assign(:group, group)
     assign(:plans_data, plans_data)

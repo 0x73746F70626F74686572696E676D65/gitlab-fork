@@ -341,18 +341,10 @@ module Gitlab
             response = http_post('graphql',
               user_auth_headers(user),
               { query: query }
-            )[:data]
+            )
 
-            if response['errors'].blank?
-              {
-                success: true,
-                response: response
-              }
-            else
-              track_error(query, response)
-
-              error(response['errors'])
-            end
+            parse_errors(response, query_name: 'getBillingAccount').presence ||
+              { success: true, billing_account_details: response.dig(:data, 'data') }
           rescue *RESCUABLE_HTTP_ERRORS => e
             Gitlab::ErrorTracking.log_exception(e)
 
