@@ -1,9 +1,0 @@
----
-name: analytics_visualization_designer_filtering
-feature_issue_url: https://gitlab.com/groups/gitlab-org/-/epics/13685
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/153638
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/462729
-milestone: '17.1'
-group: group::product analytics
-type: wip
-default_enabled: false

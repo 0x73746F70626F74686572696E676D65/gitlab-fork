@@ -50,8 +50,6 @@ describe('AnalyticsVisualizationDesigner', () => {
   const findTitleFormGroup = () => wrapper.findByTestId('visualization-title-form-group');
   const findTitleInput = () => wrapper.findByTestId('visualization-title-input');
   const findFilteredSearch = () => wrapper.findByTestId('visualization-filtered-search');
-  const findMeasureSelector = () => wrapper.findByTestId('panel-measure-selector');
-  const findDimensionSelector = () => wrapper.findByTestId('panel-dimension-selector');
   const findSaveButton = () => wrapper.findByTestId('visualization-save-btn');
   const findQueryBuilder = () => wrapper.findByTestId('query-builder');
   const findTypeSelector = () => wrapper.findComponent(VisualizationTypeSelector);
@@ -64,30 +62,13 @@ describe('AnalyticsVisualizationDesigner', () => {
     await findTitleInput().vm.$emit('input', newTitle);
   };
 
-  const setMeasurement = (type = '', subType = '') => {
-    findMeasureSelector().vm.$emit('measureSelected', type, subType);
-
-    if (type && subType) {
-      findQueryBuilder().vm.$emit('vizStateChange', {
-        query: {
-          measures: [`${type}.${subType}`],
-        },
-      });
-    }
-  };
-
-  const setVisualizationType = (type = '') => {
-    findTypeSelector().vm.$emit('input', type);
-  };
-
-  const setAllRequiredFields = async () => {
-    await setVisualizationTitle('New Title');
-    setMeasurement('pageViews', 'all');
-    setVisualizationType('SingleStat');
+  const setVisualizationType = async (newType) => {
+    await findTypeSelector().vm.$emit('input', newType);
   };
 
   const setAllRequiredFieldsWithFilter = async () => {
     await setVisualizationTitle('New Title');
+    await setVisualizationType('SingleStat');
     await findFilteredSearch().vm.$emit('input', { measures: ['Sessions.count'], limit: 100 });
   };
 
@@ -135,10 +116,6 @@ describe('AnalyticsVisualizationDesigner', () => {
       provide: {
         customDashboardsProject: TEST_CUSTOM_DASHBOARDS_PROJECT,
         aiGenerateCubeQueryEnabled: false,
-        glFeatures: {
-          analyticsVisualizationDesignerFiltering: false,
-          ...(options.provide.glFeatures || {}),
-        },
         ...options.provide,
       },
     });
@@ -151,78 +128,60 @@ describe('AnalyticsVisualizationDesigner', () => {
   describe('when mounted', () => {
     beforeEach(() => {
       __setMockMetadata(jest.fn().mockImplementation(() => mockMetaData));
+      createWrapper();
     });
 
-    describe.each([true, false])(
-      'when the "analytics_visualization_designer_filtering" feature flag is "%s"',
-      (isEnabled) => {
-        beforeEach(() => {
-          createWrapper('', {
-            provide: {
-              glFeatures: {
-                analyticsVisualizationDesignerFiltering: isEnabled,
-              },
-            },
-          });
-        });
+    it('renders the page title', () => {
+      expect(findPageTitle().text()).toBe('Create your visualization');
+    });
 
-        it('renders the page title', () => {
-          expect(findPageTitle().text()).toBe('Create your visualization');
-        });
+    it('renders the page description with a link to user documentation', () => {
+      expect(findPageDescription().text()).toContain(
+        'Use the visualization designer to create custom visualizations. After you save a visualization, you can add it to a dashboard.',
+      );
 
-        it('renders the page description with a link to user documentation', () => {
-          expect(findPageDescription().text()).toContain(
-            'Use the visualization designer to create custom visualizations. After you save a visualization, you can add it to a dashboard.',
-          );
+      expect(findPageDescriptionLink().text()).toBe('Learn more');
+      expect(findPageDescriptionLink().attributes('href')).toBe(
+        helpPagePath('user/analytics/analytics_dashboards', {
+          anchor: 'visualization-designer',
+        }),
+      );
+    });
 
-          expect(findPageDescriptionLink().text()).toBe('Learn more');
-          expect(findPageDescriptionLink().attributes('href')).toBe(
-            helpPagePath('user/analytics/analytics_dashboards', {
-              anchor: 'visualization-designer',
-            }),
-          );
-        });
+    it('renders title input', () => {
+      expect(findTitleInput().exists()).toBe(true);
+    });
 
-        it('renders title input', () => {
-          expect(findTitleInput().exists()).toBe(true);
-        });
+    it('render a cancel button that routes to the dashboard listing page', async () => {
+      const button = wrapper.findByText('Cancel');
 
-        it('does not render dimension selector', () => {
-          expect(findDimensionSelector().exists()).toBe(false);
-        });
+      expect(button.attributes('category')).toBe('secondary');
 
-        it('render a cancel button that routes to the dashboard listing page', async () => {
-          const button = wrapper.findByText('Cancel');
+      await button.vm.$emit('click');
 
-          expect(button.attributes('category')).toBe('secondary');
+      expect(routerPush).toHaveBeenCalledWith('/');
+    });
 
-          await button.vm.$emit('click');
+    it(`tracks the "${EVENT_LABEL_USER_VIEWED_VISUALIZATION_DESIGNER}" event`, () => {
+      expect(trackingSpy).toHaveBeenCalledWith(
+        undefined,
+        EVENT_LABEL_USER_VIEWED_VISUALIZATION_DESIGNER,
+        expect.any(Object),
+      );
+    });
 
-          expect(routerPush).toHaveBeenCalledWith('/');
-        });
+    describe('beforeDestroy', () => {
+      it('should dismiss the alert', async () => {
+        await setVisualizationTitle('New Title');
+        await findSaveButton().vm.$emit('click');
 
-        it(`tracks the "${EVENT_LABEL_USER_VIEWED_VISUALIZATION_DESIGNER}" event`, () => {
-          expect(trackingSpy).toHaveBeenCalledWith(
-            undefined,
-            EVENT_LABEL_USER_VIEWED_VISUALIZATION_DESIGNER,
-            expect.any(Object),
-          );
-        });
+        wrapper.destroy();
 
-        describe('beforeDestroy', () => {
-          it('should dismiss the alert', async () => {
-            await setVisualizationTitle('New Title');
-            await findSaveButton().vm.$emit('click');
+        await nextTick();
 
-            wrapper.destroy();
-
-            await nextTick();
-
-            expect(mockAlertDismiss).toHaveBeenCalled();
-          });
-        });
-      },
-    );
+        expect(mockAlertDismiss).toHaveBeenCalled();
+      });
+    });
   });
 
   describe('query builder', () => {
@@ -243,42 +202,15 @@ describe('AnalyticsVisualizationDesigner', () => {
       });
     });
 
-    describe('when "analytics_visualization_designer_filtering" is disabled', () => {
-      beforeEach(() => {
-        createWrapper('', {
-          provide: {
-            glFeatures: {
-              analyticsVisualizationDesignerFiltering: false,
-            },
-          },
-        });
+    it('renders the filtered search', () => {
+      createWrapper('', {
+        queryBuilderData: {
+          availableMeasures: [],
+          availableDimensions: mockMetaData.cubes.at(0).dimensions,
+        },
       });
 
-      it('renders the measure selector', () => {
-        expect(findMeasureSelector().exists()).toBe(true);
-        expect(findFilteredSearch().exists()).toBe(false);
-      });
-    });
-
-    describe('when "analytics_visualization_designer_filtering" is enabled', () => {
-      beforeEach(() => {
-        createWrapper('', {
-          provide: {
-            glFeatures: {
-              analyticsVisualizationDesignerFiltering: true,
-            },
-          },
-          queryBuilderData: {
-            availableMeasures: [],
-            availableDimensions: mockMetaData.cubes.at(0).dimensions,
-          },
-        });
-      });
-
-      it('renders the filtered search', () => {
-        expect(findFilteredSearch().exists()).toBe(true);
-        expect(findMeasureSelector().exists()).toBe(false);
-      });
+      expect(findFilteredSearch().exists()).toBe(true);
     });
   });
 
@@ -334,7 +266,7 @@ describe('AnalyticsVisualizationDesigner', () => {
     describe('when the visualization is valid', () => {
       describe('and it saved successfully', () => {
         beforeEach(async () => {
-          await setAllRequiredFields();
+          await setAllRequiredFieldsWithFilter();
 
           return saveVisualization();
         });
@@ -372,7 +304,7 @@ describe('AnalyticsVisualizationDesigner', () => {
 
         await mockSaveVisualizationImplementation(() => ({ status: HTTP_STATUS_CREATED }));
 
-        await setAllRequiredFields();
+        await setAllRequiredFieldsWithFilter();
         await findSaveButton().vm.$emit('click');
         await waitForPromises();
 
@@ -380,7 +312,7 @@ describe('AnalyticsVisualizationDesigner', () => {
       });
 
       it('and a error happens', async () => {
-        await setAllRequiredFields();
+        await setAllRequiredFieldsWithFilter();
         await mockSaveVisualizationImplementation(() => ({ status: HTTP_STATUS_FORBIDDEN }));
 
         await findSaveButton().vm.$emit('click');
@@ -396,7 +328,7 @@ describe('AnalyticsVisualizationDesigner', () => {
       });
 
       it('and the server responds with "A file with this name already exists"', async () => {
-        await setAllRequiredFields();
+        await setAllRequiredFieldsWithFilter();
         const responseError = new Error();
         responseError.response = {
           data: { message: 'A file with this name already exists' },
@@ -417,7 +349,7 @@ describe('AnalyticsVisualizationDesigner', () => {
       });
 
       it('and an error is thrown', async () => {
-        await setAllRequiredFields();
+        await setAllRequiredFieldsWithFilter();
         const newError = new Error();
         mockSaveVisualizationImplementation(() => {
           throw newError;
@@ -505,7 +437,7 @@ describe('AnalyticsVisualizationDesigner', () => {
     const setupSaveDashboard = async (dashboard) => {
       __setMockMetadata(jest.fn().mockImplementation(() => mockMetaData));
       createWrapper(dashboard);
-      await setAllRequiredFields();
+      await setAllRequiredFieldsWithFilter();
 
       await mockSaveVisualizationImplementation(() => ({ status: HTTP_STATUS_CREATED }));
 
@@ -566,7 +498,7 @@ describe('AnalyticsVisualizationDesigner', () => {
           aiGenerateCubeQueryEnabled: true,
         },
       });
-      await setAllRequiredFields();
+      await setAllRequiredFieldsWithFilter();
 
       expect(findAiQueryGenerator().props('warnBeforeReplacingQuery')).toBe(true);
     });
@@ -581,14 +513,14 @@ describe('AnalyticsVisualizationDesigner', () => {
     describe('default behaviour', () => {
       beforeEach(async () => {
         createWrapper();
-        await setAllRequiredFields();
+        await setAllRequiredFieldsWithFilter();
         return saveVisualization();
       });
 
       it('resets the designer fields to their initial state', () => {
         expectTitleAndTypeReset();
 
-        expect(findMeasureSelector().props('query')).toStrictEqual({ limit: 100 });
+        expect(findFilteredSearch().props('query')).toStrictEqual({ limit: 100 });
       });
     });
 
@@ -599,7 +531,7 @@ describe('AnalyticsVisualizationDesigner', () => {
             aiGenerateCubeQueryEnabled: true,
           },
         });
-        await setAllRequiredFields();
+        await setAllRequiredFieldsWithFilter();
         await findAiQueryGenerator().vm.$emit('input', 'Hello world');
         return saveVisualization();
       });
@@ -607,30 +539,9 @@ describe('AnalyticsVisualizationDesigner', () => {
       it('resets the designer fields + AI prompt to their initial state', () => {
         expectTitleAndTypeReset();
 
-        expect(findMeasureSelector().props('query')).toStrictEqual({ limit: 100 });
-        expect(findMeasureSelector().props('aiPromptCorrelationId')).toBeUndefined();
+        expect(findFilteredSearch().props('query')).toStrictEqual({ limit: 100 });
 
         expect(findAiQueryGenerator().props('value')).toBe('');
-      });
-    });
-
-    describe('when "analytics_visualization_designer_filtering" feature is enabled', () => {
-      beforeEach(async () => {
-        createWrapper('', {
-          provide: {
-            glFeatures: {
-              analyticsVisualizationDesignerFiltering: true,
-            },
-          },
-        });
-        await setAllRequiredFieldsWithFilter();
-        return saveVisualization();
-      });
-
-      it('resets the designer fields and filtered search to their initial state', () => {
-        expectTitleAndTypeReset();
-
-        expect(findFilteredSearch().props('query')).toStrictEqual({ limit: 100 });
       });
     });
   });
