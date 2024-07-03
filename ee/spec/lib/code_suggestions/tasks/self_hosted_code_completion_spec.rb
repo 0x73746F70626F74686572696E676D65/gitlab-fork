@@ -15,7 +15,10 @@ RSpec.describe CodeSuggestions::Tasks::SelfHostedCodeCompletion, feature_categor
     }.with_indifferent_access
   end
 
-  let(:code_completions_feature_setting) { create(:ai_feature_setting, feature: :code_completions) }
+  let(:self_hosted_model) { create(:ai_self_hosted_model, model: :codegemma, name: "whatever") }
+  let(:feature_setting) do
+    create(:ai_feature_setting, feature: :code_completions, self_hosted_model: self_hosted_model)
+  end
 
   let(:expected_current_file) do
     { current_file: { file_name: 'test.py', content_above_cursor: 'fix', content_below_cursor: 'som' } }
@@ -32,8 +35,8 @@ RSpec.describe CodeSuggestions::Tasks::SelfHostedCodeCompletion, feature_categor
   let(:params) do
     {
       current_file: current_file,
-      model_endpoint: code_completions_feature_setting.self_hosted_model.endpoint,
-      model_name: code_completions_feature_setting.self_hosted_model.model
+      model_endpoint: feature_setting.self_hosted_model.endpoint,
+      model_name: feature_setting.self_hosted_model.model
     }
   end
 
@@ -45,7 +48,7 @@ RSpec.describe CodeSuggestions::Tasks::SelfHostedCodeCompletion, feature_categor
   end
 
   subject(:task) do
-    described_class.new(feature_setting: code_completions_feature_setting, params: params,
+    described_class.new(feature_setting: feature_setting, params: params,
       unsafe_passthrough_params: unsafe_params)
   end
 
@@ -81,6 +84,37 @@ RSpec.describe CodeSuggestions::Tasks::SelfHostedCodeCompletion, feature_categor
       task.body
 
       expect(CodeSuggestions::Prompts::CodeCompletion::CodeGemmaMessages).to have_received(:new).with(params)
+    end
+  end
+
+  describe 'prompt selection per model name' do
+    let(:self_hosted_model) { create(:ai_self_hosted_model, model: model_name) }
+
+    where(:model_name, :class_name) do
+      [
+        [:codegemma, CodeSuggestions::Prompts::CodeCompletion::CodeGemmaMessages],
+        [:codestral, CodeSuggestions::Prompts::CodeCompletion::CodestralMessages]
+      ]
+    end
+
+    with_them do
+      it 'returns an instance of MistralMessages' do
+        expect(
+          class_name
+        ).to receive(:new).with(any_args).and_call_original
+
+        task.body
+      end
+    end
+
+    context 'when model name is unknown' do
+      let(:self_hosted_model) { create(:ai_self_hosted_model) }
+
+      it 'raises an error' do
+        allow(self_hosted_model).to receive(:model).and_return('unknown')
+
+        expect { task.body }.to raise_error("Unknown model: unknown")
+      end
     end
   end
 end

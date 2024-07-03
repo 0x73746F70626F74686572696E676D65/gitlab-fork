@@ -31,7 +31,15 @@ module CodeSuggestions
       end
 
       def prompt
-        CodeSuggestions::Prompts::CodeCompletion::CodeGemmaMessages.new(params)
+        model_name = feature_setting.self_hosted_model.model.to_sym
+        case model_name
+        when :codegemma
+          CodeSuggestions::Prompts::CodeCompletion::CodeGemmaMessages.new(params)
+        when :codestral
+          CodeSuggestions::Prompts::CodeCompletion::CodestralMessages.new(params)
+        else
+          raise "Unknown model: #{model_name}"
+        end
       end
       strong_memoize_attr :prompt
     end
