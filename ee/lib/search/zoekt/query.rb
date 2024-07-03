@@ -4,7 +4,7 @@ module Search
   module Zoekt
     class Query
       include Gitlab::Utils::StrongMemoize
-      SUPPORTED_SYNTAX_FILTERS = %w[case f file lang].freeze
+      SUPPORTED_SYNTAX_FILTERS = %w[case f file lang sym].freeze
 
       attr_reader :query
 
