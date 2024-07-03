@@ -29,4 +29,15 @@ const trainWithPagination = {
   },
 };
 
-export { activeTrain, mergedTrain, trainWithPagination };
+const emptyTrain = {
+  data: {
+    project: {
+      id: 'gid://gitlab/Project/20',
+      mergeTrains: {
+        nodes: [],
+      },
+    },
+  },
+};
+
+export { activeTrain, mergedTrain, trainWithPagination, emptyTrain };

@@ -16,7 +16,7 @@ export const initMergeTrainsApp = () => {
     return false;
   }
 
-  const { fullPath, defaultBranch, projectId } = el.dataset;
+  const { fullPath, defaultBranch, projectId, projectName } = el.dataset;
 
   return new Vue({
     el,
@@ -26,6 +26,7 @@ export const initMergeTrainsApp = () => {
       fullPath,
       defaultBranch,
       projectId,
+      projectName,
     },
     render(createElement) {
       return createElement(MergeTrainsApp);

@@ -84,13 +84,7 @@ export default {
 
 <template>
   <div>
-    <gl-table
-      :items="cars"
-      :fields="$options.fields"
-      :empty-text="__('There are no merge trains to show.')"
-      show-empty
-      stacked="md"
-    >
+    <gl-table :items="cars" :fields="$options.fields" stacked="md">
       <template #table-colgroup="{ fields }">
         <col v-for="field in fields" :key="field.key" :class="field.columnClass" />
       </template>

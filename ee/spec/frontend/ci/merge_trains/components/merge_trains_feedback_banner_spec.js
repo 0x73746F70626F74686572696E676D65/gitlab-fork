@@ -3,7 +3,7 @@ import { shallowMount } from '@vue/test-utils';
 import MergeTrainsFeedbackBanner from 'ee/ci/merge_trains/components/merge_trains_feedback_banner.vue';
 import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
 
-describe('FeedbackBanner', () => {
+describe('MergeTrainsFeedbackBanner', () => {
   let wrapper;
 
   const createComponent = () => {

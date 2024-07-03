@@ -10,7 +10,8 @@ import MergeTrainBranchSelector from 'ee/ci/merge_trains/components/merge_train_
 import MergeTrainTabs from 'ee/ci/merge_trains/components/merge_train_tabs.vue';
 import getActiveMergeTrainsQuery from 'ee/ci/merge_trains/graphql/queries/get_active_merge_trains.query.graphql';
 import getCompletedMergeTrainsQuery from 'ee/ci/merge_trains/graphql/queries/get_completed_merge_trains.query.graphql';
-import { activeTrain, mergedTrain } from './mock_data';
+import { POLL_INTERVAL } from 'ee/ci/merge_trains/constants';
+import { activeTrain, mergedTrain, emptyTrain } from './mock_data';
 
 Vue.use(VueApollo);
 
@@ -21,6 +22,7 @@ describe('MergeTrainsApp', () => {
 
   const activeTrainsHandler = jest.fn().mockResolvedValue(activeTrain);
   const mergedTrainsHandler = jest.fn().mockResolvedValue(mergedTrain);
+  const emptyTrainsHandler = jest.fn().mockResolvedValue(emptyTrain);
   const errorHandler = jest.fn().mockRejectedValue(new Error('GraphQL error'));
 
   const defaultHandlers = [
@@ -42,9 +44,15 @@ describe('MergeTrainsApp', () => {
     });
   };
 
+  const advanceToNextFetch = () => {
+    jest.advanceTimersByTime(POLL_INTERVAL);
+  };
+
   const findBranchSelector = () => wrapper.findComponent(MergeTrainBranchSelector);
   const findTabs = () => wrapper.findComponent(MergeTrainTabs);
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
+  const findActiveEmptyState = () => wrapper.findByTestId('active-empty-state');
+  const findMergedEmptyState = () => wrapper.findByTestId('merged-empty-state');
   const findActiveTable = () => wrapper.findByTestId('active-merge-trains-table');
   const findCompletedTable = () => wrapper.findByTestId('completed-merge-trains-table');
 
@@ -57,6 +65,22 @@ describe('MergeTrainsApp', () => {
       expect(findActiveTable().exists()).toBe(false);
       expect(findCompletedTable().exists()).toBe(false);
       expect(findBranchSelector().exists()).toBe(false);
+    });
+  });
+
+  describe('empty state', () => {
+    it('displays empty state', async () => {
+      createComponent([
+        [getActiveMergeTrainsQuery, activeTrainsHandler],
+        [getCompletedMergeTrainsQuery, emptyTrainsHandler],
+      ]);
+
+      await waitForPromises();
+
+      expect(findMergedEmptyState().exists()).toBe(true);
+      expect(findActiveEmptyState().exists()).toBe(false);
+      expect(findActiveTable().exists()).toBe(true);
+      expect(findCompletedTable().exists()).toBe(false);
     });
   });
 
@@ -73,6 +97,8 @@ describe('MergeTrainsApp', () => {
     });
 
     it('renders the merge trains tables', () => {
+      expect(findActiveEmptyState().exists()).toBe(false);
+      expect(findMergedEmptyState().exists()).toBe(false);
       expect(findActiveTable().exists()).toBe(true);
       expect(findCompletedTable().exists()).toBe(true);
       expect(findLoadingIcon().exists()).toBe(false);
@@ -183,6 +209,39 @@ describe('MergeTrainsApp', () => {
       expect(createAlert).toHaveBeenCalledWith({
         message: 'An error occurred while trying to fetch the active merge train.',
       });
+    });
+  });
+
+  describe('polling', () => {
+    beforeEach(async () => {
+      createComponent();
+
+      await waitForPromises();
+    });
+
+    it('polls data only for the active tab', async () => {
+      findTabs().vm.$emit('activeTab', 0);
+
+      expect(activeTrainsHandler).toHaveBeenCalledTimes(1);
+      expect(mergedTrainsHandler).toHaveBeenCalledTimes(1);
+
+      advanceToNextFetch();
+      await waitForPromises();
+
+      expect(activeTrainsHandler).toHaveBeenCalledTimes(2);
+      expect(mergedTrainsHandler).toHaveBeenCalledTimes(1);
+
+      advanceToNextFetch();
+
+      expect(activeTrainsHandler).toHaveBeenCalledTimes(3);
+      expect(mergedTrainsHandler).toHaveBeenCalledTimes(1);
+
+      findTabs().vm.$emit('activeTab', 1);
+
+      advanceToNextFetch();
+
+      expect(activeTrainsHandler).toHaveBeenCalledTimes(3);
+      expect(mergedTrainsHandler).toHaveBeenCalledTimes(2);
     });
   });
 });

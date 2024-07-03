@@ -30,12 +30,8 @@ export default {
 </script>
 
 <template>
-  <gl-tabs sync-active-tab-with-query-params lazy>
-    <gl-tab
-      query-param-value="active"
-      data-testid="active-cars-tab"
-      @click="$emit('activeTabClicked')"
-    >
+  <gl-tabs sync-active-tab-with-query-params lazy @input="$emit('activeTab', $event)">
+    <gl-tab query-param-value="active" data-testid="active-cars-tab">
       <template #title>
         <span class="gl-mr-2">{{ s__('Pipelines|Active') }}</span>
         <gl-badge>
@@ -44,11 +40,7 @@ export default {
       </template>
       <slot name="active"></slot>
     </gl-tab>
-    <gl-tab
-      query-param-value="merged"
-      data-testid="merged-cars-tab"
-      @click="$emit('mergedTabClicked')"
-    >
+    <gl-tab query-param-value="merged" data-testid="merged-cars-tab">
       <template #title>
         <span class="gl-mr-2">{{ s__('Pipelines|Merged') }}</span>
         <gl-badge>

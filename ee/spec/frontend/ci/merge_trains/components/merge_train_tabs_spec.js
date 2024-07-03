@@ -54,20 +54,12 @@ describe('MergeTrainTabs', () => {
     expect(findMergedCarsTab().text()).toContain(`${defaultProps.mergedTrain.cars.count}`);
   });
 
-  it('emits the activeTabClicked event', () => {
+  it('emits the activeTab event', () => {
     createComponent();
 
     findActiveCarsTab().vm.$emit('click');
 
-    expect(wrapper.emitted('activeTabClicked')).toEqual([[]]);
-  });
-
-  it('emits the mergedTabClicked event', () => {
-    createComponent();
-
-    findMergedCarsTab().vm.$emit('click');
-
-    expect(wrapper.emitted('mergedTabClicked')).toEqual([[]]);
+    expect(wrapper.emitted('activeTab')).toEqual([[0]]);
   });
 
   it('passes the `sync-active-tab-with-query-params` prop', () => {

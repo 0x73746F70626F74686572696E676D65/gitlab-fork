@@ -6,9 +6,12 @@ import MergeTrainsFeedbackBanner from './components/merge_trains_feedback_banner
 import MergeTrainBranchSelector from './components/merge_train_branch_selector.vue';
 import MergeTrainTabs from './components/merge_train_tabs.vue';
 import MergeTrainsTable from './components/merge_trains_table.vue';
+import MergeTrainsEmptyState from './components/merge_trains_empty_state.vue';
 import getActiveMergeTrains from './graphql/queries/get_active_merge_trains.query.graphql';
 import getCompletedMergeTrains from './graphql/queries/get_completed_merge_trains.query.graphql';
-import { DEFAULT_CURSOR } from './constants';
+import { DEFAULT_CURSOR, POLL_INTERVAL } from './constants';
+
+const ACTIVE_TAB_INDEX = 0;
 
 export default {
   name: 'MergeTrainsApp',
@@ -18,6 +21,7 @@ export default {
     MergeTrainBranchSelector,
     MergeTrainTabs,
     MergeTrainsTable,
+    MergeTrainsEmptyState,
   },
   inject: {
     fullPath: {
@@ -95,6 +99,23 @@ export default {
         this.$apollo.queries.completedMergeTrains.loading
       );
     },
+    hasActiveCars() {
+      return this.activeMergeTrains?.train?.cars?.nodes?.length > 0;
+    },
+    hasMergedCars() {
+      return this.completedMergeTrains?.train?.cars?.nodes?.length > 0;
+    },
+  },
+  methods: {
+    tabHandler(tabIndex) {
+      if (tabIndex === ACTIVE_TAB_INDEX) {
+        this.$apollo.queries.activeMergeTrains.startPolling(POLL_INTERVAL);
+        this.$apollo.queries.completedMergeTrains.stopPolling();
+      } else {
+        this.$apollo.queries.completedMergeTrains.startPolling(POLL_INTERVAL);
+        this.$apollo.queries.activeMergeTrains.stopPolling();
+      }
+    },
   },
 };
 </script>
@@ -118,21 +139,36 @@ export default {
         class="gl-pt-2"
         :active-train="activeMergeTrains.train"
         :merged-train="completedMergeTrains.train"
+        @activeTab="tabHandler"
       >
         <template #active>
           <merge-trains-table
+            v-if="hasActiveCars"
             :train="activeMergeTrains.train"
             :cursor="activeCursor"
             data-testid="active-merge-trains-table"
             @pageChange="activeCursor = $event"
           />
+
+          <merge-trains-empty-state
+            v-else
+            :branch="selectedBranch"
+            data-testid="active-empty-state"
+          />
         </template>
         <template #merged>
           <merge-trains-table
+            v-if="hasMergedCars"
             :train="completedMergeTrains.train"
             :cursor="mergedCursor"
             data-testid="completed-merge-trains-table"
             @pageChange="mergedCursor = $event"
+          />
+
+          <merge-trains-empty-state
+            v-else
+            :branch="selectedBranch"
+            data-testid="merged-empty-state"
           />
         </template>
       </merge-train-tabs>

@@ -38960,6 +38960,9 @@ msgstr ""
 msgid "Pipelines|More Information"
 msgstr ""
 
+msgid "Pipelines|No merge trains"
+msgstr ""
+
 msgid "Pipelines|No trigger tokens have been created yet. Add one using the form above."
 msgstr ""
 
@@ -39015,6 +39018,9 @@ msgid "Pipelines|There are currently no finished pipelines."
 msgstr ""
 
 msgid "Pipelines|There are currently no pipelines."
+msgstr ""
+
+msgid "Pipelines|There are no merge trains for the %{branch} target branch in %{projectName}. Merge requests added to a merge train are displayed on this page. Go to a merge request to %{linkStart}start a merge train.%{linkEnd}"
 msgstr ""
 
 msgid "Pipelines|There was a problem with loading the pipeline data."
@@ -53672,9 +53678,6 @@ msgid "There are no issues with the selected labels"
 msgstr ""
 
 msgid "There are no matching files"
-msgstr ""
-
-msgid "There are no merge trains to show."
 msgstr ""
 
 msgid "There are no open epics"

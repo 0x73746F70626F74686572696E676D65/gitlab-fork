@@ -6,3 +6,5 @@ export const DEFAULT_CURSOR = {
   last: null,
   before: null,
 };
+
+export const POLL_INTERVAL = 10000;
