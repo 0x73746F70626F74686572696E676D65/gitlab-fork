@@ -37,7 +37,7 @@ RSpec.describe 'Edit group settings', :js, feature_category: :system_access do
           choose('sync_method_group')
 
           select_from_listbox('my-group-cn', from: 'Select a LDAP group')
-          select 'Developer', from: 'ldap_group_link_group_access'
+          select_from_listbox('Developer', from: 'Select a role')
 
           click_button 'Add synchronization'
         end
@@ -58,6 +58,30 @@ RSpec.describe 'Edit group settings', :js, feature_category: :system_access do
 
         expect(page).to have_content("Synchronize #{group.name}'s members with this LDAP group")
         expect(page).not_to have_content('This query must use valid LDAP Search Filter Syntax')
+      end
+
+      context 'when custom roles are enabled' do
+        before do
+          stub_licensed_features(ldap_group_sync_filter: true, custom_roles: true)
+
+          create(:member_role, :instance, name: 'Custom role')
+
+          visit group_ldap_group_links_path(group)
+        end
+
+        it 'adds new LDAP group link with a custom role', :js do
+          page.within('form#new_ldap_group_link') do
+            choose('sync_method_group')
+
+            select_from_listbox('my-group-cn', from: 'Select a LDAP group')
+            select_from_listbox('Custom role', from: 'Select a role')
+
+            click_button 'Add synchronization'
+          end
+
+          expect(page).not_to have_content('No LDAP synchronizations')
+          expect(page).to have_content('As Custom role on ldap server')
+        end
       end
     end
 

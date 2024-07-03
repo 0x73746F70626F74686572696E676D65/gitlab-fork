@@ -55,7 +55,7 @@ RSpec.describe SamlGroupLinksHelper, feature_category: :system_access do
     context 'when a member role is not present' do
       let_it_be(:saml_group_link) { create_default(:saml_group_link, group: group, member_role: nil) }
 
-      it { is_expected.to eq(::Gitlab::Access.human_access(saml_group_link.access_level)) }
+      it { is_expected.to eq('Guest') }
     end
 
     context 'when custom roles are disabled' do
@@ -63,7 +63,20 @@ RSpec.describe SamlGroupLinksHelper, feature_category: :system_access do
         stub_licensed_features(custom_roles: false)
       end
 
-      it { is_expected.to eq(::Gitlab::Access.human_access(saml_group_link.access_level)) }
+      it { is_expected.to eq('Guest') }
+    end
+  end
+
+  describe '#saml_group_link_input_names' do
+    subject(:saml_group_link_input_names) { helper.saml_group_link_input_names }
+
+    it 'returns the correct data' do
+      expected_data = {
+        base_access_level_input_name: "saml_group_link[access_level]",
+        member_role_id_input_name: "saml_group_link[member_role_id]"
+      }
+
+      expect(saml_group_link_input_names).to match(hash_including(expected_data))
     end
   end
 end

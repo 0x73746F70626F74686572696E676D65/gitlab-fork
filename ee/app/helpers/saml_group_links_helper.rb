@@ -16,7 +16,14 @@ module SamlGroupLinksHelper
     if saml_group_link.member_role_id.present? && saml_group_link.group.custom_roles_enabled?
       saml_group_link.member_role.name
     else
-      ::Gitlab::Access.human_access(saml_group_link.access_level)
+      saml_group_link.human_access
     end
+  end
+
+  def saml_group_link_input_names
+    {
+      base_access_level_input_name: "saml_group_link[access_level]",
+      member_role_id_input_name: "saml_group_link[member_role_id]"
+    }
   end
 end

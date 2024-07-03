@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class LdapGroupLink < ApplicationRecord
-  include Gitlab::Access
   include MemberRoles::MemberRoleRelation
 
   base_access_level_attr :group_access
@@ -28,8 +27,8 @@ class LdapGroupLink < ApplicationRecord
 
   before_validation :nullify_blank_attributes
 
-  def access_field
-    group_access
+  def human_access
+    Gitlab::Access.human_access(group_access)
   end
 
   def config

@@ -13,7 +13,7 @@ module EE
               current = self[dn]
 
               # Keep the higher of the access values.
-              self[dn] = to if current.nil? || to > current
+              self[dn] = to if current.nil? || to[:base_access_level] > current[:base_access_level]
             end
           end
         end

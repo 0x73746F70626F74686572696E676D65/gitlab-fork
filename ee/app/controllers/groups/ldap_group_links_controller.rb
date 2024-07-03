@@ -49,6 +49,7 @@ class Groups::LdapGroupLinksController < Groups::ApplicationController
   def ldap_group_link_params
     attrs = %i[cn group_access provider]
     attrs << :filter if ::License.feature_available?(:ldap_group_sync_filter)
+    attrs << :member_role_id if group.custom_roles_enabled?
 
     params.require(:ldap_group_link).permit(attrs)
   end

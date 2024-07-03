@@ -127,9 +127,9 @@ module EE
 
             def update_access_levels(access_levels, group_link)
               if member_dns = get_member_dns(group_link)
-                access_levels.set(member_dns, to: group_link.group_access)
+                access_levels.set(member_dns, to: { base_access_level: group_link.group_access, member_role_id: group_link.member_role_id })
 
-                logger.debug "Resolved '#{group.name}' group member access: #{access_levels.to_hash}"
+                logger.debug "Resolved '#{group.name}' group member access: #{access_levels[:base_access_level]}"
               end
             end
 
@@ -172,7 +172,7 @@ module EE
                   identities_for_user.each do |identity|
                     distinguished_name = identity.extern_uid
 
-                    access_levels.set([distinguished_name], to: member.access_level)
+                    access_levels.set([distinguished_name], to: { base_access_level: member.access_level, member_role_id: member.member_role_id })
                   end
                 end
               end
@@ -268,14 +268,15 @@ module EE
 
             def add_or_update_user_membership(user, group, access, current_user: nil)
               # Prevent the last owner of a group from being demoted
-              if access < ::Gitlab::Access::OWNER && group.last_owner?(user)
+              if access[:base_access_level] < ::Gitlab::Access::OWNER && group.last_owner?(user)
                 warn_cannot_remove_last_owner(user, group)
               else
                 # If you pass the user object, instead of just user ID,
                 # it saves an extra user database query.
                 group.add_member(
                   user,
-                  access,
+                  access[:base_access_level],
+                  member_role_id: access[:member_role_id],
                   current_user: current_user,
                   ldap: true
                 )

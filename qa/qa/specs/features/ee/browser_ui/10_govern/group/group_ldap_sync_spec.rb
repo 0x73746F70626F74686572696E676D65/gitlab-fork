@@ -80,6 +80,7 @@ module QA
           EE::Page::Group::Settings::LDAPSync.perform do |settings|
             settings.set_ldap_group_sync_method
             settings.set_group_cn('Engineering')
+            settings.set_ldap_access('Guest')
             settings.click_add_sync_button
           end
         end
@@ -135,6 +136,7 @@ module QA
           EE::Page::Group::Settings::LDAPSync.perform do |settings|
             settings.set_ldap_user_filter_sync_method
             settings.set_user_filter('(&(objectClass=person)(cn=HR*))')
+            settings.set_ldap_access('Guest')
             settings.click_add_sync_button
           end
 

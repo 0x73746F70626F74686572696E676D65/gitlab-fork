@@ -8,4 +8,4 @@
       %li
         %strong= ldap_group_link.cn ? _("Group: %{group_name}") % { group_name: ldap_group_link.cn } : _("Filter: %{filter_name})") % {filter_name: truncate(ldap_group_link.filter, length: 40)}
         _('as')
-        %strong= ldap_group_link.human_access
+        %strong= saml_group_link_role_name(ldap_group_link)

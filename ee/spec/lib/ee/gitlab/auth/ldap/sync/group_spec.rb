@@ -5,8 +5,8 @@ require 'spec_helper'
 RSpec.describe EE::Gitlab::Auth::Ldap::Sync::Group, feature_category: :system_access do
   include LdapHelpers
 
-  let(:adapter) { ldap_adapter }
-  let(:user) { create(:user) }
+  let_it_be(:adapter) { ldap_adapter }
+  let_it_be(:user) { create(:user) }
 
   before do
     # We need to actually activate the LDAP config otherwise `Group#ldap_synced?`
@@ -559,6 +559,26 @@ RSpec.describe EE::Gitlab::Auth::Ldap::Sync::Group, feature_category: :system_ac
           expect_any_instance_of(EE::Gitlab::Auth::Ldap::Sync::Proxy).not_to receive(:dns_for_group_cn)
 
           sync_group.update_permissions
+        end
+      end
+
+      context 'when custom roles is enabled' do
+        let(:member_role) { create(:member_role, :instance) }
+        let(:ldap_group1) { ldap_group_entry(user_dn(user.username)) }
+
+        before do
+          stub_licensed_features(custom_roles: true)
+
+          group.ldap_group_links.last.update!(member_role_id: member_role.id)
+        end
+
+        it 'assigns member role to synced ldap users' do
+          sync_group.update_permissions
+
+          member = group.members.find_by(user_id: user.id)
+
+          expect(member.access_level).to eq(::Gitlab::Access::DEVELOPER)
+          expect(member.member_role_id).to eq(member_role.id)
         end
       end
     end

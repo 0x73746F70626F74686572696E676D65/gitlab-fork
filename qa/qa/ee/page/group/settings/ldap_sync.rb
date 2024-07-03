@@ -35,6 +35,13 @@ module QA
               fill_element('ldap-user-filter-field', user_filter)
             end
 
+            def set_ldap_access(access_level)
+              within_element('ldap-access-field') do
+                expand_select_list
+              end
+              select_item(access_level)
+            end
+
             def click_add_sync_button
               click_element('add-sync-button')
             end

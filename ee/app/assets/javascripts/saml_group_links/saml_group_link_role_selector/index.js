@@ -9,7 +9,11 @@ export default () => {
     return null;
   }
 
-  const { samlGroupLinkRoleSelectorData = {} } = el.dataset;
+  const {
+    samlGroupLinkRoleSelectorData = {},
+    baseAccessLevelInputName,
+    memberRoleIdInputName,
+  } = el.dataset;
   const { standardRoles, customRoles = [] } = convertObjectPropsToCamelCase(
     JSON.parse(samlGroupLinkRoleSelectorData),
     { deep: true },
@@ -23,7 +27,12 @@ export default () => {
       customRoles,
     },
     render(h) {
-      return h(SamlGroupLinkRoleSelector);
+      return h(SamlGroupLinkRoleSelector, {
+        props: {
+          baseAccessLevelInputName,
+          memberRoleIdInputName,
+        },
+      });
     },
   });
 };

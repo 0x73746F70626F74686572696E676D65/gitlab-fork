@@ -1,8 +1,12 @@
 <script>
 import { GlCollapsibleListbox } from '@gitlab/ui';
+import { __ } from '~/locale';
 import { initialSelectedRole, roleDropdownItems } from 'ee/members/utils';
 
 export default {
+  i18n: {
+    placeholder: __('Select a role'),
+  },
   components: {
     GlCollapsibleListbox,
   },
@@ -36,6 +40,14 @@ export default {
       }),
     };
   },
+  computed: {
+    selectedItem() {
+      return this.accessLevelOptions.flatten.find(({ value }) => value === this.selectedRole);
+    },
+    toggleText() {
+      return this.selectedRole ? this.selectedItem.text : this.$options.i18n.placeholder;
+    },
+  },
   watch: {
     accessLevelOptions: {
       immediate: true,
@@ -50,9 +62,7 @@ export default {
   },
   methods: {
     onSelect() {
-      const { accessLevel, memberRoleId } = this.accessLevelOptions.flatten.find(
-        (item) => item.value === this.selectedRole,
-      );
+      const { accessLevel, memberRoleId } = this.selectedItem;
 
       this.$emit('onSelect', {
         selectedStandardRoleValue: accessLevel,
@@ -68,6 +78,7 @@ export default {
     v-model="selectedRole"
     block
     :items="accessLevelOptions.formatted"
+    :toggle-text="toggleText"
     @select="onSelect"
   />
 </template>

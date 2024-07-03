@@ -25,4 +25,8 @@ class SamlGroupLink < ApplicationRecord
 
     errors.add(:access_level, "is invalid")
   end
+
+  def human_access
+    Gitlab::Access.human_access(access_level)
+  end
 end
