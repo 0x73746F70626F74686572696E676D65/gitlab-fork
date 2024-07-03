@@ -34584,6 +34584,9 @@ msgstr ""
 msgid "New epic"
 msgstr ""
 
+msgid "New epic look"
+msgstr ""
+
 msgid "New epic title"
 msgstr ""
 
@@ -43122,6 +43125,9 @@ msgid "Provide a number our sales team can use to call you."
 msgstr ""
 
 msgid "Provide feedback"
+msgstr ""
+
+msgid "Provide feedback on the experience"
 msgstr ""
 
 msgid "Provider"
@@ -59588,6 +59594,9 @@ msgid "Welcome to GitLab,%{br_tag}%{name}!"
 msgstr ""
 
 msgid "Welcome, %{name}!"
+msgstr ""
+
+msgid "We’ve introduced some improvements to the epic page such as real time updates, additional features, and a refreshed design. Have questions or thoughts on the changes?"
 msgstr ""
 
 msgid "What are some examples?"
