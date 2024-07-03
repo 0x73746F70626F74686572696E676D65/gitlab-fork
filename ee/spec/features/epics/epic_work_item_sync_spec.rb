@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'Epic Work Item sync', :js, feature_category: :portfolio_management do
+  include WorkItemFeedbackHelpers
+
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:parent_epic) { create(:epic, group: group) }
@@ -197,6 +199,8 @@ RSpec.describe 'Epic Work Item sync', :js, feature_category: :portfolio_manageme
 
         work_item = WorkItem.last
         visit group_work_item_path(group, work_item.iid)
+
+        close_work_item_feedback_popover_if_present
 
         find_by_testid('work-item-edit-form-button').click
         find_by_testid('work-item-title-input').fill_in with: updated_title
