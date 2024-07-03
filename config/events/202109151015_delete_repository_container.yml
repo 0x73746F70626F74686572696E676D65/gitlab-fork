@@ -1,9 +1,6 @@
 description: Delete repository
 category: delete_repository
 action: container
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 product_group: group::package

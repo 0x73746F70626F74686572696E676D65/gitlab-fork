@@ -1,9 +1,6 @@
 description: Delete project repository
 category: Projects::Registry::RepositoriesController
 action: delete_repository
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 product_group: group::package

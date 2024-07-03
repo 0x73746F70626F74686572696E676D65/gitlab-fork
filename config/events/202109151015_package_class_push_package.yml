@@ -1,9 +1,6 @@
 description: Package registered
 category: package class
 action: push_package
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 product_group: group::package

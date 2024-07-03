@@ -1,8 +1,6 @@
 description: "Copy Composer registry include command"
 category: default
 action: copy_composer_registry_include_command
-property_description: ""
-value_description: ""
 extra_properties:
 identifiers:
 product_group: group::package

@@ -1,9 +1,6 @@
 description: "Download package"
 category: "`UI:[MavenPackages | NpmPackages | ConanPackages | undefined]`"
 action: pull_package
-label_description: ""
-property_description: ""
-value_description: ""
 extra_properties:
 identifiers:
 product_group: group::package

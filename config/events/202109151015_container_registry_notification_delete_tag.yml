@@ -1,9 +1,6 @@
 description: Delete tag container registry notification
 category: container_registry:notification
 action: delete_tag
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 product_group: group::package

@@ -1,9 +1,6 @@
 description: List project repositories tags
 category: API::ProjectContainerRepositories
 action: list_tags
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 product_group: group::package

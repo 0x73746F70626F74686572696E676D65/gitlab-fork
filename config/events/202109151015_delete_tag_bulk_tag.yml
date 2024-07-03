@@ -1,9 +1,6 @@
 description: Delete container repository tags in bulk
 category: delete_tag_bulk
 action: tag
-label_description:
-property_description:
-value_description:
 extra_properties:
 identifiers:
 product_group: group::package
