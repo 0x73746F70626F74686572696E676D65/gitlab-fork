@@ -72,8 +72,7 @@ export default {
     },
     toggleExpand(index) {
       if (!this.hasChildrenSpans(index)) return;
-
-      this.$set(this.expanded, index, !this.isExpanded(index));
+      this.expanded = this.expanded.with(index, !this.isExpanded(index));
     },
     isExpanded(index) {
       return this.expanded[index];
