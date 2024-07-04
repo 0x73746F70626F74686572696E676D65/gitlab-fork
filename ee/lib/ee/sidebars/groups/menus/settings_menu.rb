@@ -8,6 +8,7 @@ module EE
           extend ::Gitlab::Utils::Override
           include ::GitlabSubscriptions::SubscriptionHelper
           include ::Groups::AnalyticsDashboardHelper
+          include ::Nav::GitlabDuoUsageSettingsPage
 
           override :configure_menu_items
           def configure_menu_items
@@ -17,6 +18,7 @@ module EE
               insert_item_after(:general, roles_and_permissions_menu_item)
               insert_item_after(:integrations, webhooks_menu_item)
               insert_item_after(:ci_cd, analytics_menu_item)
+              insert_item_after(:usage_quotas, gitlab_duo_usage_menu_item)
               add_item(ldap_sync_menu_item)
               add_item(saml_sso_menu_item)
               add_item(saml_group_links_menu_item)
@@ -189,6 +191,19 @@ module EE
 
           def analytics_available?
             group_analytics_settings_available?(context.current_user, context.group)
+          end
+
+          def gitlab_duo_usage_menu_item
+            unless show_gitlab_duo_usage_menu_item?(context.group)
+              return ::Sidebars::NilMenuItem.new(item_id: :gitlab_duo_usage)
+            end
+
+            ::Sidebars::MenuItem.new(
+              title: s_('UsageQuota|GitLab Duo'),
+              link: group_settings_gitlab_duo_usage_index_path(context.group),
+              active_routes: { path: 'gitlab_duo_usage#index' },
+              item_id: :gitlab_duo_usage
+            )
           end
         end
       end

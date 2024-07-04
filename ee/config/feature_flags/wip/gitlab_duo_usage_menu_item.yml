@@ -1,0 +1,9 @@
+---
+name: gitlab_duo_usage_menu_item
+feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/464019
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/156951
+rollout_issue_url:
+milestone: '17.2'
+group: group::ai framework
+type: wip
+default_enabled: false
