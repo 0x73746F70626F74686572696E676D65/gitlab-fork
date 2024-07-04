@@ -14189,6 +14189,9 @@ msgstr ""
 msgid "ContainerRegistry|Add rule"
 msgstr ""
 
+msgid "ContainerRegistry|Both keep and remove regex patterns are automatically surrounded with %{codeStart}\\A%{codeEnd} and %{codeStart}\\Z%{codeEnd} anchors, so you do not need to include them. However, make sure to take this into account when choosing and testing your regex patterns."
+msgstr ""
+
 msgid "ContainerRegistry|Build an image"
 msgstr ""
 
