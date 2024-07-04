@@ -59721,9 +59721,6 @@ msgstr ""
 msgid "WikiPage|Write your content or drag files here…"
 msgstr ""
 
-msgid "Wiki|+ %{count} more"
-msgstr ""
-
 msgid "Wiki|Add custom sidebar"
 msgstr ""
 
