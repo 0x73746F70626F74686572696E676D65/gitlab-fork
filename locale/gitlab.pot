@@ -53478,7 +53478,7 @@ msgstr ""
 msgid "There are no secure files yet."
 msgstr ""
 
-msgid "There are no topics to show."
+msgid "There are no topics to show"
 msgstr ""
 
 msgid "There are no variables yet."
