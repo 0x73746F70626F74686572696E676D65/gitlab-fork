@@ -14,19 +14,24 @@ RSpec.describe Llm::GenerateCommitMessageService, :saas, feature_category: :code
   before do
     stub_ee_application_setting(should_check_namespace_plan: true)
     stub_licensed_features(generate_commit_message: true, ai_features: true, experimental_features: true)
+
+    allow(user).to receive(:can?).with("read_merge_request", resource).and_call_original
+    allow(user).to receive(:can?).with(:access_duo_features, resource.project).and_call_original
+    allow(user).to receive(:can?).with(:admin_all_resources).and_call_original
+
+    group.namespace_settings.update!(experiment_features_enabled: true)
   end
 
   describe '#execute' do
     before do
-      project.root_ancestor.namespace_settings.update!(
-        experiment_features_enabled: true
-      )
       allow(Llm::CompletionWorker).to receive(:perform_for)
     end
 
     context 'when the user is permitted to view the merge request' do
       before do
         group.add_developer(user)
+
+        allow(user).to receive(:can?).with(:access_generate_commit_message).and_return(true)
       end
 
       it_behaves_like 'schedules completion worker' do
@@ -62,7 +67,7 @@ RSpec.describe Llm::GenerateCommitMessageService, :saas, feature_category: :code
   describe '#valid?' do
     using RSpec::Parameterized::TableSyntax
 
-    where(:experiment_features_enabled, :result) do
+    where(:access_generate_commit_message, :result) do
       true   | true
       false  | false
     end
@@ -70,9 +75,8 @@ RSpec.describe Llm::GenerateCommitMessageService, :saas, feature_category: :code
     with_them do
       before do
         group.add_maintainer(user)
-        project.root_ancestor.namespace_settings.update!(
-          experiment_features_enabled: experiment_features_enabled
-        )
+
+        allow(user).to receive(:can?).with(:access_generate_commit_message).and_return(access_generate_commit_message)
       end
 
       subject { described_class.new(user, resource, options) }
