@@ -1956,9 +1956,6 @@ msgstr ""
 msgid "A member of the abuse team will review your report as soon as possible."
 msgstr ""
 
-msgid "A merge request (MR) is a proposal to incorporate changes from a source branch to a target branch."
-msgstr ""
-
 msgid "A new Auto DevOps pipeline has been created, go to the Pipelines page for details"
 msgstr ""
 
@@ -15386,9 +15383,6 @@ msgstr ""
 msgid "Create a new issue"
 msgstr ""
 
-msgid "Create a new merge request"
-msgstr ""
-
 msgid "Create a new project"
 msgstr ""
 
@@ -19807,9 +19801,6 @@ msgstr ""
 msgid "Email a new %{name} to this project"
 msgstr ""
 
-msgid "Email a new issue"
-msgstr ""
-
 msgid "Email address copied"
 msgstr ""
 
@@ -19970,9 +19961,6 @@ msgid "Enable Gitpod?"
 msgstr ""
 
 msgid "Enable Invisible Captcha during sign up"
-msgstr ""
-
-msgid "Enable Jira integration"
 msgstr ""
 
 msgid "Enable Kroki"
@@ -26977,9 +26965,6 @@ msgstr ""
 msgid "Import and export settings"
 msgstr ""
 
-msgid "Import existing issues"
-msgstr ""
-
 msgid "Import from"
 msgstr ""
 
@@ -30716,9 +30701,6 @@ msgstr ""
 msgid "Learn more about groups."
 msgstr ""
 
-msgid "Learn more about issues"
-msgstr ""
-
 msgid "Learn more about issues."
 msgstr ""
 
@@ -30732,9 +30714,6 @@ msgid "Learn more about linking issues and incidents"
 msgstr ""
 
 msgid "Learn more about max seats used"
-msgstr ""
-
-msgid "Learn more about merge requests"
 msgstr ""
 
 msgid "Learn more about seats owed"
@@ -43334,9 +43313,6 @@ msgstr ""
 msgid "Read more about GitLab at %{link_to_promo}."
 msgstr ""
 
-msgid "Read our documentation"
-msgstr ""
-
 msgid "Read the documentation before applying changes."
 msgstr ""
 
@@ -54046,9 +54022,6 @@ msgstr ""
 msgid "This feature is not enabled yet."
 msgstr ""
 
-msgid "This feature is only available on paid plans."
-msgstr ""
-
 msgid "This feature requires local storage to be enabled"
 msgstr ""
 
@@ -59520,9 +59493,6 @@ msgstr ""
 msgid "When using the %{code_open}ssh://%{code_close} protocol, please use the following format: %{code_open}ssh://username@example.com/group/project.git%{code_close}."
 msgstr ""
 
-msgid "When you open a merge request, you can visualize and collaborate on the changes before merge."
-msgstr ""
-
 msgid "When you transfer your project to a group, you can easily manage multiple projects, view usage quotas for storage, compute minutes, and users, and start a trial or upgrade to a paid tier."
 msgstr ""
 
@@ -59858,9 +59828,6 @@ msgid "Wireframe"
 msgstr ""
 
 msgid "With custom notification levels you receive notifications for the same events as in the Participate level, with additional selected events. For more information, see %{notificationLinkStart}notification emails%{notificationLinkEnd}."
-msgstr ""
-
-msgid "With issues you can discuss the implementation of an idea, track tasks and work status, elaborate on code implementations, and accept feature proposals, questions, support requests, or bug reports."
 msgstr ""
 
 msgid "With requirements, you can set criteria to check your products against."
