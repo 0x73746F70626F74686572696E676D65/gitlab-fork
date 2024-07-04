@@ -70,7 +70,7 @@ module Vulnerabilities
       when Group
         make_group_level_export(value)
       when InstanceSecurityDashboard
-        make_instance_level_export
+        make_instance_level_export(value)
       else
         raise "Can not assign #{value.class} as exportable"
       end
@@ -102,9 +102,9 @@ module Vulnerabilities
       self.organization_id = set_organization(group)
     end
 
-    def make_instance_level_export
+    def make_instance_level_export(security_dashboard)
       self.project = self.group = nil
-      self.organization_id = set_organization(author&.namespace)
+      self.organization_id = set_organization(security_dashboard.user.namespace)
     end
 
     def set_organization(namespace)

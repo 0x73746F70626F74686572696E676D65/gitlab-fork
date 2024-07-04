@@ -144,7 +144,10 @@ RSpec.describe Vulnerabilities::Export, feature_category: :vulnerability_managem
   end
 
   describe '#exportable=' do
-    let(:vulnerability_export) { build(:vulnerability_export) }
+    let_it_be(:author_namespace) { create(:namespace) }
+    let_it_be(:author) { create(:user, namespace: author_namespace) }
+
+    let(:vulnerability_export) { build(:vulnerability_export, author: author) }
 
     subject(:set_exportable) { vulnerability_export.exportable = exportable }
 
@@ -174,12 +177,10 @@ RSpec.describe Vulnerabilities::Export, feature_category: :vulnerability_managem
     end
 
     context 'when the exportable is an InstanceSecurityDashboard' do
-      let(:namespace) { create(:namespace) }
-      let(:exportable) { InstanceSecurityDashboard.new(vulnerability_export.author) }
+      let(:exportable) { InstanceSecurityDashboard.new(author) }
 
       before do
-        allow(vulnerability_export.author).to receive(:security_dashboard).and_return(exportable)
-        allow(vulnerability_export.author).to receive(:namespace).and_return(namespace)
+        allow(author).to receive(:security_dashboard).and_return(exportable)
       end
 
       it 'changes the exportable of the export to security dashboard of the author' do
@@ -188,7 +189,16 @@ RSpec.describe Vulnerabilities::Export, feature_category: :vulnerability_managem
 
       it 'sets the organization of the export' do
         expect { set_exportable }.to change { vulnerability_export.organization_id }
-          .to(vulnerability_export.author.namespace.organization_id)
+          .to(author_namespace.organization_id)
+      end
+
+      context 'when the author of the export is not yet assigned' do
+        let(:vulnerability_export) { build(:vulnerability_export, author: nil) }
+
+        it 'sets the organization of the export' do
+          expect { set_exportable }.to change { vulnerability_export.organization_id }
+            .to(author_namespace.organization_id)
+        end
       end
     end
 

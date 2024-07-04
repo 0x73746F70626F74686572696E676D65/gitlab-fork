@@ -5,6 +5,8 @@ class InstanceSecurityDashboard
 
   delegate :full_path, to: :user
 
+  attr_reader :user
+
   def initialize(user, project_ids: [])
     @project_ids = project_ids
     @user = user
@@ -59,7 +61,7 @@ class InstanceSecurityDashboard
 
   private
 
-  attr_reader :project_ids, :user
+  attr_reader :project_ids
 
   def users_projects_with_security_reports
     return visible_users_security_dashboard_projects if project_ids.empty?
