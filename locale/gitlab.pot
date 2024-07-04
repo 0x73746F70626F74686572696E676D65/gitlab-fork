@@ -417,6 +417,11 @@ msgid_plural "%d replies"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "%d result"
+msgid_plural "%d results"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "%d second"
 msgid_plural "%d seconds"
 msgstr[0] ""
@@ -24433,9 +24438,6 @@ msgstr ""
 msgid "Go to next page"
 msgstr ""
 
-msgid "Go to page %{page}"
-msgstr ""
-
 msgid "Go to parent"
 msgstr ""
 
@@ -37833,6 +37835,9 @@ msgid "Pagination|Go to last page"
 msgstr ""
 
 msgid "Pagination|Go to next page"
+msgstr ""
+
+msgid "Pagination|Go to page %{page}"
 msgstr ""
 
 msgid "Pagination|Go to previous page"
