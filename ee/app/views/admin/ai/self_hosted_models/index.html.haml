@@ -1,4 +1,4 @@
-- page_title _("Self-Hosted Models")
+- page_title s_("AdminSelfHostedModels|Self-hosted models")
 - add_page_specific_style 'page_bundles/labels'
 
 - if Feature.enabled?(:custom_models_vue_app, current_user)
@@ -9,24 +9,24 @@
       - c.with_header do
         .gl-new-card-title-wrapper.gl-flex-direction-column
           %h2.h5.gl-new-card-title
-            = _('Self-Hosted Models')
+            = s_('AdminSelfHostedModels|Self-hosted models')
             .gl-new-card-count
               %span.js-admin-labels-count= @self_hosted_models.count
           .gl-new-card-description
-            = s_('AdminSelfHostedModels|They point to the self-hosted AI models that can be used for backing up GitLab AI features.')
+            = s_('AdminSelfHostedModels|Add self-hosted language models to use as backups for GitLab Duo features.')
         .gl-new-card-actions
           = render Pajamas::ButtonComponent.new(variant: :default,
             size: :small,
             href: new_admin_ai_self_hosted_model_path) do
-            = _('New Self-Hosted Model')
+            = s_('AdminSelfHostedModels|New self-hosted model')
       - c.with_body do
         %ul.manage-labels-list.js-other-labels.gl-px-3
           = render partial: 'self_hosted_model', collection: @self_hosted_models, as: :self_hosted_model
   .js-admin-labels-empty-state{ class: ('gl-display-none' if @self_hosted_models.present?) }
     = render Pajamas::EmptyStateComponent.new(svg_path: 'illustrations/empty-state/empty-labels-md.svg',
       title: s_('AdminSelfHostedModels|Define your set of self-hosted models'),
-      primary_button_text: _('New Self-Hosted Model'),
+      primary_button_text: s_('AdminSelfHostedModels|New self-hosted model'),
       primary_button_link: new_admin_ai_self_hosted_model_path) do |c|
 
       - c.with_description do
-        = s_('AdminSelfHostedModels|They point to the self-hosted AI models that can be used for backing up GitLab AI features.')
+        = s_('AdminSelfHostedModels|Add self-hosted language models to use as backups for GitLab Duo features.')

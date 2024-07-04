@@ -5,7 +5,7 @@
   = form_errors(@self_hosted_model)
 
   .form-group
-    = f.label :name, _('Name the deployment (must be unique)')
+    = f.label :name, s_('AdminSelfHostedModels|Name the deployment (must be unique)')
     = f.text_field :name, class: "gl-form-input form-control js-quick-submit", data: { testid: 'self-hosted-model-name-field' }, placeholder: "Mixtral-vllm-deployment"
 
   .form-group
@@ -17,7 +17,7 @@
     = f.text_field :endpoint, class: "gl-form-input form-control js-quick-submit", data: { testid: 'self-hosted-model-endpoint-field' }
 
   .form-group
-    = f.label :api_token, _('API token (if needed)')
+    = f.label :api_token, s_('AdminSelfHostedModels|API token (if needed)')
     = f.password_field :api_token, class: "gl-form-input form-control js-quick-submit", data: { testid: 'self-hosted-model-api-token-field' }, placeholder: @self_hosted_model.api_token? ? "*************" : nil
 
   .gl-display-flex.gl-justify-content-space-between
@@ -25,6 +25,6 @@
       - if @self_hosted_model.persisted?
         = f.submit _('Save changes'), class: 'js-save-button gl-mr-2', pajamas_button: true
       - else
-        = f.submit _('Create Self-Hosted Model'), class: 'js-save-button gl-mr-2', data: { testid: 'label-create-button' }, pajamas_button: true
+        = f.submit s_('AdminSelfHostedModels|Create model'), class: 'js-save-button gl-mr-2', data: { testid: 'label-create-button' }, pajamas_button: true
       = render Pajamas::ButtonComponent.new(href: back_path) do
         = _('Cancel')

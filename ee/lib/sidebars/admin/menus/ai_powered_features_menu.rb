@@ -15,7 +15,7 @@ module Sidebars
 
         override :title
         def title
-          s_('Admin|AI-Powered Features')
+          s_('Admin|AI-powered features')
         end
 
         override :sprite_icon
@@ -32,21 +32,21 @@ module Sidebars
 
         def code_suggestions_menu_item
           ::Sidebars::MenuItem.new(
-            title: s_('Admin|GitLab Duo Pro'),
+            title: s_('Admin|GitLab Duo'),
             link: admin_code_suggestions_path,
             active_routes: { controller: :code_suggestions },
             item_id: :duo_pro_code_suggestions,
-            container_html_options: { title: 'GitLab Duo Pro' }
+            container_html_options: { title: 'GitLab Duo' }
           )
         end
 
         def self_hosted_models_menu_item
           ::Sidebars::MenuItem.new(
-            title: s_('Admin|Models'),
+            title: s_('Admin|Custom models'),
             link: admin_ai_self_hosted_models_path,
             active_routes: { controller: 'admin/ai/self_hosted_models' },
             item_id: :duo_pro_self_hosted_models,
-            container_html_options: { title: 'Models' }
+            container_html_options: { title: 'Custom models' }
           )
         end
 

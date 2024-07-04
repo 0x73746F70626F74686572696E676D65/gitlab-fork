@@ -1,13 +1,13 @@
-- page_title s_("AdminAIPoweredFeatures|AI-Powered Features")
+- page_title s_("AdminAIPoweredFeatures|AI-powered features")
 - add_page_specific_style 'page_bundles/labels'
 
 = render Pajamas::CardComponent.new(card_options: { class: 'gl-new-card labels other-labels js-toggle-container js-admin-labels-container' }, header_options: { class: 'gl-new-card-header' }, body_options: { class: 'gl-new-card-body gl-px-0' }) do |c|
   - c.with_header do
     .gl-new-card-title-wrapper.gl-flex-col
       .gl-new-card-title
-        = s_('AdminAIPoweredFeatures|AI-Powered Features')
+        = s_('AdminAIPoweredFeatures|AI-powered features')
       .gl-new-card-description
-        = s_('AdminAIPoweredFeatures|AI-Powered Features that can be enabled, disabled or linked to a cloud-based or self-hosted model.')
+        = s_('AdminAIPoweredFeatures|AI-powered features that can be enabled, disabled or linked to a cloud-based or self-hosted model.')
   - c.with_body do
     %ul.manage-labels-list.gl-px-3
       = render partial: 'feature_setting', collection: @feature_settings, as: :feature_setting
