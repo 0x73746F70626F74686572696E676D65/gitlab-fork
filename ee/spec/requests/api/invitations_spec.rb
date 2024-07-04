@@ -251,6 +251,128 @@ RSpec.describe API::Invitations, 'EE Invitations', :aggregate_failures, feature_
       end
     end
 
+    context 'when billable promotion management is enabled for the group' do
+      let_it_be(:license) { create(:license, plan: License::ULTIMATE_PLAN) }
+      let_it_be(:owner) { create(:user) }
+      let_it_be(:new_user) { create(:user) }
+      let(:user) { new_user }
+      let(:source) { group }
+      let(:access_level) { Gitlab::Access::DEVELOPER }
+
+      before do
+        source.add_owner(owner)
+
+        stub_feature_flags(member_promotion_management: true)
+        stub_application_setting(enable_member_promotion_management: true)
+        allow(License).to receive(:current).and_return(license)
+      end
+
+      subject(:post_invitations) do
+        post api(url, owner), params: { access_level: access_level, user_id: user.id }
+      end
+
+      shared_examples "posts invitation successfully" do
+        it 'adds member' do
+          post_invitations
+
+          expect(response).to have_gitlab_http_status(:created)
+          expect(json_response).to eq({
+            'status' => 'success'
+          })
+        end
+      end
+
+      context 'on self managed' do
+        context 'when feature is disabled' do
+          before do
+            stub_feature_flags(member_promotion_management: false)
+          end
+
+          it_behaves_like "posts invitation successfully"
+        end
+
+        context 'when setting is disabled' do
+          before do
+            stub_application_setting(enable_member_promotion_management: false)
+          end
+
+          it_behaves_like "posts invitation successfully"
+        end
+
+        context 'when license is not Ultimate' do
+          let(:license) { create(:license, plan: License::PREMIUM_PLAN) }
+
+          it_behaves_like "posts invitation successfully"
+        end
+
+        shared_examples 'queues user invite for admin approval' do
+          it 'queues request' do
+            post_invitations
+
+            expect(response).to have_gitlab_http_status(:created)
+            expect(json_response).to eq({
+              'status' => 'error',
+              'message' => {
+                user.username => 'Request Queued For Admin Approval.'
+              }
+            })
+          end
+        end
+
+        context 'with new user' do
+          context 'when trying to add billable member' do
+            it_behaves_like 'queues user invite for admin approval'
+          end
+
+          context 'when trying to add a non billable member' do
+            let(:access_level) { Gitlab::Access::GUEST }
+
+            it_behaves_like 'posts invitation successfully'
+          end
+        end
+
+        context 'with existing members' do
+          let(:existing_member) { create(:group_member, existing_role, source: source) }
+
+          let(:user) { existing_member.user }
+
+          context 'when trying to change to a billable role' do
+            let(:access_level) { Gitlab::Access::MAINTAINER }
+
+            context 'when user is non billable' do
+              let(:existing_role) { :guest }
+
+              it_behaves_like 'queues user invite for admin approval'
+            end
+
+            context 'when user is billable' do
+              let(:existing_role) { :developer }
+
+              it_behaves_like 'posts invitation successfully'
+            end
+          end
+
+          context 'when trying to change to a non billable role' do
+            let(:access_level) { Gitlab::Access::GUEST }
+
+            context 'when user is billable' do
+              let(:existing_role) { :maintainer }
+
+              it_behaves_like 'posts invitation successfully'
+            end
+          end
+        end
+      end
+
+      context 'on saas', :saas do
+        before do
+          stub_feature_flags(block_seat_overages: false)
+        end
+
+        it_behaves_like "posts invitation successfully"
+      end
+    end
+
     context 'with free user cap considerations', :saas do
       let_it_be(:group) { create(:group_with_plan, :private, plan: :free_plan) }
 
