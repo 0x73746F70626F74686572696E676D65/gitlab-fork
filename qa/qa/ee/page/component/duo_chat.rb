@@ -9,6 +9,10 @@ module QA
             # components are derived from gitlab/ui
           end
 
+          def open_duo_chat
+            click_button('GitLab Duo Chat')
+          end
+
           def send_duo_chat_prompt(prompt)
             fill_element('chat-prompt-input', prompt)
             click_element('paper-airplane-icon')
