@@ -25,7 +25,7 @@ RSpec.describe Search::Zoekt::Query, feature_category: :global_search do
     using RSpec::Parameterized::TableSyntax
 
     where(:query, :result) do
-      ''                         | %q("")
+      ''                         | %q()
       'test'                     | %q("test")
       '"foo"'                    | %q("\"foo\"")
       'lang:ruby    test'        | %q("test" lang:ruby)
@@ -38,6 +38,7 @@ RSpec.describe Search::Zoekt::Query, feature_category: :global_search do
       'case:no -file:dummy test' | %q("test" case:no -file:dummy)
       'test case:no file:dummy'  | %q("test" case:no file:dummy)
       'test sym:foo'             | %q("test" sym:foo)
+      'sym:foo'                  | %q(sym:foo)
     end
 
     with_them do
