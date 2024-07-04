@@ -16,6 +16,11 @@ export default {
       required: false,
       default: null,
     },
+    defaultValues: {
+      type: Array, // of string
+      required: false,
+      default: null,
+    },
   },
   computed: {
     rawQuerystringIds() {
@@ -52,7 +57,7 @@ export default {
     // page. This occurs, for instance, in the vulnerability report filtered search component.
     // When the user clicks on X to remove a filter, querystring-sync gets unmounted.
     // For those cases, we need to reset the query string parameters as well.
-    this.updateQueryString([]);
+    this.updateQueryString(this.defaultValues ?? []);
     window.removeEventListener('popstate', this.emitQuerystringIds);
   },
   methods: {
