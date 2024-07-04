@@ -83,23 +83,29 @@ RSpec.describe Members::UpdateService, feature_category: :groups_and_projects do
 
       before do
         source.add_owner(user)
-        create(:user_highest_role, :developer, user: members.second.user)
       end
 
       context 'when ActiveRecord::RecordInvalid is raised' do
         it 'returns an error' do
-          allow(members.first).to receive(:queue_for_approval).and_raise(ActiveRecord::RecordInvalid)
+          allow(Members::MemberApproval).to receive(:create_or_update_pending_approval)
+                                              .and_raise(ActiveRecord::RecordInvalid)
 
+          expect { update_members }.not_to change { Members::MemberApproval.count }
           expect(update_members[:status]).to eq(:error)
+          expect(update_members[:members].first.errors[:base].first).to eq(
+            "Invalid record while queuing users for approval."
+          )
           expect(update_members[:members]).to contain_exactly(members.first)
         end
       end
 
       context 'when current_user can update the given members' do
         it 'queues members requiring promotion management for approval and updates others' do
+          expect { update_members }.to change { Members::MemberApproval.count }.by(1)
           expect(update_members[:status]).to eq(:success)
           expect(update_members[:members]).to contain_exactly(members.second)
 
+          members.first.reload
           member_approval = Members::MemberApproval.last
           expect(member_approval.member).to eq(members.first)
           expect(member_approval.member_namespace).to eq(members.first.member_namespace)

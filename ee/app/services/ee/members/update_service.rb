@@ -9,19 +9,25 @@ module EE
 
       override :execute
       def execute(members, permission: :update)
-        return super unless non_admin_and_member_promotion_management_enabled?
+        return super unless non_admin_and_member_promotion_management_enabled? && members.present?
 
         members = Array.wrap(members)
         validate_update_permission!(members, permission)
 
-        service_response = GitlabSubscriptions::MemberManagement::QueueExistingMembersService.new(
-          current_user, members, params).execute
-        return service_response if service_response.error?
+        service_response = GitlabSubscriptions::MemberManagement::QueueNonBillableToBillableService.new(
+          current_user: current_user,
+          members: members,
+          params: params).execute
 
-        members_to_update = service_response.payload[:members_to_update]
-        members_queued_for_approval = service_response.payload[:members_queued_for_approval]
+        if service_response.error?
+          errored_members = service_response.payload[:non_billable_to_billable_members]
+          return prepare_response(errored_members)
+        end
 
-        update_member_response = super(members_to_update, permission: permission)
+        billable_members = service_response.payload[:billable_members]
+        members_queued_for_approval = service_response.payload[:users_queued_for_promotion]
+
+        update_member_response = super(billable_members, permission: permission)
         return update_member_response if update_member_response[:status] == :error
 
         update_member_response.merge(members_queued_for_approval: members_queued_for_approval)

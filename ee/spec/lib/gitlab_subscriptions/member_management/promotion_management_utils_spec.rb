@@ -59,51 +59,29 @@ RSpec.describe GitlabSubscriptions::MemberManagement::PromotionManagementUtils, 
     end
   end
 
-  describe '#promotion_management_required_for_role?' do
-    let_it_be(:non_billable_existing_member) { create(:group_member, :guest) }
-    let_it_be(:billable_existing_member) { create(:group_member, :developer) }
+  describe '#promotion_management_required_for_role?', :aggregate_failures do
     let_it_be(:access_level) { ::Gitlab::Access::DEVELOPER }
     let(:billable_role_change_value) { true }
-
-    before_all do
-      create(:user_highest_role, :developer, user: billable_existing_member.user)
-    end
 
     before do
       allow(self).to receive(:sm_billable_role_change?).and_return(billable_role_change_value)
     end
 
-    subject(:promotion_check) do
-      promotion_management_required_for_role?(
-        new_access_level: access_level,
-        existing_member: member)
-    end
+    subject(:promotion_check) { promotion_management_required_for_role?(new_access_level: access_level) }
 
     context 'when promotion_management_applicable? returns true' do
-      context 'when member is non billable' do
-        let(:member) { non_billable_existing_member }
-
-        context 'when role change is billable' do
-          it { is_expected.to be true }
-        end
-
-        context 'when role change is not billable' do
-          let(:billable_role_change_value) { false }
-
-          it { is_expected.to be false }
-        end
+      context 'when role change is billable' do
+        it { is_expected.to be true }
       end
 
-      context 'when member is billable' do
-        let(:member) { billable_existing_member }
+      context 'when role change is not billable' do
+        let(:billable_role_change_value) { false }
 
         it { is_expected.to be false }
       end
     end
 
     context 'when promotion_management_applicable? returns false' do
-      let(:member) { non_billable_existing_member }
-
       before do
         allow(self).to receive(:promotion_management_applicable?).and_return(false)
       end
