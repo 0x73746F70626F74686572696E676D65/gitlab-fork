@@ -39,18 +39,18 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::PipelineExecutionPolicies::FindConfi
   end
 
   describe '#perform!' do
-    it 'sets execution_policy_pipelines' do
+    it 'sets pipeline_execution_policies' do
       step.perform!
 
-      expect(command.execution_policy_pipelines).to be_a(Array)
-      expect(command.execution_policy_pipelines.size).to eq(2)
+      expect(command.pipeline_execution_policies).to be_a(Array)
+      expect(command.pipeline_execution_policies.size).to eq(2)
     end
 
     it 'passes pipeline source to execution policy pipelines' do
       step.perform!
 
-      command.execution_policy_pipelines.each do |pipeline|
-        expect(pipeline.source).to eq(source)
+      command.pipeline_execution_policies.each do |policy|
+        expect(policy.pipeline.source).to eq(source)
       end
     end
 
@@ -73,7 +73,7 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::PipelineExecutionPolicies::FindConfi
       it 'passes the merge request to the policy pipelines' do
         step.perform!
 
-        expect(command.execution_policy_pipelines.first.merge_request).to eq(merge_request)
+        expect(command.pipeline_execution_policies.first.pipeline.merge_request).to eq(merge_request)
       end
     end
 
@@ -117,7 +117,7 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::PipelineExecutionPolicies::FindConfi
       end
 
       it 'ignores the policy pipelines' do
-        expect(command.execution_policy_pipelines).to be_empty
+        expect(command.pipeline_execution_policies).to be_empty
       end
     end
 
@@ -126,20 +126,20 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::PipelineExecutionPolicies::FindConfi
         stub_feature_flags(pipeline_execution_policy_type: false)
       end
 
-      it 'does not set execution_policy_pipelines' do
+      it 'does not set pipeline_execution_policies' do
         step.perform!
 
-        expect(command.execution_policy_pipelines).to be_nil
+        expect(command.pipeline_execution_policies).to be_nil
       end
     end
 
     context 'when running in execution_policy_dry_run' do
       let(:execution_policy_dry_run) { true }
 
-      it 'does not set execution_policy_pipelines' do
+      it 'does not set pipeline_execution_policies' do
         step.perform!
 
-        expect(command.execution_policy_pipelines).to be_nil
+        expect(command.pipeline_execution_policies).to be_nil
       end
     end
 
@@ -148,10 +148,10 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::PipelineExecutionPolicies::FindConfi
         context "when source is #{source}" do
           let(:source) { source }
 
-          it 'does not set execution_policy_pipelines' do
+          it 'does not set pipeline_execution_policies' do
             step.perform!
 
-            expect(command.execution_policy_pipelines).to be_nil
+            expect(command.pipeline_execution_policies).to be_nil
           end
         end
       end
@@ -160,10 +160,10 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::PipelineExecutionPolicies::FindConfi
     context 'when pipeline execution policy configs are empty' do
       let(:policy_contents) { [] }
 
-      it 'does not set execution_policy_pipelines' do
+      it 'does not set pipeline_execution_policies' do
         step.perform!
 
-        expect(command.execution_policy_pipelines).to be_nil
+        expect(command.pipeline_execution_policies).to be_nil
       end
     end
   end

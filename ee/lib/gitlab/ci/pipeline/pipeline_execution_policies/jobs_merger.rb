@@ -13,25 +13,25 @@ module Gitlab
         class JobsMerger
           include ::Gitlab::Utils::StrongMemoize
 
-          def initialize(pipeline:, execution_policy_pipelines:, declared_stages:)
+          def initialize(pipeline:, pipeline_execution_policies:, declared_stages:)
             @pipeline = pipeline
-            @execution_policy_pipelines = execution_policy_pipelines
+            @pipeline_execution_policies = pipeline_execution_policies
             @declared_stages = declared_stages
             @pipeline_stages_by_name = pipeline.stages.index_by(&:name)
           end
 
           def execute
-            execution_policy_pipelines.each do |policy_pipeline_config|
+            pipeline_execution_policies.each do |policy_pipeline_config|
               inject_jobs_from(policy_pipeline_config)
             end
           end
 
           private
 
-          attr_reader :pipeline, :execution_policy_pipelines, :declared_stages, :pipeline_stages_by_name
+          attr_reader :pipeline, :pipeline_execution_policies, :declared_stages, :pipeline_stages_by_name
 
           def inject_jobs_from(policy_pipeline)
-            policy_pipeline.stages.each do |policy_stage|
+            policy_pipeline.pipeline.stages.each do |policy_stage|
               ensure_stage_exists(policy_stage)
               matching_pipeline_stage = pipeline_stages_by_name[policy_stage.name]
 

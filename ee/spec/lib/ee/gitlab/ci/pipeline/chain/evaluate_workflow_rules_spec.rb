@@ -7,12 +7,12 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::EvaluateWorkflowRules, feature_categ
   let_it_be(:user) { create(:user) }
   let(:pipeline) { build(:ci_pipeline, project: project) }
 
-  let(:execution_policy_pipelines) { nil }
+  let(:pipeline_execution_policies) { nil }
   let(:command) do
     Gitlab::Ci::Pipeline::Chain::Command.new(
       project: project,
       current_user: user,
-      execution_policy_pipelines: execution_policy_pipelines
+      pipeline_execution_policies: pipeline_execution_policies
     )
   end
 
@@ -101,8 +101,10 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::EvaluateWorkflowRules, feature_categ
         end
       end
 
-      context 'when execution_policy_pipelines are present' do
-        let(:execution_policy_pipelines) { [build(:ci_pipeline, project: project, user: user)] }
+      context 'when pipeline_execution_policies are present' do
+        let(:pipeline_execution_policies) do
+          [build(:ci_pipeline_execution_policy, pipeline: build(:ci_pipeline, project: project, user: user))]
+        end
 
         before do
           step.perform!

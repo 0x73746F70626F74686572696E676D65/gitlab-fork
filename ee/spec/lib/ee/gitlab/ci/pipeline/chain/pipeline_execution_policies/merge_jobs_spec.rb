@@ -9,10 +9,10 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::PipelineExecutionPolicies::MergeJobs
   let_it_be(:project) { create(:project, :repository, group: group) }
   let_it_be(:user) { create(:user, developer_of: project) }
   let(:pipeline) { build(:ci_pipeline, project: project, ref: 'master', user: user) }
-  let(:execution_policy_pipelines) do
+  let(:pipeline_execution_policies) do
     [
-      build_mock_policy_pipeline({ 'build' => ['docker'] }),
-      build_mock_policy_pipeline({ 'test' => ['rspec'] })
+      build(:ci_pipeline_execution_policy, pipeline: build_mock_policy_pipeline({ 'build' => ['docker'] })),
+      build(:ci_pipeline_execution_policy, pipeline: build_mock_policy_pipeline({ 'test' => ['rspec'] }))
     ]
   end
 
@@ -21,7 +21,7 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::PipelineExecutionPolicies::MergeJobs
       project: project,
       current_user: user,
       origin_ref: pipeline.ref,
-      execution_policy_pipelines: execution_policy_pipelines
+      pipeline_execution_policies: pipeline_execution_policies
     )
   end
 
@@ -46,7 +46,7 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::PipelineExecutionPolicies::MergeJobs
       expect(::Gitlab::Ci::Pipeline::PipelineExecutionPolicies::JobsMerger)
         .to receive(:new).with(
           pipeline: pipeline,
-          execution_policy_pipelines: execution_policy_pipelines,
+          pipeline_execution_policies: pipeline_execution_policies,
           declared_stages: %w[.pipeline-policy-pre .pre build test deploy .post .pipeline-policy-post]
         ).and_call_original
 
@@ -69,7 +69,7 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::PipelineExecutionPolicies::MergeJobs
         expect(::Gitlab::Ci::Pipeline::PipelineExecutionPolicies::JobsMerger)
           .to receive(:new).with(
             pipeline: pipeline,
-            execution_policy_pipelines: execution_policy_pipelines,
+            pipeline_execution_policies: pipeline_execution_policies,
             declared_stages: %w[.pipeline-policy-pre .pre pre-test test post-test .post .pipeline-policy-post]
           ).and_call_original
 
@@ -84,7 +84,7 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::PipelineExecutionPolicies::MergeJobs
         expect(::Gitlab::Ci::Pipeline::PipelineExecutionPolicies::JobsMerger)
           .to receive(:new).with(
             pipeline: pipeline,
-            execution_policy_pipelines: execution_policy_pipelines,
+            pipeline_execution_policies: pipeline_execution_policies,
             declared_stages: %w[.pipeline-policy-pre .pre build test deploy .post .pipeline-policy-post]
           ).and_call_original
 
@@ -110,8 +110,8 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::PipelineExecutionPolicies::MergeJobs
       end
     end
 
-    context 'when execution_policy_pipelines is not defined' do
-      let(:execution_policy_pipelines) { nil }
+    context 'when pipeline_execution_policies is not defined' do
+      let(:pipeline_execution_policies) { nil }
 
       it 'does not change pipeline stages' do
         expect { run_chain }.not_to change { pipeline.stages }

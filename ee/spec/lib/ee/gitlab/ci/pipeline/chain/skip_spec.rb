@@ -35,7 +35,7 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::Skip, feature_category: :pipeline_co
 
       context 'when pipeline execution policies are present' do
         before do
-          command.execution_policy_pipelines = build_list(:ci_empty_pipeline, 1)
+          command.pipeline_execution_policies = build_list(:ci_pipeline_execution_policy, 1)
         end
 
         it 'does not break the chain' do

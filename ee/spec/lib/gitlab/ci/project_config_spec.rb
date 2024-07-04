@@ -11,7 +11,7 @@ RSpec.describe ::Gitlab::Ci::ProjectConfig, feature_category: :continuous_integr
   let(:triggered_for_branch) { true }
   let(:ref) { 'master' }
   let(:security_policies) { {} }
-  let(:has_execution_policy_pipelines) { false }
+  let(:has_pipeline_execution_policies) { false }
 
   let(:content_result) do
     <<~CICONFIG
@@ -31,7 +31,7 @@ RSpec.describe ::Gitlab::Ci::ProjectConfig, feature_category: :continuous_integr
       pipeline_source_bridge: bridge,
       triggered_for_branch: triggered_for_branch,
       ref: ref,
-      has_execution_policy_pipelines: has_execution_policy_pipelines
+      has_pipeline_execution_policies: has_pipeline_execution_policies
     )
   end
 
@@ -267,7 +267,7 @@ RSpec.describe ::Gitlab::Ci::ProjectConfig, feature_category: :continuous_integr
         end
       end
 
-      let(:has_execution_policy_pipelines) { true }
+      let(:has_pipeline_execution_policies) { true }
 
       it_behaves_like 'forces the pipeline creation by including dummy content'
 

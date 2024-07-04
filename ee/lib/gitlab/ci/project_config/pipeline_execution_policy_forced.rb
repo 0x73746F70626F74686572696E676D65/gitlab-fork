@@ -22,7 +22,7 @@ module Gitlab
 
         def content
           return if ::Feature.disabled?(:pipeline_execution_policy_type, @project.group)
-          return unless @has_execution_policy_pipelines
+          return unless @has_pipeline_execution_policies
 
           # Create a dummy job to ensure that project pipeline gets created.
           # Pipeline execution policy jobs will be merged onto the project pipeline.
