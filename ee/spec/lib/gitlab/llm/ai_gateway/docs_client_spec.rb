@@ -90,5 +90,22 @@ RSpec.describe Gitlab::Llm::AiGateway::DocsClient, feature_category: :ai_abstrac
         expect(result).to eq(nil)
       end
     end
+
+    context 'when duo chat model is self-hosted' do
+      let_it_be(:feature_setting) { create(:ai_feature_setting, feature: :duo_chat) }
+
+      it 'returns access token for self-hosted-models service' do
+        service = instance_double('::CloudConnector::SelfSigned::AvailableServiceData')
+        expect(::CloudConnector::AvailableServices).to receive(:find_by_name)
+          .with(:self_hosted_models).and_return(service)
+        allow(service).to receive(:access_token).and_return(expected_access_token)
+
+        expect(Gitlab::HTTP).to receive(:post).with(
+          anything,
+          hash_including(timeout: described_class::DEFAULT_TIMEOUT)
+        ).and_call_original
+        expect(result.parsed_response).to eq(expected_response)
+      end
+    end
   end
 end
