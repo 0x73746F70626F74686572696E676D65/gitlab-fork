@@ -6,9 +6,8 @@ module QA
     describe 'Duo Chat' do
       shared_examples 'Duo Chat' do |testcase|
         it 'gets a response back from Duo Chat', testcase: testcase do
-          Page::Main::Menu.perform(&:open_duo_chat)
-
           QA::EE::Page::Component::DuoChat.perform do |duo_chat|
+            duo_chat.open_duo_chat
             duo_chat.clear_chat_history
             duo_chat.send_duo_chat_prompt('hi')
 
