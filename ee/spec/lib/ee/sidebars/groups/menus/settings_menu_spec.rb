@@ -223,22 +223,12 @@ RSpec.describe Sidebars::Groups::Menus::SettingsMenu, feature_category: :navigat
           allow(group).to receive(:usage_quotas_enabled?).and_return(true)
         end
 
-        context 'when :gitlab_duo_usage_menu_item feature flag is disabled' do
-          before do
-            stub_feature_flags(gitlab_duo_usage_menu_item: false)
-          end
+        it { is_expected.to be_present }
+
+        context 'when subgroup' do
+          let(:container) { subgroup }
 
           it { is_expected.not_to be_present }
-        end
-
-        context 'when :gitlab_duo_usage_menu_item feature flag is enabled' do
-          it { is_expected.to be_present }
-
-          context 'when subgroup' do
-            let(:container) { subgroup }
-
-            it { is_expected.not_to be_present }
-          end
         end
       end
 
