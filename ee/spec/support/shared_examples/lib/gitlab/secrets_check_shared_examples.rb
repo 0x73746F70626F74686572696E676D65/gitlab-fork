@@ -1068,7 +1068,7 @@ RSpec.shared_examples 'scan skipped when a commit has special bypass flag' do
   let_it_be(:new_commit) do
     create_commit(
       { '.env' => 'SECRET=glpat-JUST20LETTERSANDNUMB' }, # gitleaks:allow
-      'dummy commit [skip secret detection]'
+      'dummy commit [skip secret push protection]'
     )
   end
 
@@ -1107,7 +1107,7 @@ RSpec.shared_examples 'scan skipped when a commit has special bypass flag' do
   end
 end
 
-RSpec.shared_examples 'scan skipped when secret_detection.skip_all push option is passed' do
+RSpec.shared_examples 'scan skipped when secret_push_protection.skip_all push option is passed' do
   include_context 'secrets check context'
 
   let(:changes_access) do
@@ -1117,7 +1117,7 @@ RSpec.shared_examples 'scan skipped when secret_detection.skip_all push option i
       user_access: user_access,
       protocol: protocol,
       logger: logger,
-      push_options: Gitlab::PushOptions.new(["secret_detection.skip_all"])
+      push_options: Gitlab::PushOptions.new(["secret_push_protection.skip_all"])
     )
   end
 

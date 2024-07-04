@@ -19,7 +19,7 @@ module Gitlab
         secrets_check: 'Detecting secrets...',
         secrets_not_found: 'Secret detection scan completed with no findings.',
         skip_secret_detection: "\n\nTo skip secret push protection, add the following Git push option" \
-                               "to your push command: `-o secret_detection.skip_all`",
+                               "to your push command: `-o secret_push_protection.skip_all`",
         found_secrets: "\nPUSH BLOCKED: Secrets detected in code changes",
         found_secrets_post_message: "\n\nTo push your changes you must remove the identified secrets.",
         found_secrets_docs_link: "\nFor guidance, see %{path}",
@@ -35,7 +35,7 @@ module Gitlab
       }.freeze
 
       BLOB_BYTES_LIMIT = 1.megabyte # Limit is 1MiB to start with.
-      SPECIAL_COMMIT_FLAG = /\[skip secret detection\]/i
+      SPECIAL_COMMIT_FLAG = /\[skip secret push protection\]/i
       DOCUMENTATION_PATH = 'user/application_security/secret_detection/secret_push_protection/index.html'
       DOCUMENTATION_PATH_ANCHOR = 'resolve-a-blocked-push'
 
@@ -54,7 +54,7 @@ module Gitlab
 
         return if includes_full_revision_history?
 
-        # Skip if any commit has the special bypass flag `[skip secret detection]`
+        # Skip if any commit has the special bypass flag `[skip secret push protection]`
         if skip_secret_detection_commit_message?
           log_audit_event(_("commit message")) # Keeping this a string and not constant so I18N picks it up
           track_spp_skipped("commit message")
@@ -121,7 +121,7 @@ module Gitlab
       end
 
       def skip_secret_detection_push_option?
-        changes_access.push_options&.get(:secret_detection, :skip_all)
+        changes_access.push_options&.get(:secret_push_protection, :skip_all)
       end
 
       def secret_detection_logger
