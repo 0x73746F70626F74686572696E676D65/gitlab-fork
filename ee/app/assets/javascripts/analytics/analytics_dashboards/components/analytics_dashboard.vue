@@ -144,13 +144,19 @@ export default {
     },
   },
   watch: {
-    initialDashboard(initialDashboard) {
-      this.trackEvent(EVENT_LABEL_VIEWED_DASHBOARD);
+    initialDashboard({ title: label, userDefined } = {}) {
+      this.trackEvent(EVENT_LABEL_VIEWED_DASHBOARD, {
+        ...(!this.isNewDashboard && { label }),
+      });
 
-      if (initialDashboard?.userDefined) {
-        this.trackEvent(EVENT_LABEL_VIEWED_CUSTOM_DASHBOARD);
+      if (userDefined) {
+        this.trackEvent(EVENT_LABEL_VIEWED_CUSTOM_DASHBOARD, {
+          ...(!this.isNewDashboard && { label }),
+        });
       } else {
-        this.trackEvent(EVENT_LABEL_VIEWED_BUILTIN_DASHBOARD);
+        this.trackEvent(EVENT_LABEL_VIEWED_BUILTIN_DASHBOARD, {
+          label,
+        });
       }
     },
   },
@@ -286,9 +292,13 @@ export default {
           this.$toast.show(s__('Analytics|Dashboard was saved successfully'));
 
           if (this.isNewDashboard) {
-            this.trackEvent(EVENT_LABEL_CREATED_DASHBOARD);
+            this.trackEvent(EVENT_LABEL_CREATED_DASHBOARD, {
+              label: dashboard.title,
+            });
           } else {
-            this.trackEvent(EVENT_LABEL_EDITED_DASHBOARD);
+            this.trackEvent(EVENT_LABEL_EDITED_DASHBOARD, {
+              label: dashboard.title,
+            });
           }
 
           const apolloClient = this.$apollo.getClient();
