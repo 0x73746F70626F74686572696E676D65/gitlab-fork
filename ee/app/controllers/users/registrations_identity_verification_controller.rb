@@ -15,16 +15,7 @@ module Users
     before_action :require_arkose_verification!, except: [:arkose_labs_challenge, :verify_arkose_labs_session,
       :restricted]
 
-    def show
-      # We need to perform cookie migration for tracking from logged out to log in
-      # calling this before tracking gives us access to request where the
-      # signed cookie exist with the info we need for migration.
-      experiment(:signup_intent_step_one, actor: @user).run
-
-      # Invite registration will never be provided here as a value for label since invites aren't accepted yet.
-      experiment(:signup_intent_step_one, actor: @user)
-        .track(:render_identity_verification, label: onboarding_status.tracking_label)
-    end
+    def show; end
 
     def arkose_labs_challenge; end
 

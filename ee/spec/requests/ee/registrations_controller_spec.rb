@@ -354,46 +354,5 @@ RSpec.describe RegistrationsController, type: :request, feature_category: :syste
         end
       end
     end
-
-    context 'for signup_intent_step_one experiment' do
-      let(:experiment) { instance_double(ApplicationExperiment) }
-
-      before do
-        allow_next_instance_of(described_class) do |controller|
-          allow(controller)
-            .to receive(:experiment)
-            .with(:signup_intent_step_one, actor: instance_of(User))
-            .and_return(experiment)
-        end
-      end
-
-      context 'when signup_intent is not provided' do
-        it 'does not tracks signup_intent_step_one experiment event' do
-          expect(experiment).not_to receive(:track)
-
-          create_user
-        end
-      end
-
-      context 'when signup intent is provided' do
-        let(:params) do
-          {
-            user: user_attrs,
-            signup_intent: 'select_signup_intent_dropdown_new_team_registration_step_one'
-          }
-        end
-
-        subject(:create_user) { post user_registration_path, params: params }
-
-        it 'tracks signup_intent_step_one experiment events' do
-          expect(experiment).to receive(:track).with(
-            'select_signup_intent_dropdown_new_team_registration_step_one',
-            label: 'free_registration'
-          )
-
-          create_user
-        end
-      end
-    end
   end
 end
