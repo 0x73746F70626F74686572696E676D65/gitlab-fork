@@ -345,6 +345,20 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
 
               it_behaves_like 'passes validation'
             end
+
+            context 'with sufficient approvals_required through membership inheritance' do
+              let(:subgroup) { create(:group, parent: group) }
+
+              let(:action) do
+                {
+                  type: 'require_approval',
+                  group_approvers: [subgroup.name],
+                  approvals_required: 1
+                }
+              end
+
+              it_behaves_like 'passes validation'
+            end
           end
 
           context 'with role_approvers' do

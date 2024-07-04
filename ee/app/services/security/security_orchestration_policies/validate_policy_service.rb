@@ -117,7 +117,7 @@ module Security
       def user_ids_by_groups(groups)
         return [] if groups.empty?
 
-        GroupMember.eligible_approvers_by_groups(groups).pluck_user_ids
+        GroupMember.eligible_approvers_by_groups(groups.self_and_ancestors).pluck_user_ids
       end
 
       def user_ids_by_roles(roles)
