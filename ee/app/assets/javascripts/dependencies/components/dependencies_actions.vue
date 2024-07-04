@@ -4,6 +4,7 @@ import { GlSorting } from '@gitlab/ui';
 import { mapActions, mapState } from 'vuex';
 import { omit } from 'lodash';
 import { __ } from '~/locale';
+import { setUrlParams, updateHistory } from '~/lib/utils/url_utility';
 import GroupDependenciesFilteredSearch from 'ee/dependencies/components/filtered_search/group_dependencies_filtered_search.vue';
 import { NAMESPACE_PROJECT } from '../constants';
 import { DEPENDENCY_LIST_TYPES } from '../store/constants';
@@ -67,12 +68,17 @@ export default {
   methods: {
     ...mapActions({
       setSortField(dispatch, field) {
+        this.clearCursorParam();
         dispatch(`${this.namespace}/setSortField`, field);
       },
       toggleSortOrder(dispatch) {
+        this.clearCursorParam();
         dispatch(`${this.namespace}/toggleSortOrder`);
       },
     }),
+    clearCursorParam() {
+      updateHistory({ url: setUrlParams({ cursor: null }) });
+    },
   },
 };
 </script>

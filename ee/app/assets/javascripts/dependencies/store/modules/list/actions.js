@@ -91,12 +91,6 @@ const queryParametersFor = (state, params) => {
     ...params,
   };
 
-  if (state.pageInfo.type === 'cursor' || (params && 'cursor' in params)) {
-    queryParams.cursor = params.cursor || state.pageInfo.currentCursor;
-  } else {
-    queryParams.page = params?.page || state.pageInfo.page || 1;
-  }
-
   return queryParams;
 };
 
