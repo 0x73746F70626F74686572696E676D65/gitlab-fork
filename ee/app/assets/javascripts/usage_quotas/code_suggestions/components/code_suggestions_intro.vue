@@ -3,10 +3,13 @@ import { GlEmptyState, GlLink, GlSprintf, GlButton, GlIntersectionObserver } fro
 import emptyStateSvgUrl from '@gitlab/svgs/dist/illustrations/tanuki-ai-sm.svg?url';
 import { __, s__ } from '~/locale';
 import SafeHtml from '~/vue_shared/directives/safe_html';
-import { codeSuggestionsLearnMoreLink } from 'ee/usage_quotas/code_suggestions/constants';
+import {
+  codeSuggestionsLearnMoreLink,
+  VIEW_ADMIN_CODE_SUGGESTIONS_PAGELOAD,
+} from 'ee/usage_quotas/code_suggestions/constants';
 import HandRaiseLeadButton from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead_button.vue';
 import apolloProvider from 'ee/subscriptions/buy_addons_shared/graphql';
-import Tracking from '~/tracking';
+import Tracking, { InternalEvents } from '~/tracking';
 
 export default {
   name: 'CodeSuggestionsIntro',
@@ -32,7 +35,7 @@ export default {
     GlButton,
     GlIntersectionObserver,
   },
-  mixins: [Tracking.mixin()],
+  mixins: [Tracking.mixin(), InternalEvents.mixin()],
   inject: {
     duoProTrialHref: { default: null },
     addDuoProHref: { default: null },
@@ -42,6 +45,9 @@ export default {
     purchaseSeatsBtnCategory() {
       return this.duoProTrialHref ? 'secondary' : 'primary';
     },
+  },
+  mounted() {
+    this.trackEvent(VIEW_ADMIN_CODE_SUGGESTIONS_PAGELOAD);
   },
   methods: {
     trackPageView() {

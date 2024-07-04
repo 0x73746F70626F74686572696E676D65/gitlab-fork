@@ -3,7 +3,9 @@ import { GlEmptyState, GlIntersectionObserver, GlSprintf } from '@gitlab/ui';
 import CodeSuggestionsIntro from 'ee/usage_quotas/code_suggestions/components/code_suggestions_intro.vue';
 import HandRaiseLeadButton from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead_button.vue';
 import { mockTracking } from 'helpers/tracking_helper';
+import { useMockInternalEventsTracking } from 'helpers/tracking_internal_events_helper';
 import { mockHandRaiseLeadData } from 'ee_jest/usage_quotas/code_suggestions/mock_data';
+import { VIEW_ADMIN_CODE_SUGGESTIONS_PAGELOAD } from 'ee/usage_quotas/code_suggestions/constants';
 
 describe('Code Suggestions Intro', () => {
   let wrapper;
@@ -23,6 +25,20 @@ describe('Code Suggestions Intro', () => {
       },
     });
   };
+
+  describe('on page load', () => {
+    const { bindInternalEventDocument } = useMockInternalEventsTracking();
+
+    it('tracks VIEW_ADMIN_CODE_SUGGESTIONS_PAGELOAD event', () => {
+      createComponent();
+      const { trackEventSpy } = bindInternalEventDocument(wrapper.element);
+      expect(trackEventSpy).toHaveBeenCalledWith(
+        VIEW_ADMIN_CODE_SUGGESTIONS_PAGELOAD,
+        {},
+        undefined,
+      );
+    });
+  });
 
   describe('when rendering', () => {
     it('renders gl-empty-state component with hand raise lead', () => {

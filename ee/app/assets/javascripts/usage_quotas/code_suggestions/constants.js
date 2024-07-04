@@ -91,3 +91,4 @@ export const SORT_OPTIONS = [
 
 export const ASSIGN_SEATS_BULK_ACTION = 'ASSIGN_BULK_ACTION';
 export const UNASSIGN_SEATS_BULK_ACTION = 'UNASSIGN_BULK_ACTION';
+export const VIEW_ADMIN_CODE_SUGGESTIONS_PAGELOAD = 'view_admin_code_suggestions_pageload';
