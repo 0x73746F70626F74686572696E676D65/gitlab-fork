@@ -46,14 +46,14 @@ module QA
         end
 
         it(
-          'finds a blob as an authorized user',
+          'finds a blob as an authorized user', :blocking,
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348064'
         ) do
           successful_search(api_client)
         end
 
         it(
-          'does not find a blob as an non-member user',
+          'does not find a blob as an non-member user', :blocking,
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348065'
         ) do
           QA::Support::Retrier.retry_on_exception(
