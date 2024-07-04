@@ -600,11 +600,17 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
 
     let_it_be_with_reload(:current_user) { create(:user) }
 
-    where(:duo_pro_seat_assigned, :code_suggestions_licensed, :code_suggestions_enabled_for_user) do
-      true  | true  | be_allowed(:access_code_suggestions)
-      true  | false | be_disallowed(:access_code_suggestions)
-      false | true  | be_disallowed(:access_code_suggestions)
-      false | false | be_disallowed(:access_code_suggestions)
+    where(:code_suggestions_licensed, :duo_pro_seat_assigned, :self_hosted_enabled, :self_hosted_licensed,
+      :self_hosted_free_access, :code_suggestions_enabled_for_user) do
+      true  | true  | true  | true   | false  | be_allowed(:access_code_suggestions)
+      true  | true  | false | false  | false  | be_allowed(:access_code_suggestions)
+      true  | false | true  | true   | false  | be_allowed(:access_code_suggestions)
+      true  | false | true  | false  | true   | be_allowed(:access_code_suggestions)
+      true  | false | true  | false  | false  | be_disallowed(:access_code_suggestions)
+      true  | false | true  | false  | false  | be_disallowed(:access_code_suggestions)
+      true  | false | false | false  | false  | be_disallowed(:access_code_suggestions)
+      false | true  | true  | true   | false  | be_disallowed(:access_code_suggestions)
+      false | false | false | false  | false  | be_disallowed(:access_code_suggestions)
     end
 
     with_them do
@@ -615,6 +621,13 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
                                                                           .and_return(code_suggestions_service_data)
         allow(code_suggestions_service_data).to receive(:allowed_for?).with(current_user)
                                                                       .and_return(duo_pro_seat_assigned)
+        allow(::Ai::FeatureSetting).to receive(:code_suggestions_self_hosted?).and_return(:self_hosted_enabled)
+        self_hosted_models_service_data = instance_double(CloudConnector::BaseAvailableServiceData)
+        allow(CloudConnector::AvailableServices).to receive(:find_by_name).with(:self_hosted_models)
+                                                                          .and_return(self_hosted_models_service_data)
+        allow(self_hosted_models_service_data).to receive(:allowed_for?).with(current_user)
+                                                                      .and_return(self_hosted_licensed)
+        allow(self_hosted_models_service_data).to receive(:free_access?).and_return(self_hosted_free_access)
       end
 
       it { is_expected.to code_suggestions_enabled_for_user }

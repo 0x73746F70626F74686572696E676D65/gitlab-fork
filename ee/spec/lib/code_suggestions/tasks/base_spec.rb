@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe CodeSuggestions::Tasks::Base, feature_category: :code_suggestions do
-  subject { described_class.new }
+  subject(:task) { described_class.new }
 
   describe '.base_url' do
     it 'returns correct URL' do
@@ -13,7 +13,13 @@ RSpec.describe CodeSuggestions::Tasks::Base, feature_category: :code_suggestions
 
   describe '#endpoint' do
     it 'raies NotImplementedError' do
-      expect { subject.endpoint }.to raise_error(NotImplementedError)
+      expect { task.endpoint }.to raise_error(NotImplementedError)
+    end
+  end
+
+  describe '#feature_name' do
+    it 'returns code suggestions feature name' do
+      expect(task.feature_name).to eq(:code_suggestions)
     end
   end
 end

@@ -17,6 +17,11 @@ module CodeSuggestions
         'completions'
       end
 
+      override :service_name
+      def feature_name
+        :self_hosted_models
+      end
+
       private
 
       attr_reader :feature_setting

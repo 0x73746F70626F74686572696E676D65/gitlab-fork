@@ -28,6 +28,10 @@ module Ai
       duo_chat: 2
     }
 
+    def self.code_suggestions_self_hosted?
+      exists?(feature: [:code_generations, :code_completions], provider: :self_hosted)
+    end
+
     def provider_title
       title = PROVIDER_TITLES[provider]
       return title unless self_hosted?

@@ -12,6 +12,9 @@ RSpec.describe CloudConnector::SelfSigned::AccessDataReader, feature_category: :
     let_it_be(:duo_chat_bundled_with) { { "duo_pro" => duo_chat_unit_primitives } }
     let_it_be(:backend) { 'gitlab-ai-gateway' }
 
+    let_it_be(:self_hosted_models_cut_off_date) { Time.zone.parse("2024-08-31 00:00:00 UTC").utc }
+    let_it_be(:self_hosted_models_bundled_with) { { "duo_enterprise" => [:code_suggestions, :duo_chat] } }
+
     let_it_be(:anthropic_proxy_bundled_with) do
       {
         "duo_enterprise" => %i[
@@ -61,8 +64,8 @@ RSpec.describe CloudConnector::SelfSigned::AccessDataReader, feature_category: :
           duo_chat: [nil, duo_chat_bundled_with, backend],
           anthropic_proxy: [nil, anthropic_proxy_bundled_with, backend],
           vertex_ai_proxy: [nil, vertex_ai_proxy_bundled_with, backend],
-          resolve_vulnerability: [nil, resolve_vulnerability_bundled_with,
-            backend]
+          resolve_vulnerability: [nil, resolve_vulnerability_bundled_with, backend],
+          self_hosted_models: [self_hosted_models_cut_off_date, self_hosted_models_bundled_with, backend]
         }
       end
     end

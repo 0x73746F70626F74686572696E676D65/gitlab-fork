@@ -76,10 +76,6 @@ module API
           end
         end
         post do
-          token = ::CloudConnector::AvailableServices.find_by_name(:code_suggestions).access_token(current_user)
-
-          unauthorized! if token.nil?
-
           check_rate_limit!(:code_suggestions_api_endpoint, scope: current_user) do
             Gitlab::InternalEvents.track_event(
               'code_suggestions_rate_limit_exceeded',
@@ -94,6 +90,12 @@ module API
             params: declared_params(params),
             unsafe_passthrough_params: params.except(:private_token)
           ).task
+
+          service = CloudConnector::AvailableServices.find_by_name(task.feature_name)
+          unauthorized! unless service.free_access? || service.allowed_for?(current_user)
+
+          token = service.access_token(current_user)
+          unauthorized! if token.nil?
 
           body = task.body
           file_too_large! if body.size > MAX_BODY_SIZE

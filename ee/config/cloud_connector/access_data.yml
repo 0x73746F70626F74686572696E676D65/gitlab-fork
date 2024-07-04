@@ -64,3 +64,11 @@ services: # Cloud connector features (i.e. code_suggestions, duo_chat...)
       duo_enterprise:
         unit_primitives:
           - resolve_vulnerability
+  self_hosted_models:
+    backend: 'gitlab-ai-gateway'
+    cut_off_date: 2024-08-31 00:00:00 UTC
+    bundled_with:
+      duo_enterprise:
+        unit_primitives:
+          - code_suggestions
+          - duo_chat

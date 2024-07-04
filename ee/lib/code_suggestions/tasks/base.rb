@@ -26,6 +26,10 @@ module CodeSuggestions
         body_params.to_json
       end
 
+      def feature_name
+        :code_suggestions
+      end
+
       private
 
       attr_reader :params, :unsafe_passthrough_params
