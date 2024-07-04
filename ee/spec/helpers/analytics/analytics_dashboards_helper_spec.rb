@@ -8,7 +8,6 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
   let_it_be_with_refind(:group) { create(:group) } # rubocop:disable RSpec/FactoryBot/AvoidCreate
   let_it_be_with_refind(:project) { create(:project, group: group) } # rubocop:disable RSpec/FactoryBot/AvoidCreate
   let_it_be(:user) { build_stubbed(:user) }
-  let_it_be(:pointer) { create(:analytics_dashboards_pointer, :project_based, project: project) } # rubocop:disable RSpec/FactoryBot/AvoidCreate
   let_it_be(:group_pointer) { create(:analytics_dashboards_pointer, namespace: group, target_project: project) } # rubocop:disable RSpec/FactoryBot/AvoidCreate
   let_it_be(:add_on) { create(:gitlab_subscription_add_on, :product_analytics) } # rubocop:disable RSpec/FactoryBot/AvoidCreate
 
@@ -56,16 +55,16 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
 
         subject(:data) { helper.analytics_dashboards_list_app_data(project) }
 
-        def expected_data(has_permission)
+        def expected_data(has_permission, pointer_project = project)
           {
             is_project: 'true',
             is_group: 'false',
             namespace_id: project.id,
             dashboard_project: {
-              id: pointer.target_project.id,
-              full_path: pointer.target_project.full_path,
-              name: pointer.target_project.name,
-              default_branch: pointer.target_project.default_branch
+              id: pointer_project.id,
+              full_path: pointer_project.full_path,
+              name: pointer_project.name,
+              default_branch: pointer_project.default_branch
             }.to_json,
             can_configure_project_settings: user_can_admin_project.to_s,
             can_select_gitlab_managed_provider: 'false',
@@ -111,6 +110,14 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
 
           it 'returns the expected data' do
             expect(data).to include({ overview_counts_aggregation_enabled: "true" })
+          end
+        end
+
+        context 'with a dashboard pointer' do
+          let_it_be(:pointer) { create(:analytics_dashboards_pointer, :project_based, project: project) } # rubocop:disable RSpec/FactoryBot/AvoidCreate
+
+          it 'returns the pointer target project in the expected data' do
+            expect(data).to eq(expected_data(false, pointer.target_project))
           end
         end
       end
