@@ -3,7 +3,6 @@
 module Geo
   # Called by Geo::EventWorker to consume the event
   class EventService
-    include ::Gitlab::Geo::LogHelpers
     include ::Gitlab::Utils::StrongMemoize
 
     attr_reader :replicable_name, :event_name, :payload
@@ -21,19 +20,10 @@ module Geo
     private
 
     def replicator
-      strong_memoize(:replicator) do
-        model_record_id = payload[:model_record_id]
+      model_record_id = payload[:model_record_id]
 
-        ::Gitlab::Geo::Replicator.for_replicable_params(replicable_name: replicable_name, replicable_id: model_record_id)
-      end
+      ::Gitlab::Geo::Replicator.for_replicable_params(replicable_name: replicable_name, replicable_id: model_record_id)
     end
-
-    def extra_log_data
-      {
-        replicable_name: replicable_name,
-        event_name: event_name,
-        payload: payload
-      }
-    end
+    strong_memoize_attr :replicator
   end
 end
