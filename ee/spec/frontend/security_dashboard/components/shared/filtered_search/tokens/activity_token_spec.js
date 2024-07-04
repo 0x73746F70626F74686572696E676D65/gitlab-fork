@@ -265,6 +265,7 @@ describe('ActivityToken', () => {
     it('has expected props', () => {
       expect(findQuerystringSync().props()).toMatchObject({
         querystringKey: 'activity',
+        defaultValues: ActivityToken.queryStringDefaultValues,
         value: ActivityToken.DEFAULT_VALUES,
         validValues: [
           'ALL',

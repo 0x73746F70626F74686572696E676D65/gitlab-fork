@@ -9,10 +9,10 @@ const router = new VueRouter();
 describe('Querystring Sync component', () => {
   let wrapper;
 
-  const createWrapper = ({ validValues } = {}) => {
+  const createWrapper = ({ validValues, defaultValues } = {}) => {
     wrapper = shallowMount(QuerystringSync, {
       router,
-      propsData: { querystringKey: 'values', value: [], validValues },
+      propsData: { querystringKey: 'values', value: [], validValues, defaultValues },
     });
   };
 
@@ -152,6 +152,17 @@ describe('Querystring Sync component', () => {
       wrapper.destroy();
 
       expect(router.currentRoute.query).not.toHaveProperty('values');
+    });
+
+    it('sets the querystring back to the default value when the component is destroyed', () => {
+      router.replace({ query: { values: 'abc' } });
+      createWrapper({ defaultValues: ['my-value'] });
+
+      expect(router.currentRoute.query).toHaveProperty('values');
+
+      wrapper.destroy();
+
+      expect(router.currentRoute.query?.values).toBe('my-value');
     });
   });
 });

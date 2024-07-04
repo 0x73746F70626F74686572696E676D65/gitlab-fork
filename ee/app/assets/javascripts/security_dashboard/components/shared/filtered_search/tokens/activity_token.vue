@@ -54,6 +54,7 @@ export default {
   DEFAULT_VALUES: [ITEMS.STILL_DETECTED.value],
   VALID_VALUES: [ALL_ACTIVITY_VALUE, ...OPTIONS.map(({ value }) => value)],
   GROUPS,
+  queryStringDefaultValues: [ALL_ACTIVITY_VALUE],
   components: {
     GlBadge,
     GlFilteredSearchToken,
@@ -193,6 +194,7 @@ export default {
     querystring-key="activity"
     :value="querySyncValues"
     :valid-values="$options.VALID_VALUES"
+    :default-values="$options.queryStringDefaultValues"
     data-testid="activity-token"
     @input="updateSelectedFromQS"
   >
