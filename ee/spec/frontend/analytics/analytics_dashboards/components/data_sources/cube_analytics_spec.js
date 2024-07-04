@@ -1,5 +1,9 @@
 import { CubeApi, HttpTransport, __setMockLoad } from '@cubejs-client/core';
 import fetch from 'ee/analytics/analytics_dashboards/data_sources/cube_analytics';
+import {
+  TODAY,
+  SEVEN_DAYS_AGO,
+} from 'ee/vue_shared/components/customizable_dashboard/filters/constants';
 import { pikadayToString } from '~/lib/utils/datetime_utility';
 import {
   mockResultSet,
@@ -51,8 +55,22 @@ describe('Cube Analytics Data Source', () => {
 
     itSetsUpCube();
 
-    it('loads the query with the query override', () => {
-      expect(mockLoad).toHaveBeenCalledWith(queryOverrides, cubeJsOptions);
+    it('loads the query with the query override and default filters', () => {
+      expect(mockLoad).toHaveBeenCalledWith(expect.objectContaining(queryOverrides), cubeJsOptions);
+    });
+
+    it('loads the query with the default 7 days date range filters', () => {
+      const defaultFilters = {
+        filters: [
+          {
+            member: 'TrackedEvents.derivedTstamp',
+            operator: 'inDateRange',
+            values: [pikadayToString(SEVEN_DAYS_AGO), pikadayToString(TODAY)],
+          },
+        ],
+      };
+
+      expect(mockLoad).toHaveBeenCalledWith(expect.objectContaining(defaultFilters), cubeJsOptions);
     });
   });
 
@@ -294,7 +312,7 @@ describe('Cube Analytics Data Source', () => {
 
           expect(mockLoad).toHaveBeenCalledWith(
             {
-              filters: existingFilters,
+              filters: expect.arrayContaining(existingFilters),
               measures: [queryMeasurement],
               ...expectedSegments,
             },

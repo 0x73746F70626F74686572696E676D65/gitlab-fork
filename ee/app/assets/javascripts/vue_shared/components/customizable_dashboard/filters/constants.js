@@ -2,6 +2,7 @@ import { __, sprintf } from '~/locale';
 import { getCurrentUtcDate, getDateInPast } from '~/lib/utils/datetime_utility';
 
 export const TODAY = getCurrentUtcDate();
+export const SEVEN_DAYS_AGO = getDateInPast(TODAY, 7);
 
 export const CUSTOM_DATE_RANGE_KEY = 'custom';
 
@@ -27,7 +28,7 @@ export const DATE_RANGE_OPTIONS = [
   {
     key: 'last_7_days',
     text: sprintf(__('Last %{days} days'), { days: 7 }),
-    startDate: getDateInPast(TODAY, 7),
+    startDate: SEVEN_DAYS_AGO,
     endDate: TODAY,
   },
   {

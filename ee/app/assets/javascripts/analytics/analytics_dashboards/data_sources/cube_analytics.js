@@ -13,6 +13,10 @@ import {
   VISUALIZATION_TYPE_COLUMN_CHART,
   VISUALIZATION_TYPE_SINGLE_STAT,
 } from 'ee/analytics/analytics_dashboards/constants';
+import {
+  TODAY,
+  SEVEN_DAYS_AGO,
+} from 'ee/vue_shared/components/customizable_dashboard/filters/constants';
 
 // This can be any value because the cube proxy adds the real API token.
 const CUBE_API_TOKEN = '1';
@@ -106,21 +110,17 @@ const getDateRangeDimension = (query) => {
   return DATE_RANGE_FILTER_DIMENSIONS[tableKey] ?? getDynamicSchemaDateRangeDimension(query);
 };
 
-const buildDateRangeFilter = (query, queryOverrides, { startDate, endDate }) => {
-  if (!startDate && !endDate) return {};
-
-  return {
-    filters: [
-      ...(query.filters ?? []),
-      ...(queryOverrides.filters ?? []),
-      {
-        member: getDateRangeDimension(query),
-        operator: 'inDateRange',
-        values: [pikadayToString(startDate), pikadayToString(endDate)],
-      },
-    ],
-  };
-};
+const buildDateRangeFilter = (query, queryOverrides, { startDate, endDate }) => ({
+  filters: [
+    ...(query.filters ?? []),
+    ...(queryOverrides.filters ?? []),
+    {
+      member: getDateRangeDimension(query),
+      operator: 'inDateRange',
+      values: [pikadayToString(startDate ?? SEVEN_DAYS_AGO), pikadayToString(endDate ?? TODAY)],
+    },
+  ],
+});
 
 const buildAnonUsersFilter = (query, queryOverrides, { filterAnonUsers }) => {
   if (!filterAnonUsers) return {};
