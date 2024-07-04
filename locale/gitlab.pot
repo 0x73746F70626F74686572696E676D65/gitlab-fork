@@ -22089,9 +22089,6 @@ msgstr ""
 msgid "Fast timeout"
 msgstr ""
 
-msgid "Faster releases. Better code. Less pain."
-msgstr ""
-
 msgid "Favicon"
 msgstr ""
 
@@ -42014,7 +42011,7 @@ msgstr ""
 msgid "Projects are graded based on the highest severity vulnerability present"
 msgstr ""
 
-msgid "Projects are where you store your code, access issues, wiki and other features of GitLab."
+msgid "Projects are where you store your code, access issues, wiki, and other features of GitLab."
 msgstr ""
 
 msgid "Projects contributed to"
@@ -43317,6 +43314,9 @@ msgid "Read the documentation before applying changes."
 msgstr ""
 
 msgid "Read their documentation."
+msgstr ""
+
+msgid "Ready to get started with GitLab? Follow these steps to get familiar with us:"
 msgstr ""
 
 msgid "Ready to merge by members who can write to the target branch."
@@ -59386,10 +59386,10 @@ msgstr ""
 msgid "Welcome back! Your account had been deactivated due to inactivity but is now reactivated."
 msgstr ""
 
-msgid "Welcome to GitLab"
+msgid "Welcome to GitLab, %{first_name}!"
 msgstr ""
 
-msgid "Welcome to GitLab, %{first_name}!"
+msgid "Welcome to GitLab, %{name}!"
 msgstr ""
 
 msgid "Welcome to GitLab,%{br_tag}%{name}!"
@@ -61237,9 +61237,6 @@ msgid "You need to upload a GitLab project export archive (ending in .gz)."
 msgstr ""
 
 msgid "You need to verify your primary email first before enabling Two-Factor Authentication."
-msgstr ""
-
-msgid "You see projects here when you're added to a group or project."
 msgstr ""
 
 msgid "You should run a new pipeline, because the target branch has changed for this merge request."
