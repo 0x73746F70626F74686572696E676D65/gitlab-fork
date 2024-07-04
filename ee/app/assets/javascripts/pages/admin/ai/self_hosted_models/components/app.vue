@@ -27,7 +27,7 @@ export default {
   i18n: {
     emptyStateTitle: s__('AdminSelfHostedModels|Define your set of self-hosted models'),
     emptyStateDescription: s__(
-      'AdminSelfHostedModels|They point to the self-hosted AI models that can be used for backing up GitLab AI features.',
+      'AdminSelfHostedModels|Add self-hosted language models to use as backups for GitLab Duo features.',
     ),
     emptyStatePrimaryButtonText: s__('AdminSelfHostedModels|New self-hosted model'),
     errorMessage: s__(

@@ -9,7 +9,7 @@ RSpec.describe Sidebars::Admin::Menus::AiPoweredFeaturesMenu, feature_category: 
 
   it_behaves_like 'Admin menu',
     link: '/admin/code_suggestions',
-    title: s_('Admin|AI-Powered Features'),
+    title: s_('Admin|AI-powered features'),
     icon: 'tanuki-ai'
 
   it_behaves_like 'Admin menu with sub menus'
@@ -25,7 +25,7 @@ RSpec.describe Sidebars::Admin::Menus::AiPoweredFeaturesMenu, feature_category: 
 
       it 'renders a sub item' do
         expect(sub_item.link).to eq('/admin/code_suggestions')
-        expect(sub_item.title).to eq('GitLab Duo Pro')
+        expect(sub_item.title).to eq('GitLab Duo')
         expect(sub_item.active_routes).to eq({ controller: :code_suggestions })
       end
     end
@@ -35,7 +35,7 @@ RSpec.describe Sidebars::Admin::Menus::AiPoweredFeaturesMenu, feature_category: 
 
       it 'renders a sub item' do
         expect(sub_item.link).to eq('/admin/ai/self_hosted_models')
-        expect(sub_item.title).to eq('Models')
+        expect(sub_item.title).to eq('Custom models')
         expect(sub_item.active_routes).to eq({ controller: 'admin/ai/self_hosted_models' })
       end
     end
