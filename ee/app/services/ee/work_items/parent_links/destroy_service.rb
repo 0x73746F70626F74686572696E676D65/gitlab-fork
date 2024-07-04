@@ -53,6 +53,11 @@ module EE
         def permission_to_remove_relation?
           return true if synced_work_item?
 
+          if parent.work_item_type.epic? && child.work_item_type.epic? &&
+              !parent.namespace.licensed_feature_available?(:subepics)
+            return false
+          end
+
           super
         end
 

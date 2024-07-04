@@ -18,6 +18,10 @@ RSpec.describe WorkItems::ParentLinks::DestroyService, feature_category: :team_p
 
     let(:params) { {} }
 
+    before do
+      stub_licensed_features(subepics: true)
+    end
+
     subject(:destroy_link) { described_class.new(parent_link, user, params).execute }
 
     shared_examples 'destroys parent link' do |notes_created: 2|
@@ -54,6 +58,16 @@ RSpec.describe WorkItems::ParentLinks::DestroyService, feature_category: :team_p
       end
 
       it_behaves_like 'destroys parent link'
+
+      context 'when epic work item type' do
+        context 'when subepics are not available' do
+          before do
+            stub_licensed_features(subepics: false)
+          end
+
+          it_behaves_like 'does not remove relationship'
+        end
+      end
     end
 
     context "when only parent work item has a synced epic" do
