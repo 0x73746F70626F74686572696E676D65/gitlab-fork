@@ -17,7 +17,7 @@ module EE
             module MergeJobs
               def perform!
                 return if ::Feature.disabled?(:pipeline_execution_policy_type, project.group)
-                return if command.execution_policy_mode? || command.execution_policy_pipelines.blank?
+                return if command.execution_policy_mode? || command.pipeline_execution_policies.blank?
 
                 clear_project_pipeline
                 merge_policy_jobs
@@ -38,7 +38,7 @@ module EE
               def merge_policy_jobs
                 ::Gitlab::Ci::Pipeline::PipelineExecutionPolicies::JobsMerger
                   .new(pipeline: pipeline,
-                    execution_policy_pipelines: command.execution_policy_pipelines,
+                    pipeline_execution_policies: command.pipeline_execution_policies,
                     # `yaml_processor_result` contains the declared project stages, even if they are unused.
                     declared_stages: command.yaml_processor_result.stages
                   )

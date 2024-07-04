@@ -135,7 +135,7 @@ RSpec.describe ::Gitlab::Ci::Pipeline::Chain::Config::Content, feature_category:
     end
 
     before do
-      command.execution_policy_pipelines = build_list(:ci_empty_pipeline, 2)
+      command.pipeline_execution_policies = build_list(:ci_pipeline_execution_policy, 2)
     end
 
     it 'forces the pipeline creation' do

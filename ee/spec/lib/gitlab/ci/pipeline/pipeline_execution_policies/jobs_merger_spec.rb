@@ -9,17 +9,17 @@ RSpec.describe Gitlab::Ci::Pipeline::PipelineExecutionPolicies::JobsMerger, feat
   let_it_be(:user) { create(:user, developer_of: project) }
   let(:declared_stages) { %w[.pipeline-policy-pre .pre build test deploy .post .pipeline-policy-post] }
   let(:pipeline) { build_mock_pipeline({ 'build' => ['build_job'], 'test' => ['rake'] }, declared_stages) }
-  let(:execution_policy_pipelines) do
+  let(:pipeline_execution_policies) do
     [
-      build_mock_policy_pipeline({ 'build' => ['docker'] }),
-      build_mock_policy_pipeline({ 'test' => ['rspec'] })
+      build(:ci_pipeline_execution_policy, pipeline: build_mock_policy_pipeline({ 'build' => ['docker'] })),
+      build(:ci_pipeline_execution_policy, pipeline: build_mock_policy_pipeline({ 'test' => ['rspec'] }))
     ]
   end
 
   subject(:execute) do
     described_class.new(
       pipeline: pipeline,
-      execution_policy_pipelines: execution_policy_pipelines,
+      pipeline_execution_policies: pipeline_execution_policies,
       declared_stages: declared_stages
     ).execute
   end
@@ -47,10 +47,10 @@ RSpec.describe Gitlab::Ci::Pipeline::PipelineExecutionPolicies::JobsMerger, feat
 
   context 'with conflicting jobs' do
     context 'when two policy pipelines have the same job names' do
-      let(:execution_policy_pipelines) do
+      let(:pipeline_execution_policies) do
         [
-          build_mock_policy_pipeline({ 'test' => ['rspec'] }),
-          build_mock_policy_pipeline({ 'test' => ['rspec'] })
+          build(:ci_pipeline_execution_policy, pipeline: build_mock_policy_pipeline({ 'test' => ['rspec'] })),
+          build(:ci_pipeline_execution_policy, pipeline: build_mock_policy_pipeline({ 'test' => ['rspec'] }))
         ]
       end
 
@@ -64,10 +64,10 @@ RSpec.describe Gitlab::Ci::Pipeline::PipelineExecutionPolicies::JobsMerger, feat
     end
 
     context 'when project and policy pipelines have the same job names' do
-      let(:execution_policy_pipelines) do
+      let(:pipeline_execution_policies) do
         [
-          build_mock_policy_pipeline({ 'test' => ['rake'] }),
-          build_mock_policy_pipeline({ 'test' => ['rspec'] })
+          build(:ci_pipeline_execution_policy, pipeline: build_mock_policy_pipeline({ 'test' => ['rake'] })),
+          build(:ci_pipeline_execution_policy, pipeline: build_mock_policy_pipeline({ 'test' => ['rspec'] }))
         ]
       end
 
@@ -85,8 +85,8 @@ RSpec.describe Gitlab::Ci::Pipeline::PipelineExecutionPolicies::JobsMerger, feat
     context 'when custom policy stage is also defined but not used in the main pipeline' do
       let(:declared_stages) { %w[.pipeline-policy-pre .pre build test custom .post .pipeline-policy-post] }
 
-      let(:execution_policy_pipelines) do
-        [build_mock_policy_pipeline({ 'custom' => ['docker'] })]
+      let(:pipeline_execution_policies) do
+        build_list(:ci_pipeline_execution_policy, 1, pipeline: build_mock_policy_pipeline({ 'custom' => ['docker'] }))
       end
 
       it 'injects the policy job into the custom stage', :aggregate_failures do
@@ -101,8 +101,8 @@ RSpec.describe Gitlab::Ci::Pipeline::PipelineExecutionPolicies::JobsMerger, feat
     end
 
     context 'when custom policy stage is not defined in the main pipeline' do
-      let(:execution_policy_pipelines) do
-        [build_mock_policy_pipeline({ 'custom' => ['docker'] })]
+      let(:pipeline_execution_policies) do
+        build_list(:ci_pipeline_execution_policy, 1, pipeline: build_mock_policy_pipeline({ 'custom' => ['docker'] }))
       end
 
       it 'ignores the stage' do
@@ -115,8 +115,8 @@ RSpec.describe Gitlab::Ci::Pipeline::PipelineExecutionPolicies::JobsMerger, feat
 
   context 'when the policy stage is defined in a different position than the stage in the main pipeline' do
     let(:declared_stages) { %w[.pipeline-policy-pre .pre build test .post .pipeline-policy-post] }
-    let(:execution_policy_pipelines) do
-      [build_mock_policy_pipeline({ 'test' => ['rspec'] })]
+    let(:pipeline_execution_policies) do
+      build_list(:ci_pipeline_execution_policy, 1, pipeline: build_mock_policy_pipeline({ 'test' => ['rspec'] }))
     end
 
     it 'reassigns the position and stage_idx for the jobs to match the main pipeline', :aggregate_failures do
@@ -133,8 +133,8 @@ RSpec.describe Gitlab::Ci::Pipeline::PipelineExecutionPolicies::JobsMerger, feat
     let(:declared_stages) { %w[.pipeline-policy-pre .pre build test deploy .post .pipeline-policy-post] }
     let(:pipeline) { build_mock_pipeline({ 'deploy' => ['package'] }, declared_stages) }
 
-    let(:execution_policy_pipelines) do
-      [build_mock_policy_pipeline({ 'deploy' => ['docker'] })]
+    let(:pipeline_execution_policies) do
+      build_list(:ci_pipeline_execution_policy, 1, pipeline: build_mock_policy_pipeline({ 'deploy' => ['docker'] }))
     end
 
     it 'reassigns the position and stage_idx for policy jobs based on the declared stages', :aggregate_failures do
@@ -149,8 +149,8 @@ RSpec.describe Gitlab::Ci::Pipeline::PipelineExecutionPolicies::JobsMerger, feat
     end
   end
 
-  context 'when execution_policy_pipelines is empty' do
-    let(:execution_policy_pipelines) { [] }
+  context 'when pipeline_execution_policies is empty' do
+    let(:pipeline_execution_policies) { [] }
 
     it 'does not change pipeline stages' do
       expect { execute }.not_to change { pipeline.stages }

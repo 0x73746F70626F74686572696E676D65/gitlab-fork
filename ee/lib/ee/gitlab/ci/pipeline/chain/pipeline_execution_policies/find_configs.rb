@@ -22,6 +22,8 @@ module EE
               include ::Gitlab::Utils::StrongMemoize
               extend ::Gitlab::Utils::Override
 
+              PipelineExecutionPolicy = Struct.new(:pipeline)
+
               override :perform!
               def perform!
                 return if ::Feature.disabled?(:pipeline_execution_policy_type, project.group)
@@ -29,12 +31,12 @@ module EE
                 return if pipeline.dangling?
                 return if pipeline_execution_policy_contents.empty?
 
-                command.execution_policy_pipelines = []
+                command.pipeline_execution_policies = []
                 pipeline_execution_policy_contents.each do |content|
                   response = create_pipeline(content)
 
                   if response.success?
-                    command.execution_policy_pipelines << response.payload
+                    command.pipeline_execution_policies << PipelineExecutionPolicy.new(response.payload)
                   elsif pipeline_filtered_by_rules?(response.payload)
                     # no-op: we ignore empty pipelines
                   else

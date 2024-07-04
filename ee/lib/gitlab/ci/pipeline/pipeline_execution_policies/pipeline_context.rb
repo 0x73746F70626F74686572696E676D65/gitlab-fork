@@ -15,20 +15,20 @@ module Gitlab
             command&.execution_policy_mode? || false
           end
 
-          def has_execution_policy_pipelines?
-            command&.execution_policy_pipelines.present? || false
+          def has_pipeline_execution_policies?
+            command&.pipeline_execution_policies.present? || false
           end
 
           # We inject reserved policy stages only when;
           # - execution_policy_mode: This is a temporary pipeline creation mode.
           #   We need to inject these stages for the validation because the policy may use them.
-          # - has_execution_policy_pipelines?: This is the actual pipeline creation mode.
+          # - has_pipeline_execution_policies?: This is the actual pipeline creation mode.
           #   It means that the result pipeline will have PEPs.
           #   We need to inject these stages because some of the policies may use them.
           def inject_policy_reserved_stages?
             return false if ::Feature.disabled?(:pipeline_execution_policy_type, project&.group)
 
-            execution_policy_mode? || has_execution_policy_pipelines?
+            execution_policy_mode? || has_pipeline_execution_policies?
           end
 
           def valid_stage?(stage)

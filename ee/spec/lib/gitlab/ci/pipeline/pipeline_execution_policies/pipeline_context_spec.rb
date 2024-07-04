@@ -25,13 +25,13 @@ RSpec.describe Gitlab::Ci::Pipeline::PipelineExecutionPolicies::PipelineContext,
     end
   end
 
-  describe '#has_execution_policy_pipelines?' do
-    subject { context.has_execution_policy_pipelines? }
+  describe '#has_pipeline_execution_policies?' do
+    subject { context.has_pipeline_execution_policies? }
 
     it { is_expected.to eq(false) }
 
-    context 'with execution_policy_pipelines' do
-      let(:execution_policy_pipelines) { build_list(:ci_empty_pipeline, 2) }
+    context 'with pipeline_execution_policies' do
+      let(:pipeline_execution_policies) { build_list(:ci_pipeline_execution_policy, 2) }
 
       it { is_expected.to eq(true) }
     end
@@ -54,8 +54,8 @@ RSpec.describe Gitlab::Ci::Pipeline::PipelineExecutionPolicies::PipelineContext,
       it { is_expected.to eq(true) }
     end
 
-    context 'with execution_policy_pipelines' do
-      let(:execution_policy_pipelines) { build_list(:ci_empty_pipeline, 2) }
+    context 'with pipeline_execution_policies' do
+      let(:pipeline_execution_policies) { build_list(:ci_empty_pipeline, 2) }
 
       it { is_expected.to eq(true) }
     end
