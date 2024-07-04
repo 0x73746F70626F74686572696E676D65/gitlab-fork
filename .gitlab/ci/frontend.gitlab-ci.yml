@@ -189,6 +189,8 @@ rspec-all frontend_fixture:
 # Uploads EE fixtures in the EE project.
 # Uploads FOSS fixtures in the FOSS project.
 upload-frontend-fixtures:
+  variables:
+    SETUP_DB: "false"
   extends:
     - .default-retry
     - .default-before_script
