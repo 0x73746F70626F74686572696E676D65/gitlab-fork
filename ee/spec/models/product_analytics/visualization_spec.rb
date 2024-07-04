@@ -47,6 +47,17 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
     end
   end
 
+  describe '#schema_errors_for' do
+    let(:dashboard) { dashboards.find { |d| d.title == 'Audience' } }
+
+    it 'fetches correct schema path' do
+      allow(JSONSchemer).to receive(:schema).and_call_original
+      expect(JSONSchemer).to receive(:schema).with(Rails.root.join(described_class::SCHEMA_PATH))
+
+      dashboard.panels.first.visualization
+    end
+  end
+
   describe '.for' do
     context 'when resource_parent is a Project' do
       subject { described_class.for(container: project, user: user) }
