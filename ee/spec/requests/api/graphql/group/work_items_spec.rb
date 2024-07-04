@@ -102,7 +102,7 @@ RSpec.describe 'getting a work item list for a group', feature_category: :team_p
     # that implement the widget interface. Only `type` for the widgets field.
     context 'when querying the widget interface' do
       before do
-        stub_licensed_features(epics: true)
+        stub_licensed_features(epics: true, subepics: true)
       end
 
       let(:fields) do

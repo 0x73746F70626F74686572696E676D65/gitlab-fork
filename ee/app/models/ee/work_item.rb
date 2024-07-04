@@ -39,8 +39,22 @@ module EE
     end
 
     class_methods do
+      extend ::Gitlab::Utils::Override
+
       def with_api_entity_associations
         super.preload(:sync_object)
+      end
+
+      override :work_item_children_keyset_order
+      def work_item_children_keyset_order(work_item)
+        return super unless work_item.epic_work_item? && !work_item.namespace.licensed_feature_available?(:subepics)
+
+        non_epic_children = work_item.work_item_children.where.not(
+          work_item_type_id: ::WorkItems::Type.default_by_type(:epic).id
+        )
+        keyset_order = ::WorkItem.work_item_children_keyset_order_config
+
+        keyset_order.apply_cursor_conditions(non_epic_children.includes(:parent_link)).reorder(keyset_order)
       end
     end
 

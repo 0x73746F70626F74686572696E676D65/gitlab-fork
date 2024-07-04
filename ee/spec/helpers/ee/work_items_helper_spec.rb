@@ -13,7 +13,8 @@ RSpec.describe EE::WorkItemsHelper, feature_category: :team_planning do
         issuable_health_status: feature_available,
         iterations: feature_available,
         issue_weights: feature_available,
-        okrs: feature_available
+        okrs: feature_available,
+        subepics: feature_available
       )
     end
 
@@ -28,7 +29,8 @@ RSpec.describe EE::WorkItemsHelper, feature_category: :team_planning do
             has_issuable_health_status_feature: "true",
             has_issue_weights_feature: "true",
             has_iterations_feature: "true",
-            has_okrs_feature: "true"
+            has_okrs_feature: "true",
+            has_subepics_feature: "true"
           }
         )
       end
@@ -43,7 +45,8 @@ RSpec.describe EE::WorkItemsHelper, feature_category: :team_planning do
             has_issuable_health_status_feature: "false",
             has_issue_weights_feature: "false",
             has_iterations_feature: "false",
-            has_okrs_feature: "false"
+            has_okrs_feature: "false",
+            has_subepics_feature: "false"
           }
         )
       end

@@ -576,6 +576,73 @@ RSpec.describe WorkItem, :elastic_helpers, feature_category: :team_planning do
     end
   end
 
+  describe '.work_item_children_by_relative_position' do
+    subject { parent_item.reload.work_item_children_by_relative_position }
+
+    let_it_be(:namespace) { create(:namespace) }
+    let_it_be(:parent_item) { create(:work_item, :epic, namespace: namespace) }
+    let_it_be(:oldest_item) { create(:work_item, :epic, namespace: namespace) }
+    let_it_be(:middle_item) { create(:work_item, :issue, project: reusable_project) }
+    let_it_be(:newest_item) { create(:work_item, :issue, project: reusable_project) }
+
+    let_it_be_with_reload(:link_to_oldest_item) do
+      create(:parent_link, work_item_parent: parent_item, work_item: oldest_item)
+    end
+
+    let_it_be_with_reload(:link_to_middle_item) do
+      create(:parent_link, work_item_parent: parent_item, work_item: middle_item)
+    end
+
+    let_it_be_with_reload(:link_to_newest_item) do
+      create(:parent_link, work_item_parent: parent_item, work_item: newest_item)
+    end
+
+    context 'when subepics are not available' do
+      before do
+        stub_licensed_features(subepics: false)
+      end
+
+      context 'when ordered by relative position does not include subepics' do
+        using RSpec::Parameterized::TableSyntax
+
+        where(:oldest_item_position, :middle_item_position, :newest_item_position, :expected_order) do
+          nil | nil | nil | lazy { [middle_item, newest_item] }
+          nil | nil | 1   | lazy { [newest_item, middle_item] }
+          nil | 1   | 2   | lazy { [middle_item, newest_item] }
+          2   | 3   | 1   | lazy { [newest_item, middle_item] }
+          1   | 2   | 3   | lazy { [middle_item, newest_item] }
+          1   | 3   | 2   | lazy { [newest_item, middle_item] }
+          2   | 1   | 3   | lazy { [middle_item, newest_item] }
+          3   | 1   | 2   | lazy { [middle_item, newest_item] }
+          3   | 2   | 1   | lazy { [newest_item, middle_item] }
+          1   | 2   | 1   | lazy { [newest_item, middle_item] }
+        end
+
+        with_them do
+          before do
+            link_to_oldest_item.update!(relative_position: oldest_item_position)
+            link_to_middle_item.update!(relative_position: middle_item_position)
+            link_to_newest_item.update!(relative_position: newest_item_position)
+          end
+
+          it { is_expected.to eq(expected_order) }
+        end
+      end
+    end
+
+    context 'when subepics are available' do
+      before do
+        stub_licensed_features(subepics: true)
+      end
+
+      # Skipped order related specs since they are tested in work_item_spec file in CE
+      it 'return child epics as well in the children' do
+        expect(parent_item.reload.work_item_children_by_relative_position).to eq([oldest_item, middle_item,
+          newest_item])
+      end
+    end
+  end
+
   describe '#preload_for_indexing' do
     let_it_be(:work_item) { create(:work_item) }
 

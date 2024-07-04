@@ -10,6 +10,7 @@ import WorkItemRolledupDates from 'ee/work_items/components/work_item_rolledup_d
 import waitForPromises from 'helpers/wait_for_promises';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { workItemResponseFactory, epicType } from 'jest/work_items/mock_data';
+import WorkItemParent from '~/work_items/components/work_item_parent.vue';
 import WorkItemAttributesWrapper from '~/work_items/components/work_item_attributes_wrapper.vue';
 import workItemByIidQuery from '~/work_items/graphql/work_item_by_iid.query.graphql';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
@@ -39,6 +40,7 @@ describe('EE WorkItemAttributesWrapper component', () => {
     handler = successHandler,
     confidentialityMock = [updateWorkItemMutation, jest.fn()],
     featureFlags = { workItemsBeta: true, workItemsRolledupDates: true },
+    hasSubepicsFeature = true,
   } = {}) => {
     wrapper = shallowMount(WorkItemAttributesWrapper, {
       apolloProvider: createMockApollo([
@@ -54,6 +56,7 @@ describe('EE WorkItemAttributesWrapper component', () => {
         hasIssueWeightsFeature: true,
         hasIterationsFeature: true,
         hasOkrsFeature: true,
+        hasSubepicsFeature,
         hasIssuableHealthStatusFeature: true,
         projectNamespace: 'namespace',
         glFeatures: featureFlags,
@@ -233,6 +236,19 @@ describe('EE WorkItemAttributesWrapper component', () => {
       await nextTick();
 
       expect(wrapper.emitted('error')).toEqual([[updateError]]);
+    });
+  });
+
+  describe('parent widget', () => {
+    it.each`
+      description                                       | hasSubepicsFeature | exists
+      ${'renders when subepics is available'}           | ${true}            | ${true}
+      ${'does not render when subepics is unavailable'} | ${false}           | ${false}
+    `('$description', ({ hasSubepicsFeature, exists }) => {
+      const response = workItemResponseFactory({ workItemType: epicType });
+      createComponent({ workItem: response.data.workItem, hasSubepicsFeature });
+
+      expect(wrapper.findComponent(WorkItemParent).exists()).toBe(exists);
     });
   });
 
