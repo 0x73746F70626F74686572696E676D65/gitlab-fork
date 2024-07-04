@@ -8,7 +8,6 @@ import {
   HTTP_STATUS_BAD_REQUEST,
 } from '~/lib/utils/http_status';
 import { createAlert } from '~/alert';
-import { mockTracking } from 'helpers/tracking_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import getCustomizableDashboardQuery from 'ee/analytics/analytics_dashboards/graphql/queries/get_customizable_dashboard.query.graphql';
@@ -34,6 +33,7 @@ import {
 import { saveCustomDashboard } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
 import { dashboard } from 'ee_jest/vue_shared/components/customizable_dashboard/mock_data';
 import { stubComponent } from 'helpers/stub_component';
+import { useMockInternalEventsTracking } from 'helpers/tracking_internal_events_helper';
 import {
   TEST_CUSTOM_DASHBOARDS_PROJECT,
   TEST_CUSTOM_DASHBOARDS_GROUP,
@@ -77,7 +77,8 @@ Vue.use(VueApollo);
 describe('AnalyticsDashboard', () => {
   /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
-  let trackingSpy;
+
+  const { bindInternalEventDocument } = useMockInternalEventsTracking();
 
   const namespaceId = '1';
 
@@ -123,10 +124,6 @@ describe('AnalyticsDashboard', () => {
   const mockAvailableVisualizationsResponse = (response) => {
     mockAvailableVisualizationsHandler = jest.fn().mockResolvedValue(response);
   };
-
-  beforeEach(() => {
-    trackingSpy = mockTracking(undefined, window.document, jest.spyOn);
-  });
 
   afterEach(() => {
     mockAnalyticsDashboardsHandler = jest.fn();
@@ -566,10 +563,14 @@ describe('AnalyticsDashboard', () => {
         });
 
         it(`tracks the "${EVENT_LABEL_EDITED_DASHBOARD}" event`, () => {
-          expect(trackingSpy).toHaveBeenCalledWith(
-            undefined,
+          const { trackEventSpy } = bindInternalEventDocument(wrapper.element);
+
+          expect(trackEventSpy).toHaveBeenCalledWith(
             EVENT_LABEL_EDITED_DASHBOARD,
-            expect.any(Object),
+            {
+              label: 'Analytics Overview',
+            },
+            undefined,
           );
         });
 
@@ -709,11 +710,19 @@ describe('AnalyticsDashboard', () => {
       });
 
       it(`tracks the "${EVENT_LABEL_VIEWED_CUSTOM_DASHBOARD}" event`, () => {
-        expect(trackingSpy).toHaveBeenCalledWith(
-          undefined,
+        const { trackEventSpy } = bindInternalEventDocument(wrapper.element);
+
+        expect(trackEventSpy).toHaveBeenCalledWith(
           EVENT_LABEL_VIEWED_CUSTOM_DASHBOARD,
-          expect.any(Object),
+          {},
+          undefined,
         );
+      });
+
+      it(`tracks the "${EVENT_LABEL_VIEWED_DASHBOARD}" event`, () => {
+        const { trackEventSpy } = bindInternalEventDocument(wrapper.element);
+
+        expect(trackEventSpy).toHaveBeenCalledWith(EVENT_LABEL_VIEWED_DASHBOARD, {}, undefined);
       });
 
       describe('when saving', () => {
@@ -740,10 +749,14 @@ describe('AnalyticsDashboard', () => {
         });
 
         it(`tracks the "${EVENT_LABEL_CREATED_DASHBOARD}" event`, () => {
-          expect(trackingSpy).toHaveBeenCalledWith(
-            undefined,
+          const { trackEventSpy } = bindInternalEventDocument(wrapper.element);
+
+          expect(trackEventSpy).toHaveBeenCalledWith(
             EVENT_LABEL_CREATED_DASHBOARD,
-            expect.any(Object),
+            {
+              label: 'Analytics Overview',
+            },
+            undefined,
           );
         });
 
@@ -755,30 +768,38 @@ describe('AnalyticsDashboard', () => {
   });
 
   describe.each`
-    userDefined | event
-    ${false}    | ${EVENT_LABEL_VIEWED_BUILTIN_DASHBOARD}
-    ${true}     | ${EVENT_LABEL_VIEWED_CUSTOM_DASHBOARD}
-  `('when a dashboard is userDefined=$userDefined is viewed', ({ userDefined, event }) => {
+    userDefined | event                                   | title
+    ${false}    | ${EVENT_LABEL_VIEWED_BUILTIN_DASHBOARD} | ${'Audience'}
+    ${true}     | ${EVENT_LABEL_VIEWED_CUSTOM_DASHBOARD}  | ${'My custom dashboard'}
+  `('when a dashboard is userDefined=$userDefined is viewed', ({ userDefined, event, title }) => {
     beforeEach(() => {
-      setupDashboard(createDashboardGraphqlSuccessResponse(getGraphQLDashboard({ userDefined })));
+      setupDashboard(
+        createDashboardGraphqlSuccessResponse(getGraphQLDashboard({ userDefined, title })),
+      );
 
       return waitForPromises();
     });
 
     it(`tracks the "${event}" event`, () => {
-      expect(trackingSpy).toHaveBeenCalledWith(undefined, event, expect.any(Object));
+      const { trackEventSpy } = bindInternalEventDocument(wrapper.element);
+
+      expect(trackEventSpy).toHaveBeenCalledWith(event, { label: title }, undefined);
     });
 
     it(`tracks the "${EVENT_LABEL_VIEWED_DASHBOARD}" event`, () => {
-      expect(trackingSpy).toHaveBeenCalledWith(
-        undefined,
+      const { trackEventSpy } = bindInternalEventDocument(wrapper.element);
+
+      expect(trackEventSpy).toHaveBeenCalledWith(
         EVENT_LABEL_VIEWED_DASHBOARD,
-        expect.any(Object),
+        { label: title },
+        undefined,
       );
     });
 
     it('tracks exactly two events', () => {
-      expect(trackingSpy).toHaveBeenCalledTimes(2);
+      const { trackEventSpy } = bindInternalEventDocument(wrapper.element);
+
+      expect(trackEventSpy).toHaveBeenCalledTimes(2);
     });
   });
 
