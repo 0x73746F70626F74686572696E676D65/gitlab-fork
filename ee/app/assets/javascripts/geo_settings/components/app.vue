@@ -3,6 +3,8 @@ import { GlLoadingIcon } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapActions, mapState } from 'vuex';
 import { s__ } from '~/locale';
+import { VIEW_ADMIN_GEO_SETTINGS_PAGELOAD } from 'ee/geo_settings/constants';
+import { InternalEvents } from '~/tracking';
 import GeoSettingsForm from './geo_settings_form.vue';
 
 export default {
@@ -17,11 +19,15 @@ export default {
     GlLoadingIcon,
     GeoSettingsForm,
   },
+  mixins: [InternalEvents.mixin()],
   computed: {
     ...mapState(['isLoading']),
   },
   created() {
     this.fetchGeoSettings();
+  },
+  mounted() {
+    this.trackEvent(VIEW_ADMIN_GEO_SETTINGS_PAGELOAD);
   },
   methods: {
     ...mapActions(['fetchGeoSettings']),

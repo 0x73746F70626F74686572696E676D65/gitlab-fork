@@ -5,3 +5,5 @@ export const FORM_VALIDATION_FIELDS = {
   TIMEOUT: 'timeout',
   ALLOWED_IP: 'allowedIp',
 };
+
+export const VIEW_ADMIN_GEO_SETTINGS_PAGELOAD = 'view_admin_geo_settings_pageload';
