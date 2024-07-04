@@ -1,0 +1,9 @@
+---
+name: duo_chat_set_warden
+feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/470043
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/158022
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/470646
+milestone: '17.2'
+group: group::duo chat
+type: gitlab_com_derisk
+default_enabled: false
