@@ -79,7 +79,7 @@ RSpec.shared_examples 'write access for a read-only GitLab (EE) instance in main
   end
 
   context 'normal requests to a read-only GitLab instance' do
-    let(:fake_app) { lambda { |env| [200, { 'Content-Type' => 'text/plain' }, ['OK']] } }
+    let(:fake_app) { ->(env) { [200, { 'Content-Type' => 'text/plain' }, ['OK']] } }
 
     it_behaves_like 'allowlisted /admin/geo requests'
 

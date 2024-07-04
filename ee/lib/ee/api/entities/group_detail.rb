@@ -17,7 +17,7 @@ module EE
           expose :ip_restriction_ranges,
             if: ->(group, options) { group.licensed_feature_available?(:group_ip_restriction) }
 
-          unique_project_download_limit_enabled = lambda do |group, options|
+          unique_project_download_limit_enabled = ->(group, options) do
             options[:current_user]&.can?(:admin_group, group) &&
               group.namespace_settings.present? &&
               group.unique_project_download_limit_enabled?

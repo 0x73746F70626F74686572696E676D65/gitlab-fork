@@ -189,7 +189,7 @@ RSpec.describe 'GlobalSearch', :elastic_clean, :clean_gitlab_redis_shared_state,
             POSSIBLE_FEATURES - [except].flatten.compact
           end
 
-    check_count = lambda do |feature, c|
+    check_count = ->(feature, c) do
       if arr.include?(feature)
         expect(c).to be > 0, "Search returned no #{feature} for #{user}"
       else

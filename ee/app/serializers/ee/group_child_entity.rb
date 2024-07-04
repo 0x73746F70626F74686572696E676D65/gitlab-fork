@@ -10,7 +10,7 @@ module EE
         instance.marked_for_deletion?
       end
 
-      expose :compliance_management_frameworks, if: lambda { |_instance, _options| compliance_framework_available? }
+      expose :compliance_management_frameworks, if: ->(_instance, _options) { compliance_framework_available? }
     end
 
     private

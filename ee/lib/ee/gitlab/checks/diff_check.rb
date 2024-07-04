@@ -26,7 +26,7 @@ module EE
         end
 
         def validate_code_owners
-          lambda do |paths|
+          ->(paths) do
             validator = ::Gitlab::CodeOwners::Validator.new(project, branch_name, paths)
 
             validator.execute
@@ -56,7 +56,7 @@ module EE
         end
 
         def path_locks_validation
-          lambda do |changed_path|
+          ->(changed_path) do
             path = changed_path.path
             lock_info = project.find_path_lock(path)
 
@@ -68,7 +68,7 @@ module EE
         end
 
         def file_name_validation
-          lambda do |changed_path|
+          ->(changed_path) do
             if changed_path.new_file? && denylisted_regex = push_rule.filename_denylisted?(changed_path.path)
               return unless denylisted_regex.present?
 

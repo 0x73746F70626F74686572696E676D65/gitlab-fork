@@ -26,7 +26,7 @@ module EE
 
       module ControllerActions
         def self.on_routable_not_found
-          lambda do |routable, full_path|
+          ->(routable, full_path) do
             redirector = SsoEnforcementRedirect.new(routable, full_path)
 
             if redirector.should_redirect_to_group_saml_sso?(current_user, request)

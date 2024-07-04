@@ -13,7 +13,7 @@ module ElasticsearchHelpers
     es_host = Gitlab::CurrentSettings.elasticsearch_url.first
     search_uri = %r{#{es_host}/[\w-]+/_search}
 
-    ensure_names_present = lambda do |req|
+    ensure_names_present = ->(req) do
       payload = Gitlab::Json.parse(req.body)
       query = payload["query"]
 
