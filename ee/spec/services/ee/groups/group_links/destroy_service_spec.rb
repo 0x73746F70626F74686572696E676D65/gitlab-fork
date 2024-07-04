@@ -51,18 +51,6 @@ RSpec.describe Groups::GroupLinks::DestroyService, '#execute', feature_category:
 
           subject.execute(link)
         end
-
-        context 'when the feature flag is not enabled' do
-          before do
-            stub_feature_flags(hamilton_seat_management: false)
-          end
-
-          it 'does not enqueue CleanupUserAddOnAssignmentWorker' do
-            expect(worker).not_to receive(:perform_async)
-
-            subject.execute(link)
-          end
-        end
       end
     end
   end

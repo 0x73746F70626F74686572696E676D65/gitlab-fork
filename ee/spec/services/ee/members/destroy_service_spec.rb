@@ -317,18 +317,6 @@ RSpec.describe Members::DestroyService, feature_category: :groups_and_projects d
             end.to change { Member.where(user: member_user).count }.by(-2)
           end
         end
-
-        context 'when the feature flag is not enabled' do
-          before do
-            stub_feature_flags(hamilton_seat_management: false)
-          end
-
-          it 'does not enqueue CleanupUserAddOnAssignmentWorker worker' do
-            expect(worker_class).not_to receive(:perform_async)
-
-            destroy_service.execute(member)
-          end
-        end
       end
     end
 

@@ -158,26 +158,6 @@ RSpec.describe 'UserAddOnAssignmentRemove', feature_category: :seat_cost_managem
 
   it_behaves_like 'success response'
 
-  context 'when feature flag is disabled' do
-    context 'when SaaS' do
-      before do
-        stub_saas_features(gitlab_com_subscriptions: true)
-        stub_feature_flags(hamilton_seat_management: false)
-      end
-
-      it_behaves_like 'empty response'
-    end
-
-    context 'when self-managed' do
-      before do
-        stub_saas_features(gitlab_com_subscriptions: false)
-        stub_feature_flags(self_managed_code_suggestions: false)
-      end
-
-      it_behaves_like 'empty response'
-    end
-  end
-
   context 'when current_user is admin' do
     let(:current_user) { create(:admin) }
 

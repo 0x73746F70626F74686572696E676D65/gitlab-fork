@@ -13,30 +13,8 @@ RSpec.describe GitlabSubscriptions::CodeSuggestionsHelper, feature_category: :se
         stub_saas_features(gitlab_com_subscriptions: true)
       end
 
-      context 'when .com feature flag is globally enabled' do
-        it 'returns true' do
-          expect(helper.gitlab_duo_available?(namespace)).to be_truthy
-        end
-      end
-
-      context 'when .com feature flag is globally disabled' do
-        before do
-          stub_feature_flags(hamilton_seat_management: false)
-        end
-
-        it 'returns false' do
-          expect(helper.gitlab_duo_available?(namespace)).to be_falsy
-        end
-
-        context 'when .com feature flag is enabled for a specific namespace' do
-          before do
-            stub_feature_flags(hamilton_seat_management: namespace)
-          end
-
-          it 'returns true' do
-            expect(helper.gitlab_duo_available?(namespace)).to be_truthy
-          end
-        end
+      it 'returns true' do
+        expect(helper.gitlab_duo_available?(namespace)).to be_truthy
       end
     end
 
@@ -106,16 +84,6 @@ RSpec.describe GitlabSubscriptions::CodeSuggestionsHelper, feature_category: :se
               expect(helper.duo_pro_bulk_user_assignment_available?(namespace)).to be_truthy
             end
           end
-        end
-      end
-
-      context 'when duo pro is not available' do
-        before do
-          stub_feature_flags(hamilton_seat_management: false)
-        end
-
-        it 'returns false' do
-          expect(helper.duo_pro_bulk_user_assignment_available?).to be_falsey
         end
       end
     end
