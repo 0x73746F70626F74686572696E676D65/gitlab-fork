@@ -23,7 +23,8 @@ module EE
             target: token,
             message: message,
             additional_details: {
-              action: :custom
+              action: :custom,
+              revocation_source: source
             }
           }
           ::Gitlab::Audit::Auditor.audit(audit_context)
