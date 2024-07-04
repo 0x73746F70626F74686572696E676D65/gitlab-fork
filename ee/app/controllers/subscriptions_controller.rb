@@ -20,13 +20,21 @@ class SubscriptionsController < ApplicationController
 
   before_action :load_eligible_groups, only: :new
 
-  before_action :send_to_customers_dot_flow, only: :new, if: :redirect_to_customers_dot?
-
   feature_category :subscription_management
   urgency :low
 
   def new
     @namespace = get_namespace
+
+    purchase_url_builder = GitlabSubscriptions::PurchaseUrlBuilder.new(
+      current_user: current_user,
+      plan_id: params[:plan_id],
+      namespace: @namespace
+    )
+
+    return unless purchase_url_builder.customers_dot_flow?
+
+    redirect_to purchase_url_builder.build
   end
 
   def buy_minutes
@@ -41,6 +49,16 @@ class SubscriptionsController < ApplicationController
     @active_subscription = result[:active_subscription]
 
     render_404 if @group.nil?
+
+    purchase_url_builder = GitlabSubscriptions::PurchaseUrlBuilder.new(
+      current_user: current_user,
+      plan_id: ci_minutes_plan_data['id'],
+      namespace: result[:namespace]
+    )
+
+    return unless purchase_url_builder.customers_dot_flow?
+
+    redirect_to purchase_url_builder.build(transaction: 'ci_minutes')
   end
 
   def buy_storage
@@ -55,6 +73,16 @@ class SubscriptionsController < ApplicationController
     @active_subscription = result[:active_subscription]
 
     render_404 if @group.nil?
+
+    purchase_url_builder = GitlabSubscriptions::PurchaseUrlBuilder.new(
+      current_user: current_user,
+      plan_id: storage_plan_data["id"],
+      namespace: result[:namespace]
+    )
+
+    return unless purchase_url_builder.customers_dot_flow?
+
+    redirect_to purchase_url_builder.build(transaction: 'storage')
   end
 
   def payment_form
@@ -220,10 +248,8 @@ class SubscriptionsController < ApplicationController
   def get_namespace
     return if params[:namespace_id].blank?
 
-    strong_memoize(:get_namespace) do
-      namespace_id = params[:namespace_id].to_i
-      @eligible_groups.find { |n| n.id == namespace_id }
-    end
+    namespace_id = params[:namespace_id].to_i
+    @eligible_groups.find { |n| n.id == namespace_id }
   end
 
   def identity_verification_request?
@@ -236,24 +262,6 @@ class SubscriptionsController < ApplicationController
   def identity_verification_user
     strong_memoize(:identity_verification_user) do
       User.find_by_id(session[:verification_user_id])
-    end
-  end
-
-  def redirect_to_customers_dot?
-    purchase_url_builder.customers_dot_flow?
-  end
-
-  def send_to_customers_dot_flow
-    redirect_to purchase_url_builder.build
-  end
-
-  def purchase_url_builder
-    strong_memoize(:purchase_url_builder) do
-      GitlabSubscriptions::PurchaseUrlBuilder.new(
-        current_user: current_user,
-        plan_id: params[:plan_id],
-        namespace: get_namespace
-      )
     end
   end
 end
