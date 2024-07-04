@@ -131,7 +131,6 @@ RSpec::Matchers.define :trigger_internal_events do |*event_names|
       [
         expect_internal_event(event_name),
         expect_snowplow(event_name),
-        expect_redis(event_name),
         expect_product_analytics(event_name)
       ]
     end
@@ -245,18 +244,6 @@ RSpec::Matchers.define :trigger_internal_events do |*event_names|
     # rubocop:disable RSpec/ExpectGitlabTracking -- Supercedes the #expect_snowplow_event helper for internal events
     expect(Gitlab::Tracking).not_to receive(:event).with(anything, event_name, any_args)
     # rubocop:enable RSpec/ExpectGitlabTracking
-  end
-
-  def expect_redis(event_name)
-    Gitlab::InternalEvents::EventDefinitions.unique_properties(event_name).map do |property|
-      expect(Gitlab::Redis::HLL)
-        .to receive_expected_count_of(:add)
-        .with(hash_including(
-          key: a_string_including(event_name),
-          value: @properties.any? ? id_for(property) : anything,
-          expiry: 6.weeks
-        ))
-    end
   end
 
   def expect_product_analytics(event_name)
