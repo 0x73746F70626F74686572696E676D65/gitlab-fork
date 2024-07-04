@@ -1,9 +1,0 @@
----
-name: issues_mrs_empty_state
-feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/436480
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/144318
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/441647
-milestone: '16.11'
-group: group::activation
-type: experiment
-default_enabled: false

@@ -44,18 +44,6 @@ module EE
       super.merge({ can_summarize: Ability.allowed?(user, :summarize_draft_code_review, merge_request).to_s })
     end
 
-    def show_video_component?(project)
-      experiment(:issues_mrs_empty_state,
-        type: :experiment,
-        user: current_user,
-        project: project,
-        namespace: project&.namespace
-      ) do |e|
-        e.control { false }
-        e.candidate { true }
-      end.run
-    end
-
     override :identity_verification_alert_data
     def identity_verification_alert_data(merge_request)
       {

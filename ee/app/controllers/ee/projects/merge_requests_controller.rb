@@ -8,7 +8,6 @@ module EE
       prepended do
         include DescriptionDiffActions
         include GeoInstrumentation
-        include IframeYoutubeVideoCSP
 
         before_action only: [:show] do
           push_frontend_feature_flag(:merge_trains_skip_train, @project)

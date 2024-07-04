@@ -128,64 +128,6 @@ RSpec.describe EE::MergeRequestsHelper, feature_category: :code_review_workflow 
     end
   end
 
-  describe '#show_video_component?' do
-    before do
-      allow(helper).to receive(:current_user).and_return(nil)
-    end
-
-    context 'when project is nil' do
-      subject do
-        helper.show_video_component?(nil)
-      end
-
-      it 'returns false' do
-        expect(subject).to eq(false)
-      end
-    end
-
-    context 'when project is set' do
-      let_it_be(:project) { build_stubbed(:project) }
-
-      subject do
-        helper.show_video_component?(project)
-      end
-
-      context 'when user is not signed in' do
-        it 'returns false' do
-          expect(subject).to eq(false)
-        end
-      end
-
-      context 'when user is signed in' do
-        before do
-          allow(helper).to receive(:current_user).and_return(
-            build_stubbed(:user, created_at: IssuesMrsEmptyStateExperiment::EXCLUDE_USERS_OLDER_THAN)
-          )
-        end
-
-        describe 'when control behavior' do
-          before do
-            stub_experiments(issues_mrs_empty_state: :control)
-          end
-
-          it 'returns false' do
-            expect(subject).to eq(false)
-          end
-        end
-
-        describe 'when candidate behavior' do
-          before do
-            stub_experiments(issues_mrs_empty_state: :candidate)
-          end
-
-          it 'returns true' do
-            expect(subject).to eq(true)
-          end
-        end
-      end
-    end
-  end
-
   describe '#identity_verification_alert_data' do
     let_it_be(:current_user) { build_stubbed(:user) }
     let(:author) { current_user }
