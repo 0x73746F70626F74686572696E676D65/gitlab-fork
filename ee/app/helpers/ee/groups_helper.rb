@@ -5,6 +5,7 @@ module EE
     extend ::Gitlab::Utils::Override
     include ::GitlabSubscriptions::CodeSuggestionsHelper
     include ::Subscriptions::HandRaiseLeadsHelper
+    include ::Nav::GitlabDuoUsageSettingsPage
 
     def size_limit_message_for_group(group)
       show_lfs = group.lfs_enabled? ? 'including LFS files' : ''
@@ -138,10 +139,7 @@ module EE
       when :seats
         License.feature_available?(:seat_usage_quotas)
       when :code_suggestions
-        gitlab_com_subscription? &&
-          gitlab_duo_available?(group) &&
-          (!group.has_free_or_no_subscription? || group.subscription_add_on_purchases.active.for_gitlab_duo_pro.any?) &&
-          License.feature_available?(:code_suggestions)
+        show_gitlab_duo_usage_app?(group)
       when :pipelines
         Ability.allowed?(current_user, :admin_ci_minutes, group) &&
           License.feature_available?(:pipelines_usage_quotas)

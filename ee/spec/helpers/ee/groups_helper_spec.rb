@@ -528,52 +528,17 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
     end
 
     context 'when on code suggestions tab' do
-      context 'on saas' do
-        let_it_be(:another_group) { create(:group) }
+      where(:show_gitlab_duo_usage_app?, :result) do
+        true | true
+        false | false
+      end
 
+      with_them do
         before do
-          stub_licensed_features(code_suggestions: true)
-          stub_saas_features(gitlab_com_subscriptions: true)
-          allow(group).to receive(:has_free_or_no_subscription?) { has_free_or_no_subscription? }
-          create(:gitlab_subscription_add_on_purchase, :gitlab_duo_pro, :trial, namespace: group_with_duo_pro)
+          allow(helper).to receive(:show_gitlab_duo_usage_app?).and_return(show_gitlab_duo_usage_app?)
         end
 
-        context 'when hamilton_seat_management is enabled' do
-          where(:has_free_or_no_subscription?, :group_with_duo_pro, :result) do
-            true | ref(:another_group) | false
-            false | ref(:another_group) | true
-            true | ref(:group) | true
-            false | ref(:group) | true
-          end
-          with_them do
-            it { expect(helper.show_usage_quotas_tab?(group, :code_suggestions)).to eq(result) }
-
-            context 'when feature not available' do
-              before do
-                stub_licensed_features(code_suggestions: false)
-              end
-
-              it { expect(helper.show_usage_quotas_tab?(group, :code_suggestions)).to be_falsy }
-            end
-          end
-        end
-
-        context 'when hamilton_seat_management is disabled' do
-          before do
-            stub_feature_flags(hamilton_seat_management: false)
-          end
-
-          where(:has_free_or_no_subscription?, :group_with_duo_pro, :result) do
-            true | ref(:another_group) | false
-            false | ref(:another_group) | false
-            true | ref(:group) | false
-            false | ref(:group) | false
-          end
-
-          with_them do
-            it { expect(helper.show_usage_quotas_tab?(group, :code_suggestions)).to eq(result) }
-          end
-        end
+        it { expect(helper.show_usage_quotas_tab?(group, :code_suggestions)).to eq(result) }
       end
 
       context 'on self managed' do

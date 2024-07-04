@@ -32,6 +32,10 @@ RSpec.describe Sidebars::Groups::SuperSidebarPanel, feature_category: :navigatio
     allow(::Gitlab::Auth::Ldap::Config).to receive(:group_sync_enabled?).and_return(true)
     # Needed for Domain Verification entry
     allow(group).to receive(:domain_verification_available?).and_return(true)
+    # Needed for GitLab Duo menu item
+    stub_licensed_features(code_suggestions: true)
+    add_on = create(:gitlab_subscription_add_on)
+    create(:gitlab_subscription_add_on_purchase, quantity: 50, namespace: group, add_on: add_on)
     # Needed for Roles and Permissions
     stub_saas_features(gitlab_com_subscriptions: true)
   end
