@@ -24,7 +24,6 @@ RSpec.describe Mutations::Security::Finding::CreateMergeRequest, feature_categor
       create(
         :security_finding,
         severity: report_finding.severity,
-        confidence: report_finding.confidence,
         uuid: report_finding.uuid,
         scan: scan
       )

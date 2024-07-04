@@ -54,7 +54,8 @@ RSpec.describe Vulnerabilities::Findings::FindOrCreateFromSecurityFindingService
     it 'creates a new vulnerability finding' do
       expect(subject.payload[:vulnerability_finding].uuid).to eq(security_finding_uuid)
       expect(subject.payload[:vulnerability_finding].severity).to eq(security_finding.severity)
-      expect(subject.payload[:vulnerability_finding].confidence).to eq(security_finding.confidence)
+      # This column will be dropped
+      expect(subject.payload[:vulnerability_finding].confidence).to be_nil
       expect(subject.payload[:vulnerability_finding].initial_pipeline_id).to eq(security_finding.pipeline.id)
       expect(subject.payload[:vulnerability_finding].latest_pipeline_id).to eq(security_finding.pipeline.id)
     end
@@ -176,11 +177,12 @@ RSpec.describe Vulnerabilities::Findings::FindOrCreateFromSecurityFindingService
 
   def insert_security_findings(report, scan)
     report.findings.map do |finding|
-      create(:security_finding,
+      create(
+        :security_finding,
         severity: finding.severity,
-        confidence: finding.confidence,
         uuid: finding.uuid,
-        scan: scan)
+        scan: scan
+      )
     end
   end
 end

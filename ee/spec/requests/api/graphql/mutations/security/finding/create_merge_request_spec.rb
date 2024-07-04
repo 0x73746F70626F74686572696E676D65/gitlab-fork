@@ -22,7 +22,6 @@ RSpec.describe 'Creating a Merge Request from a Security::Finding', feature_cate
     create(
       :security_finding,
       severity: report_finding.severity,
-      confidence: report_finding.confidence,
       uuid: report_finding.uuid,
       scan: scan
     )

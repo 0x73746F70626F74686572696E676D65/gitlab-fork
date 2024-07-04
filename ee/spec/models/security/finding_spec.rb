@@ -84,19 +84,6 @@ RSpec.describe Security::Finding, feature_category: :vulnerability_management do
     it { is_expected.to match_array(expected_findings) }
   end
 
-  describe '.by_confidence_levels' do
-    let(:expected_findings) { [finding_2] }
-
-    subject { described_class.by_confidence_levels(:high) }
-
-    before do
-      finding_1.update! confidence: :low
-      finding_2.update! confidence: :high
-    end
-
-    it { is_expected.to match_array(expected_findings) }
-  end
-
   describe '.by_report_types' do
     let(:expected_findings) { [finding_1] }
 
