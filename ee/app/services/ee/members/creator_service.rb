@@ -14,6 +14,35 @@ module EE
         def parsed_args(args)
           super.merge(member_role_id: args[:member_role_id])
         end
+
+        override :build_members
+        def build_members(emails, users, common_arguments)
+          current_user = common_arguments[:current_user]
+
+          return super unless current_user.present?
+          return super if current_user.can_admin_all_resources?
+
+          params = common_arguments.dup
+          params[:access_level] = parsed_access_level(params[:access_level])
+
+          response = GitlabSubscriptions::MemberManagement::QueueNonBillableToBillableService.new(
+            current_user: current_user,
+            params: params,
+            source: common_arguments[:source],
+            users: users
+          ).execute
+
+          if response.error?
+            errored_members = response.payload[:non_billable_to_billable_members]
+            return errored_members
+          end
+
+          billable_users = response.payload[:billable_users]
+          members = response.payload[:non_billable_to_billable_members]
+          members += super(emails, billable_users, common_arguments)
+
+          members
+        end
       end
 
       override :member_attributes

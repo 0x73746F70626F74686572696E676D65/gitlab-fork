@@ -137,5 +137,28 @@ RSpec.describe Members::CreatorService, feature_category: :groups_and_projects d
         end
       end
     end
+
+    context 'when inviting or promoting a member to a billable role' do
+      let_it_be(:license) { create(:license, plan: License::ULTIMATE_PLAN) }
+      let(:access_level) { :developer }
+      let(:source) { create(:group) }
+      let(:actor) { nil }
+
+      before do
+        stub_feature_flags(member_promotion_management: true)
+        stub_application_setting(enable_member_promotion_management: true)
+        allow(License).to receive(:current).and_return(license)
+      end
+
+      subject(:add_member) do
+        described_class.add_member(source, user, access_level, current_user: actor)
+      end
+
+      context 'with no actor' do
+        it 'adds the member' do
+          expect { add_member }.to change { Member.count }.by(1)
+        end
+      end
+    end
   end
 end

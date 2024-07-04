@@ -3,9 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe Members::Groups::CreatorService, feature_category: :groups_and_projects do
-  describe '.add_member' do
-    let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user) }
 
+  describe '.add_member' do
     context 'when the current user has permission via a group link' do
       let_it_be(:current_user) { create(:user) }
       let_it_be(:group) { create(:group) }
@@ -297,6 +297,24 @@ RSpec.describe Members::Groups::CreatorService, feature_category: :groups_and_pr
         expect(member).to be_a GroupMember
         expect(member).to be_persisted
       end
+    end
+
+    context 'when inviting or promoting a member to a billable role' do
+      let_it_be(:source) { create(:group) }
+      let(:existing_role) { :guest }
+      let!(:existing_member) { create(:group_member, existing_role, user: user, group: source) }
+
+      it_behaves_like 'billable promotion management feature'
+    end
+  end
+
+  describe '.add_members' do
+    context 'when inviting or promoting a member to a billable role' do
+      let_it_be(:source) { create(:group) }
+      let(:existing_role) { :guest }
+      let!(:existing_member) { create(:group_member, existing_role, user: user, group: source) }
+
+      it_behaves_like 'billable promotion management for multiple users'
     end
   end
 end
