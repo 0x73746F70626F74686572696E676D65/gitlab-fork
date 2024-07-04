@@ -13,7 +13,9 @@
       = link_to _('Learn more.'), help_page_path('user/analytics/analytics_dashboards', anchor: 'change-the-location-of-dashboards'), target: '_blank', rel: 'noopener noreferrer'
   .settings-content
     %h4= s_('ProjectSettings|Analytics Dashboards')
-    %p= safe_format(s_('ProjectSettings|Select the project containing %{link_start}Analytics Dashboards%{link_end} configuration files.'), tag_pair(dashboards_link, :link_start, :link_end))
+    %p
+      %span= safe_format(s_('ProjectSettings|Select the project containing %{link_start}Analytics Dashboards%{link_end} configuration files.'), tag_pair(dashboards_link, :link_start, :link_end))
+      %span= s_('ProjectSettings|By default the current project is used.')
     = gitlab_ui_form_for @project, url: project_settings_analytics_path(@project, anchor: 'js-analytics-dashboards-settings'), html: { class: 'fieldset-form', data: { testid: 'analytics-dashboards-settings' } } do |form|
       = form_errors(@project)
 

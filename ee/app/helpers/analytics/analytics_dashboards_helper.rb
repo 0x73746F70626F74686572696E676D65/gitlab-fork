@@ -110,16 +110,20 @@ module Analytics
     end
 
     def project_dashboard_pointer(project)
-      project.analytics_dashboards_pointer.target_project
+      if project.analytics_dashboards_pointer.present?
+        project.analytics_dashboards_pointer.target_project
+      else
+        project
+      end
     end
 
     def group_dashboard_pointer(group)
+      return unless group.analytics_dashboards_pointer.present?
+
       group.all_projects.find_by_id(group.analytics_dashboards_pointer.target_project_id)
     end
 
     def analytics_dashboard_pointer_project(namespace)
-      return unless namespace.analytics_dashboards_pointer
-
       pointer_project = project?(namespace) ? project_dashboard_pointer(namespace) : group_dashboard_pointer(namespace)
 
       return unless pointer_project
