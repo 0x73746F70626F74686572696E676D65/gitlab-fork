@@ -10,21 +10,27 @@ RSpec.describe Groups::DeployTokens::RevokeService, feature_category: :continuou
   let_it_be(:deploy_token_params) { { id: deploy_token.id } }
 
   describe '#execute' do
-    subject { described_class.new(entity, user, deploy_token_params).execute }
+    let(:revoke_service) { described_class.new(entity, user, deploy_token_params) }
+
+    subject(:revoke) { revoke_service.execute }
 
     before do
       stub_licensed_features(external_audit_events: true)
     end
 
     it "creates an audit event" do
-      expect { subject }.to change { AuditEvent.count }.by(1)
+      expect { revoke }.to change { AuditEvent.count }.by(1)
 
       expected_message = <<~MESSAGE.squish
         Revoked group deploy token with name: #{deploy_token.name}
         with token_id: #{deploy_token.id} with scopes: #{deploy_token.scopes}.
       MESSAGE
 
-      expect(AuditEvent.last.details[:custom_message]).to eq(expected_message)
+      details = AuditEvent.last.details
+
+      expect(details[:custom_message]).to eq(expected_message)
+      expect(details[:action]).to eq(:custom)
+      expect(details[:revocation_source]).to be_nil
     end
 
     it_behaves_like 'sends correct event type in audit event stream' do
@@ -37,13 +43,23 @@ RSpec.describe Groups::DeployTokens::RevokeService, feature_category: :continuou
       let_it_be(:deploy_token) { create(:deploy_token, :group, groups: [group]) }
       let_it_be(:deploy_token_params) { { id: deploy_token.id } }
 
-      subject { described_class.new(group, user, deploy_token_params).execute }
+      let(:revoke_service) { described_class.new(group, user, deploy_token_params) }
 
       before do
         group.add_owner(user)
       end
 
       include_examples 'sends streaming audit event'
+    end
+
+    context 'when source is set' do
+      it 'includes source in audit event' do
+        revoke_service.source = :group_token_revocation_service
+
+        revoke
+
+        expect(AuditEvent.last.details[:revocation_source]).to eq(:group_token_revocation_service)
+      end
     end
   end
 end
