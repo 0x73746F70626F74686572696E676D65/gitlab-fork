@@ -123,7 +123,7 @@ export default {
       ),
     ],
     discoverPlanCaption: s__(
-      'Discover|See the other features of the %{linkStart}ultimate plan%{linkEnd}',
+      'Discover|See the other features of the %{linkStart}Ultimate plan%{linkEnd}.',
     ),
   },
   modalId: MOVE_PERSONAL_PROJECT_TO_GROUP_MODAL,
