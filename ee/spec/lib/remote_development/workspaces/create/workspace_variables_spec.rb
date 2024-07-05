@@ -129,6 +129,18 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::WorkspaceVariables, :rd_
         workspace_id: workspace_id
       },
       {
+        key: 'GITLAB_WORKFLOW_INSTANCE_URL',
+        value: Gitlab::Routing.url_helpers.root_url,
+        variable_type: RemoteDevelopment::Enums::Workspace::WORKSPACE_VARIABLE_TYPES[:environment],
+        workspace_id: workspace_id
+      },
+      {
+        key: 'GITLAB_WORKFLOW_TOKEN_FILE',
+        value: "/.workspace-data/variables/file/gl_token",
+        variable_type: RemoteDevelopment::Enums::Workspace::WORKSPACE_VARIABLE_TYPES[:environment],
+        workspace_id: workspace_id
+      },
+      {
         key: "VAR1",
         value: "value 1",
         variable_type: RemoteDevelopment::Enums::Workspace::WORKSPACE_VARIABLE_TYPES[:environment],
@@ -171,6 +183,10 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::WorkspaceVariables, :rd_
         }
       ]
     )
+  end
+
+  before do
+    allow(Gitlab::Routing).to receive_message_chain(:url_helpers, :root_url).and_return("https://gitlab.com")
   end
 
   it 'defines correct variables' do

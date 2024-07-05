@@ -22,7 +22,7 @@ module RemoteDevelopment
           personal_access_token = user.personal_access_tokens.build(
             name: workspace_name,
             impersonation: false,
-            scopes: [:write_repository],
+            scopes: [:write_repository, :api],
             # Since expires_at is a date, we need to set it to the round it off to the next day.
             # e.g. If the max_hours_before_termination of the workspace is 1 hour
             # and the workspace is created at 2023-08-20 05:30:00,
