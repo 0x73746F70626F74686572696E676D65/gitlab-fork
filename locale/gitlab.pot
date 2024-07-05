@@ -28142,6 +28142,9 @@ msgstr ""
 msgid "Integrations|Remove exclusion"
 msgstr ""
 
+msgid "Integrations|Remove exclusion for %{name}"
+msgstr ""
+
 msgid "Integrations|Reset integration?"
 msgstr ""
 
@@ -43803,9 +43806,6 @@ msgid "Remove due date"
 msgstr ""
 
 msgid "Remove email participants"
-msgstr ""
-
-msgid "Remove exclusion for %{name}"
 msgstr ""
 
 msgid "Remove favicon"
