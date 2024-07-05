@@ -228,8 +228,8 @@ RSpec.describe GitlabSubscriptions::AddOnPurchase, feature_category: :plan_provi
       end
     end
 
-    describe '.by_namespace_id' do
-      subject(:result) { described_class.by_namespace_id(namespace_id) }
+    describe '.by_namespace' do
+      subject(:result) { described_class.by_namespace(namespace_id) }
 
       include_context 'with add-on purchases'
 
@@ -237,6 +237,12 @@ RSpec.describe GitlabSubscriptions::AddOnPurchase, feature_category: :plan_provi
         let(:namespace_id) { active_gitlab_duo_pro_purchase_as_maintainer.namespace_id }
 
         it { is_expected.to contain_exactly(active_gitlab_duo_pro_purchase_as_maintainer) }
+
+        context 'when namespace record is passed' do
+          subject { described_class.by_namespace(active_gitlab_duo_pro_purchase_as_maintainer.namespace) }
+
+          it { is_expected.to contain_exactly(active_gitlab_duo_pro_purchase_as_maintainer) }
+        end
       end
 
       context 'when record with given namespace_id does not exist' do

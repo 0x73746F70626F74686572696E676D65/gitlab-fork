@@ -70,7 +70,7 @@ module CloudConnector
         results = GitlabSubscriptions::AddOnPurchase
           .by_add_on_name(@add_on_names)
           .active
-        results = results.by_namespace_id(namespace.self_and_ancestor_ids) if namespace
+        results = results.by_namespace(namespace.self_and_ancestor_ids) if namespace
 
         results
       end

@@ -24,7 +24,7 @@ module ProductAnalyticsHelpers
     analytics_addon_quantity = GitlabSubscriptions::AddOnPurchase
                                  .active
                                  .for_product_analytics
-                                 .by_namespace_id(id)
+                                 .by_namespace(self)
                                  .sum(:quantity)
 
     analytics_addon_quantity * EVENTS_PER_ADD_ON_PURCHASE
@@ -127,7 +127,7 @@ module ProductAnalyticsHelpers
 
   def product_analytics_add_on_purchased?
     ::Feature.enabled?(:product_analytics_billing_override, root_ancestor) ||
-      ::GitlabSubscriptions::AddOnPurchase.active.for_product_analytics.by_namespace_id(root_ancestor.id).any?
+      ::GitlabSubscriptions::AddOnPurchase.active.for_product_analytics.by_namespace(root_ancestor).any?
   end
 
   def self_managed_product_analytics_cluster?

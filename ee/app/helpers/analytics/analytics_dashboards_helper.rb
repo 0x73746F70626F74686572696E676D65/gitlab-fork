@@ -106,7 +106,7 @@ module Analytics
       return false unless project?(project)
 
       ::Feature.enabled?(:product_analytics_billing_override, project.root_ancestor) ||
-        ::GitlabSubscriptions::AddOnPurchase.active.for_product_analytics.by_namespace_id(project.root_ancestor.id).any?
+        ::GitlabSubscriptions::AddOnPurchase.active.for_product_analytics.by_namespace(project.root_ancestor).any?
     end
 
     def project_dashboard_pointer(project)

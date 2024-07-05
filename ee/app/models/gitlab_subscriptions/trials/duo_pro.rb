@@ -17,7 +17,7 @@ module GitlabSubscriptions
         return false unless user.present?
 
         ::Gitlab::Saas.feature_available?(:subscriptions_trials) &&
-          add_on_purchase_for_namespace(namespace).present? &&
+          GitlabSubscriptions::DuoPro::NamespaceAddOnPurchasesFinder.new(namespace, trial: true).execute.any? &&
           user.can?(:admin_namespace, namespace)
       end
 

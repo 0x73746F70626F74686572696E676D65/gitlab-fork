@@ -118,9 +118,9 @@ RSpec.describe CloudConnector::BaseAvailableServiceData, feature_category: :clou
 
       it { is_expected.to be true }
 
-      it 'calls by_namespace_id' do
+      it 'calls by_namespace' do
         expect(GitlabSubscriptions::AddOnPurchase)
-          .to receive(:by_namespace_id)
+          .to receive(:by_namespace)
                 .with(namespace.self_and_ancestor_ids)
                 .and_call_original
 
@@ -151,8 +151,8 @@ RSpec.describe CloudConnector::BaseAvailableServiceData, feature_category: :clou
 
       it { is_expected.to be true }
 
-      it 'doesn\'t call by_namespace_id' do
-        expect(GitlabSubscriptions::AddOnPurchase).not_to receive(:by_namespace_id)
+      it 'doesn\'t call by_namespace' do
+        expect(GitlabSubscriptions::AddOnPurchase).not_to receive(:by_namespace)
 
         purchased?
       end
