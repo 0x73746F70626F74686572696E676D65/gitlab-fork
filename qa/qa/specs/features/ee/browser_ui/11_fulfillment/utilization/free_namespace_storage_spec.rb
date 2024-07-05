@@ -4,11 +4,7 @@ module QA
   RSpec.describe 'Fulfillment', :runner, :requires_admin,
     only: { subdomain: :staging },
     feature_flag: { name: 'namespace_storage_limit', scope: :group },
-    product_group: :utilization,
-    quarantine: {
-      issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/466675',
-      type: :flaky
-    } do
+    product_group: :utilization do
     describe 'Utilization' do
       include Runtime::Fixtures
 
@@ -107,6 +103,10 @@ module QA
         end
       end
 
+      def within_a_tenth?(size_displayed, size)
+        (size_displayed - size).abs <= 0.1
+      end
+
       context 'in usage quotas storage tab for free plan with a project' do
         it(
           'shows correct used up storage for namespace',
@@ -141,15 +141,20 @@ module QA
               snippets_size = convert_to_mib(usage_quota.project_snippets_size) # 10.2 KiB
               wiki_size = convert_to_mib(usage_quota.project_wiki_size) # 10.2 KiB
               containers_registry_size = convert_to_mib(usage_quota.project_containers_registry_size) # 48.2 MiB
-              total_size = (repository_size + snippets_size + wiki_size + containers_registry_size).round(1)
+              total_size = repository_size + snippets_size + wiki_size + containers_registry_size
 
               expect do
                 ::QA::Support::WaitForRequests.wait_for_requests # Handle element loading text
                 usage_quota.namespace_usage_total.squish
               end
-                .to eventually_match(%r{Namespace storage used #{total_size} [KMG]i?B.+}i)
+                .to eventually_match(%r{Namespace storage used #{total_size.floor}\.\d+ [KMG]iB.+}i)
                       .within(max_duration: 300, reload_page: page)
 
+              namespace_usage_total_text = usage_quota.namespace_usage_total.squish
+              total_size_displayed = namespace_usage_total_text[/Namespace storage used (\d+\.\d+)/, 1].to_f
+              expect(within_a_tenth?(total_size_displayed, total_size)).to be_truthy,
+                "Expected displayed total size: #{total_size_displayed} " \
+                  "to be within a tenth of total size: #{total_size}"
               expect(usage_quota.dependency_proxy_size).to match(%r{0 B}i)
               expect(usage_quota.group_usage_message)
                 .to match(%r{Usage of group resources across the projects in the #{free_plan_group.path} group}i)
