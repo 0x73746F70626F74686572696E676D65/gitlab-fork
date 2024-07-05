@@ -18,13 +18,13 @@ module Security
 
       Security::SecurityOrchestrationPolicies::PersistPolicyService
         .new(policy_configuration: configuration,
-          policies: configuration.active_scan_result_policies,
+          policies: configuration.scan_result_policies,
           policy_type: :approval_policy)
         .execute
 
       Security::SecurityOrchestrationPolicies::PersistPolicyService
         .new(policy_configuration: configuration,
-          policies: configuration.active_scan_execution_policies,
+          policies: configuration.scan_execution_policy,
           policy_type: :scan_execution_policy)
         .execute
     end
