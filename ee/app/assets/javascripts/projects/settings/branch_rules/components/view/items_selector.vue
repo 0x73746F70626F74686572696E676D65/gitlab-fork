@@ -24,12 +24,12 @@ export default {
       required: false,
       default: () => ({}),
     },
-    groupId: {
-      type: Number,
-      required: false,
-      default: null,
-    },
     disableNamespaceDropdown: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    isProjectScoped: {
       type: Boolean,
       required: false,
       default: false,
@@ -63,10 +63,10 @@ export default {
       :type="type"
       class="gl-mt-5 gl-p-0!"
       :project-path="projectPath"
-      :group-id="groupId"
       :selected-items="selectedItems"
       :users-query-options="usersOptions"
       :disable-namespace-dropdown="disableNamespaceDropdown"
+      :is-project-scoped="isProjectScoped"
       @select="handleSelect"
       @delete="handleDelete"
     />

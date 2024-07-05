@@ -123,6 +123,13 @@ describe('EE Approvals RuleForm', () => {
       store.state.settings.allowMultiRule = true;
     });
 
+    it('renders Item Selector with groups scoped to the project and with namespace dropdown', () => {
+      createComponent({ isBranchRulesEdit: true, isMrEdit: false });
+
+      expect(findGroupsSelector().props('disableNamespaceDropdown')).toBe(false);
+      expect(findGroupsSelector().props('isProjectScoped')).toBe(true);
+    });
+
     describe('isBranchRulesEdit set to `true`', () => {
       it('hides the branch selector', () => {
         createComponent({ isBranchRulesEdit: true, isMrEdit: false });

@@ -58,8 +58,10 @@ describe('Edit Rule Drawer', () => {
     ]);
   });
 
-  it('Renders Item Selector with groups', () => {
+  it('Renders Item Selector with groups scoped to the project and without namespace dropdown', () => {
     expect(findGroupsSelector().props('items')).toMatchObject([]);
+    expect(findGroupsSelector().props('disableNamespaceDropdown')).toBe(true);
+    expect(findGroupsSelector().props('isProjectScoped')).toBe(true);
   });
 
   it('enables the save button when users or groups are selected', async () => {
