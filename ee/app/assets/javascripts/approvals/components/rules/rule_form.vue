@@ -437,6 +437,7 @@ export default {
         type="groups"
         data-testid="groups-selector"
         class="gl-mt-5"
+        is-project-scoped
         :project-path="settings.projectId"
         :selected-items="groups"
         @delete="handleDeleteApprover"
