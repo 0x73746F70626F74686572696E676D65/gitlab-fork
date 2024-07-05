@@ -14,7 +14,7 @@ class Projects::PathLocksController < Projects::ApplicationController
   urgency :low, [:index]
 
   def index
-    @path_locks = @project.path_locks.page(params[:page])
+    @path_locks = @project.path_locks.page(allowed_params[:page])
   end
 
   # rubocop: disable CodeReuse/ActiveRecord
@@ -34,7 +34,7 @@ class Projects::PathLocksController < Projects::ApplicationController
   # rubocop: enable CodeReuse/ActiveRecord
 
   def destroy
-    path_lock = @project.path_locks.find(params[:id])
+    path_lock = @project.path_locks.find(allowed_params[:id])
 
     begin
       PathLocks::UnlockService.new(project, current_user).execute(path_lock)
@@ -95,6 +95,10 @@ class Projects::PathLocksController < Projects::ApplicationController
   end
 
   def path
-    params[:path]
+    allowed_params[:path]
+  end
+
+  def allowed_params
+    params.permit(:path, :id, :page)
   end
 end
