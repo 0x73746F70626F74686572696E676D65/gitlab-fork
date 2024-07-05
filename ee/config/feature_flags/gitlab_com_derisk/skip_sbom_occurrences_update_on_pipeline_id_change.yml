@@ -1,0 +1,9 @@
+---
+name: skip_sbom_occurrences_update_on_pipeline_id_change
+feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/442486
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/157932
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/470672
+milestone: '17.2'
+group: group::composition analysis
+type: gitlab_com_derisk
+default_enabled: false

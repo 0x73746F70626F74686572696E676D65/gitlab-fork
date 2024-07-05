@@ -10,6 +10,8 @@ module Sbom
         self.unique_by = %i[uuid].freeze
         self.uses = %i[id uuid].freeze
 
+        PIPELINE_ATTRIBUTES_KEYS = %i[pipeline_id commit_sha].freeze
+
         private
 
         def after_ingest
@@ -48,10 +50,7 @@ module Sbom
               ancestors: occurrence_map.ancestors
             }
 
-            existing_occurrence = existing_occurrences_by_uuid[uuid]
-            existing_attributes = existing_occurrence&.attributes&.symbolize_keys&.slice(*new_attributes.keys)
-
-            if new_attributes != existing_attributes
+            if attributes_changed?(new_attributes)
               # Remove updated items from the list so that we don't have to iterate over them
               # twice when setting the ids in `after_ingest`.
               existing_occurrences_by_uuid.delete(uuid)
@@ -85,6 +84,25 @@ module Sbom
           ).merge(project_id: project.id)
 
           ::Sbom::OccurrenceUUID.generate(**uuid_attributes)
+        end
+
+        # Return true if the new attributes differ from the existing attributes
+        # for the same uuid.
+        def attributes_changed?(new_attributes)
+          uuid = new_attributes[:uuid]
+          existing_occurrence = existing_occurrences_by_uuid[uuid]
+
+          return true unless existing_occurrence
+
+          compared_attributes = new_attributes.keys
+          if Feature.enabled?(:skip_sbom_occurrences_update_on_pipeline_id_change, project)
+            compared_attributes -= PIPELINE_ATTRIBUTES_KEYS
+          end
+
+          stable_new_attributes = new_attributes.slice(*compared_attributes)
+          stable_existing_attributes = existing_occurrence.attributes.deep_symbolize_keys.slice(*compared_attributes)
+
+          stable_new_attributes != stable_existing_attributes
         end
 
         def licenses

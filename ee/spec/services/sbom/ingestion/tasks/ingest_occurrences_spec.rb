@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Sbom::Ingestion::Tasks::IngestOccurrences, feature_category: :dependency_management do
   describe '#execute' do
-    let_it_be(:pipeline) { create(:ci_pipeline) }
+    let_it_be(:pipeline) { create(:ci_pipeline, sha: 'b83d6e391c22777fca1ed3012fce84f633d7fed0') }
 
     let(:project) { pipeline.project }
     let(:occurrence_maps) { create_list(:sbom_occurrence_map, 4, :for_occurrence_ingestion) }
@@ -159,16 +159,31 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestOccurrences, feature_category: :dep
         expect(occurrence_maps.map(&:occurrence_id)).to match_array([Integer, Integer, Integer, existing_occurrence.id])
       end
 
-      it 'does not perform database writes for existing records' do
-        recorder = ActiveRecord::QueryRecorder.new { ingest_occurrences }
+      context 'when only attributes related to the pipeline have been changed' do
+        let_it_be(:other_pipeline) do
+          create(:ci_pipeline, sha: '5716ca5987cbf97d6bb54920bea6adde242d87e6', project: pipeline.project)
+        end
 
-        inserts = recorder.occurrences_starting_with("INSERT INTO")
-        expect(inserts.size).to eq(1)
-        sql = inserts.first.first
-        expect(sql).not_to include(existing_occurrence.uuid)
+        before do
+          existing_occurrence.update!(pipeline: other_pipeline, commit_sha: other_pipeline.sha)
+        end
+
+        it 'does not update existing records' do
+          expect { ingest_occurrences }.not_to change { existing_occurrence.reload.updated_at }
+        end
+
+        context 'when skip_sbom_occurrences_update_on_pipeline_id_change is disabled' do
+          before do
+            stub_feature_flags(skip_sbom_occurrences_update_on_pipeline_id_change: false)
+          end
+
+          it 'updates existing existing records' do
+            expect { ingest_occurrences }.to change { existing_occurrence.reload.updated_at }
+          end
+        end
       end
 
-      context 'when an attribute has been changed' do
+      context 'when attributes not related to the pipeline have been changed' do
         let_it_be(:other_project) { create(:project) }
 
         before do
