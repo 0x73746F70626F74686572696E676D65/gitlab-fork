@@ -1,0 +1,9 @@
+---
+name: use_segmented_dependency_list_export
+feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/451078
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/158232
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/470503
+milestone: '17.2'
+group: group::threat insights
+type: gitlab_com_derisk
+default_enabled: false

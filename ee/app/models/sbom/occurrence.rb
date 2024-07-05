@@ -158,6 +158,34 @@ module Sbom
         .where(project_authorizations: { user_id: user.id })
     end
 
+    scope :in_parent_group_after_and_including, ->(sbom_occurrence) do
+      where(arel_grouping_by_traversal_ids_and_id.gteq(sbom_occurrence.arel_grouping_by_traversal_ids_and_id))
+    end
+    scope :in_parent_group_before_and_including, ->(sbom_occurrence) do
+      where(arel_grouping_by_traversal_ids_and_id.lteq(sbom_occurrence.arel_grouping_by_traversal_ids_and_id))
+    end
+    scope :order_traversal_ids_asc, -> do
+      reorder(Gitlab::Pagination::Keyset::Order.build([
+        Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
+          attribute_name: 'traversal_ids',
+          order_expression: arel_table[:traversal_ids].asc,
+          nullable: :not_nullable
+        ),
+        Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
+          attribute_name: 'id',
+          order_expression: arel_table[:id].asc
+        )
+      ]))
+    end
+
+    def self.arel_grouping_by_traversal_ids_and_id
+      arel_table.grouping([arel_table['traversal_ids'], arel_table['id']])
+    end
+
+    def arel_grouping_by_traversal_ids_and_id
+      self.class.arel_table.grouping([database_serialized_traversal_ids, id])
+    end
+
     def location
       {
         blob_path: input_file_blob_path,
@@ -179,6 +207,13 @@ module Sbom
       return Sbom::Occurrence.arel_table[:highest_severity].asc.nulls_first if direction == 'asc'
 
       Sbom::Occurrence.arel_table[:highest_severity].desc.nulls_last
+    end
+
+    def database_serialized_traversal_ids
+      self.class.attribute_types['traversal_ids']
+                .serialize(traversal_ids)
+                .then { |serialized_array| self.class.connection.quote(serialized_array) }
+                .then { |quoted_array| Arel::Nodes::SqlLiteral.new(quoted_array) }
     end
   end
 end

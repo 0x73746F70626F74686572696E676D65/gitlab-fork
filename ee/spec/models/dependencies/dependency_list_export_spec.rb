@@ -13,7 +13,13 @@ RSpec.describe Dependencies::DependencyListExport, feature_category: :dependency
     it { is_expected.to belong_to(:project) }
     it { is_expected.to belong_to(:group) }
     it { is_expected.to belong_to(:author).class_name('User') }
-    it { is_expected.to have_many(:export_parts).class_name('Dependencies::DependencyListExport::Part') }
+
+    it do
+      is_expected
+        .to have_many(:export_parts)
+        .class_name('Dependencies::DependencyListExport::Part')
+        .dependent(:destroy)
+    end
   end
 
   describe 'validations' do
@@ -181,5 +187,13 @@ RSpec.describe Dependencies::DependencyListExport, feature_category: :dependency
     it 'raises when exportable is an unknown type' do
       expect { export.exportable = nil }.to raise_error(RuntimeError)
     end
+  end
+
+  describe '#export_service' do
+    let(:export) { build(:dependency_list_export) }
+
+    subject { export.export_service }
+
+    it { is_expected.to be_an_instance_of(Dependencies::Export::SegmentedExportService) }
   end
 end

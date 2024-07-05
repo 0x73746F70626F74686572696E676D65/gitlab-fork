@@ -11,7 +11,7 @@ module Dependencies
     belongs_to :pipeline, class_name: 'Ci::Pipeline'
     belongs_to :author, class_name: 'User', foreign_key: :user_id, inverse_of: :dependency_list_exports
 
-    has_many :export_parts, class_name: 'Dependencies::DependencyListExport::Part'
+    has_many :export_parts, class_name: 'Dependencies::DependencyListExport::Part', dependent: :destroy
 
     validates :status, presence: true
     validates :file, presence: true, if: :finished?
@@ -68,6 +68,10 @@ module Dependencies
       else
         raise "Can not assign #{value.class} as exportable"
       end
+    end
+
+    def export_service
+      Dependencies::Export::SegmentedExportService.new(self) # rubocop:disable CodeReuse/ServiceClass -- This interface is expected by segmented export framework
     end
 
     private

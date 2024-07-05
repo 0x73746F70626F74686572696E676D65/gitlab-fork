@@ -6,6 +6,8 @@ RSpec.describe Dependencies::DependencyListExport::Part, feature_category: :depe
   describe 'associations' do
     it { is_expected.to belong_to(:dependency_list_export).class_name('Dependencies::DependencyListExport') }
     it { is_expected.to belong_to(:organization).class_name('Organizations::Organization') }
+    it { is_expected.to belong_to(:first_record).class_name('Sbom::Occurrence') }
+    it { is_expected.to belong_to(:last_record).class_name('Sbom::Occurrence') }
   end
 
   describe 'validations' do
@@ -20,5 +22,30 @@ RSpec.describe Dependencies::DependencyListExport::Part, feature_category: :depe
     subject { export_part.retrieve_upload(export_part, relative_path) }
 
     it { is_expected.to be_present }
+  end
+
+  describe '#sbom_occurrences' do
+    let(:group) { create(:group) }
+    let(:project) { create(:project, group: group) }
+    let(:export) { create(:dependency_list_export, exportable: group, project: nil) }
+    let(:occurrence) { create(:sbom_occurrence, project: project) }
+    let(:archived_occurrence) { create(:sbom_occurrence, project: project, archived: true) }
+    let(:export_part) do
+      create(:dependency_list_export_part,
+        dependency_list_export: export,
+        start_id: occurrence.id,
+        end_id: archived_occurrence.id)
+    end
+
+    subject(:sbom_occurrences) { export_part.sbom_occurrences }
+
+    before do
+      # Creating another occurrence which is not in the range of occurrences of export part
+      create(:sbom_occurrence, project: project)
+    end
+
+    it 'returns only the related sbom_occurrences for the export part' do
+      expect(sbom_occurrences).to contain_exactly(occurrence)
+    end
   end
 end
