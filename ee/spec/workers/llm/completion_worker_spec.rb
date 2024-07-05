@@ -23,7 +23,9 @@ RSpec.describe Llm::CompletionWorker, feature_category: :ai_abstraction_layer do
   describe '#perform' do
     subject { described_class.new.perform(described_class.serialize_message(prompt_message), options) }
 
-    it 'calls Llm::Internal::CompletionService and tracks event' do
+    let(:session) { ActionController::TestSession.new }
+
+    def expect_completion_service_call
       expect_next_instance_of(
         Llm::Internal::CompletionService,
         an_object_having_attributes(
@@ -36,6 +38,10 @@ RSpec.describe Llm::CompletionWorker, feature_category: :ai_abstraction_layer do
       ) do |instance|
         expect(instance).to receive(:execute)
       end
+    end
+
+    it 'calls Llm::Internal::CompletionService and tracks event' do
+      expect_completion_service_call
 
       subject
 
@@ -51,43 +57,31 @@ RSpec.describe Llm::CompletionWorker, feature_category: :ai_abstraction_layer do
 
     context 'when warden.user.user.key is nil' do
       it 'simulates it' do
-        expect_next_instance_of(
-          Llm::Internal::CompletionService,
-          an_object_having_attributes(
-            user: user,
-            resource: resource,
-            request_id: 'uuid',
-            ai_action: ai_action_name
-          ),
-          options
-        ) do |instance|
-          expect(instance).to receive(:execute)
-        end
+        expect_completion_service_call
 
-        Gitlab::Session.with_session(ActionController::TestSession.new) do
+        Gitlab::Session.with_session(session) do
           subject
 
           expect(Gitlab::Session.current['warden.user.user.key']).to match_array([[user.id], instance_of(String)])
         end
       end
 
+      context 'when sessionless' do
+        it 'does nothing' do
+          expect_completion_service_call
+
+          subject
+
+          expect(Gitlab::Session.current).to eq(nil)
+        end
+      end
+
       it 'does nothing if duo_chat_set_warden is disabled' do
         stub_feature_flags(duo_chat_set_warden: false)
 
-        expect_next_instance_of(
-          Llm::Internal::CompletionService,
-          an_object_having_attributes(
-            user: user,
-            resource: resource,
-            request_id: 'uuid',
-            ai_action: ai_action_name
-          ),
-          options
-        ) do |instance|
-          expect(instance).to receive(:execute)
-        end
+        expect_completion_service_call
 
-        Gitlab::Session.with_session(ActionController::TestSession.new) do
+        Gitlab::Session.with_session(session) do
           subject
 
           expect(Gitlab::Session.current).not_to have_key('warden.user.user.key')
