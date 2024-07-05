@@ -1,8 +1,7 @@
 import { nextTick } from 'vue';
 import { RouterLinkStub } from '@vue/test-utils';
-import { GlLink, GlSprintf } from '@gitlab/ui';
+import { GlLink, GlSprintf, GlExperimentBadge } from '@gitlab/ui';
 import { createAlert } from '~/alert';
-import BetaBadge from '~/vue_shared/components/badges/beta_badge.vue';
 import { mockTracking } from 'helpers/tracking_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import CustomizableDashboard from 'ee/vue_shared/components/customizable_dashboard/customizable_dashboard.vue';
@@ -120,7 +119,7 @@ describe('CustomizableDashboard', () => {
   const findVisualizationDrawer = () => wrapper.findComponent(AvailableVisualizationsDrawer);
   const findDashboardDescription = () => wrapper.findByTestId('dashboard-description');
   const findGridstackWrapper = () => wrapper.findComponent(GridstackWrapper);
-  const findBetaBadge = () => wrapper.findComponent(BetaBadge);
+  const findExperimentBadge = () => wrapper.findComponent(GlExperimentBadge);
 
   const enterDashboardTitle = async (title, titleValidationError = '') => {
     await findTitleInput().vm.$emit('input', title);
@@ -222,7 +221,7 @@ describe('CustomizableDashboard', () => {
     });
 
     it('does not render the `Beta` badge', () => {
-      expect(findBetaBadge().exists()).toBe(false);
+      expect(findExperimentBadge().exists()).toBe(false);
     });
   });
 
@@ -320,7 +319,7 @@ describe('CustomizableDashboard', () => {
     });
 
     it('renders the `Beta` badge', () => {
-      expect(findBetaBadge().exists()).toBe(true);
+      expect(findExperimentBadge().props().type).toBe('beta');
     });
   });
 

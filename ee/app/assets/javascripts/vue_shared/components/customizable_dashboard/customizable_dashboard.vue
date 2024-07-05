@@ -1,5 +1,13 @@
 <script>
-import { GlButton, GlFormInput, GlFormGroup, GlLink, GlIcon, GlSprintf } from '@gitlab/ui';
+import {
+  GlButton,
+  GlFormInput,
+  GlFormGroup,
+  GlLink,
+  GlIcon,
+  GlSprintf,
+  GlExperimentBadge,
+} from '@gitlab/ui';
 import { isEqual } from 'lodash';
 import { createAlert } from '~/alert';
 import { cloneWithoutReferences } from '~/lib/utils/common_utils';
@@ -7,7 +15,6 @@ import { slugify } from '~/lib/utils/text_utility';
 import { s__, __ } from '~/locale';
 import { InternalEvents } from '~/tracking';
 import UrlSync, { HISTORY_REPLACE_UPDATE_METHOD } from '~/vue_shared/components/url_sync.vue';
-import BetaBadge from '~/vue_shared/components/badges/beta_badge.vue';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { createNewVisualizationPanel } from 'ee/analytics/analytics_dashboards/utils';
 import {
@@ -41,8 +48,8 @@ export default {
     GlLink,
     GlFormGroup,
     GlSprintf,
+    GlExperimentBadge,
     UrlSync,
-    BetaBadge,
     AvailableVisualizationsDrawer,
     GridstackWrapper,
   },
@@ -383,7 +390,7 @@ export default {
         </h2>
         <div v-else class="gl-display-flex gl-align-items-center">
           <h2 data-testid="dashboard-title" class="gl-my-0">{{ dashboard.title }}</h2>
-          <beta-badge v-if="showBetaBadge" class="gl-ml-3" />
+          <gl-experiment-badge v-if="showBetaBadge" class="gl-ml-3" type="beta" />
         </div>
 
         <div
