@@ -28,11 +28,11 @@ module GitlabSubscriptions
     scope :ready_for_cleanup, -> { where('expires_on < ?', CLEANUP_DELAY_PERIOD.ago.to_date) }
     scope :trial, -> { where(trial: true) }
     scope :by_add_on_name, ->(name) { joins(:add_on).where(add_on: { name: name }) }
-    scope :by_namespace_id, ->(namespace_id) { where(namespace_id: namespace_id) }
+    scope :by_namespace, ->(namespace) { where(namespace: namespace) }
     scope :for_gitlab_duo_pro, -> { where(subscription_add_on_id: AddOn.code_suggestions.pick(:id)) }
     scope :for_product_analytics, -> { where(subscription_add_on_id: AddOn.product_analytics.pick(:id)) }
     scope :for_duo_enterprise, -> { where(subscription_add_on_id: AddOn.duo_enterprise.pick(:id)) }
-    scope :for_user, ->(user) { where(namespace_id: user.billable_gitlab_duo_pro_root_group_ids) }
+    scope :for_user, ->(user) { by_namespace(user.billable_gitlab_duo_pro_root_group_ids) }
     scope :assigned_to_user, ->(user) do
       active.joins(:assigned_users).merge(UserAddOnAssignment.by_user(user))
     end

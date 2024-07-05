@@ -11,7 +11,7 @@ module GitlabSubscriptions
 
       def execute
         # There will only be one, but we want to return a collection here and then consume it outside of this
-        items = namespace.subscription_add_on_purchases.for_gitlab_duo_pro
+        items = GitlabSubscriptions::AddOnPurchase.for_gitlab_duo_pro.by_namespace(namespace)
         items = by_active(items)
         by_trial(items)
       end

@@ -29,24 +29,6 @@ RSpec.describe GitlabSubscriptions::DuoPro, feature_category: :subscription_mana
     end
   end
 
-  describe '.any_add_on_purchase_for_namespace_id' do
-    let_it_be(:namespace) { create(:namespace) }
-
-    subject { described_class.any_add_on_purchase_for_namespace_id(namespace.id) }
-
-    context 'when there is an add-on purchase for the namespace' do
-      let_it_be(:add_on_purchase) do
-        create(:gitlab_subscription_add_on_purchase, :gitlab_duo_pro, namespace: namespace)
-      end
-
-      it { is_expected.to eq(add_on_purchase) }
-    end
-
-    context 'when there is no add-on purchase for the namespace' do
-      it { is_expected.to be_nil }
-    end
-  end
-
   describe '.any_add_on_purchase_for_namespace' do
     let_it_be(:namespace) { create(:namespace) }
 
@@ -70,6 +52,22 @@ RSpec.describe GitlabSubscriptions::DuoPro, feature_category: :subscription_mana
 
     context 'when there is no add-on purchase for the namespace' do
       it { is_expected.to be_nil }
+    end
+
+    context 'when namespace id is passed' do
+      subject { described_class.any_add_on_purchase_for_namespace(namespace.id) }
+
+      context 'when there is an add-on purchase for the namespace' do
+        let_it_be(:add_on_purchase) do
+          create(:gitlab_subscription_add_on_purchase, :gitlab_duo_pro, namespace: namespace)
+        end
+
+        it { is_expected.to eq(add_on_purchase) }
+      end
+
+      context 'when there is no add-on purchase for the namespace' do
+        it { is_expected.to be_nil }
+      end
     end
   end
 

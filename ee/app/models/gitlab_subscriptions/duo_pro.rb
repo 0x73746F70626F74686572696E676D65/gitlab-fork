@@ -6,10 +6,6 @@ module GitlabSubscriptions
       GitlabSubscriptions::DuoPro::NamespaceAddOnPurchasesFinder.new(namespace).execute.first
     end
 
-    def self.any_add_on_purchase_for_namespace_id(namespace_id)
-      GitlabSubscriptions::AddOnPurchase.for_gitlab_duo_pro.by_namespace_id(namespace_id).first
-    end
-
     def self.any_add_on_purchase_for_namespace(namespace)
       GitlabSubscriptions::DuoPro::NamespaceAddOnPurchasesFinder.new(namespace, only_active: false).execute.first
     end

@@ -25,6 +25,12 @@ RSpec.describe GitlabSubscriptions::DuoPro::NamespaceAddOnPurchasesFinder, featu
             it { is_expected.to match_array([add_on_purchase]) }
           end
 
+          context 'when a namespace_id is provided' do
+            subject(:execute) { described_class.new(namespace.id).execute }
+
+            it { is_expected.to match_array([add_on_purchase]) }
+          end
+
           context 'when filtering by trial' do
             subject(:execute) { described_class.new(namespace, trial: true).execute }
 
@@ -68,6 +74,12 @@ RSpec.describe GitlabSubscriptions::DuoPro::NamespaceAddOnPurchasesFinder, featu
           end
 
           context 'with default values of non trial and active' do
+            it { is_expected.to match_array([add_on_purchase]) }
+          end
+
+          context 'when a namespace_id is provided' do
+            subject(:execute) { described_class.new(namespace.id).execute }
+
             it { is_expected.to match_array([add_on_purchase]) }
           end
 

@@ -18,7 +18,7 @@ module Resolvers
         ::GitlabSubscriptions::AddOnPurchase
           .active
           .by_add_on_name(add_on_type)
-          .by_namespace_id(namespace_id&.model_id)
+          .by_namespace(namespace_id&.model_id)
           .first
       end
     end
