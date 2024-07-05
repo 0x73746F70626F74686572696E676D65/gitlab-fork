@@ -134,6 +134,19 @@ module RemoteDevelopment
               value: vscode_extensions_gallery_resource_url_template,
               variable_type: RemoteDevelopment::Enums::Workspace::WORKSPACE_VARIABLE_TYPES[:environment],
               workspace_id: workspace_id
+            },
+            # variables with prefix `GITLAB_WORKFLOW_` are used for configured GitLab Workflow extension for VS Code
+            {
+              key: 'GITLAB_WORKFLOW_INSTANCE_URL',
+              value: Gitlab::Routing.url_helpers.root_url,
+              variable_type: RemoteDevelopment::Enums::Workspace::WORKSPACE_VARIABLE_TYPES[:environment],
+              workspace_id: workspace_id
+            },
+            {
+              key: 'GITLAB_WORKFLOW_TOKEN_FILE',
+              value: RemoteDevelopment::Workspaces::FileMounts::GITLAB_TOKEN_FILE,
+              variable_type: RemoteDevelopment::Enums::Workspace::WORKSPACE_VARIABLE_TYPES[:environment],
+              workspace_id: workspace_id
             }
           ]
 
