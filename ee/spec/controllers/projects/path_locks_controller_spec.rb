@@ -37,6 +37,14 @@ RSpec.describe Projects::PathLocksController, feature_category: :source_code_man
         expect(response).to have_gitlab_http_status(:not_found)
       end
     end
+
+    context 'when page has an invalid value' do
+      it 'ignores an invalid param' do
+        get :index, params: { namespace_id: project.namespace, project_id: project, page: { invalid: :format } }
+
+        expect(response).to have_gitlab_http_status(:ok)
+      end
+    end
   end
 
   describe 'POST #toggle' do
