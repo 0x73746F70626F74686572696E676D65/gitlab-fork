@@ -50,6 +50,8 @@ module Gitlab
           else
             logger.error(message: "Received error from AI gateway", response: response_body)
 
+            raise Gitlab::AiGateway::ForbiddenError if response.forbidden?
+
             raise ConnectionError, 'AI gateway not reachable'
           end
         end
