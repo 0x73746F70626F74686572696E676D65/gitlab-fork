@@ -22982,6 +22982,9 @@ msgstr ""
 msgid "Generate new export"
 msgstr ""
 
+msgid "Generate page path from title"
+msgstr ""
+
 msgid "Generate project access tokens scoped to this project for your applications that need access to the GitLab API."
 msgstr ""
 
@@ -59664,7 +59667,13 @@ msgstr ""
 msgid "WikiPage|Learn more."
 msgstr ""
 
+msgid "WikiPage|Page path"
+msgstr ""
+
 msgid "WikiPage|Page title"
+msgstr ""
+
+msgid "WikiPage|Path"
 msgstr ""
 
 msgid "WikiPage|Save changes"

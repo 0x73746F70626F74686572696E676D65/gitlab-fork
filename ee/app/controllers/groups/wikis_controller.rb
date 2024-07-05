@@ -9,6 +9,10 @@ class Groups::WikisController < Groups::ApplicationController
 
   feature_category :wiki
 
+  before_action do
+    push_frontend_feature_flag(:wiki_front_matter_title, group)
+  end
+
   private
 
   def authorize_read_wiki!
