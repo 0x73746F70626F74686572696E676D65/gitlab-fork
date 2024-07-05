@@ -31,7 +31,7 @@ Old hunk of `#{diff_file.new_path}`:
 ```
 
 Instructions:
-- Review new hunk and old hunk of `#{diff_file.new_path}` line by line. New and old hunks are annotated with line numbers.
+- Review new hunk and old hunk of `#{diff_file.new_path}` line by line. New and old hunks are annotated with line numbers. The new hunk will replace the old hunk.
 - Use git diff of `#{diff_file.new_path}` only for additional context.
 - Skip empty new Hunk and old Hunk during your review.
 - You must only make really helpful suggestions based on your review.
