@@ -17,6 +17,7 @@ import Api from 'ee/api';
 import { getUser } from '~/rest_api';
 import { s__ } from '~/locale';
 import AccessDropdown from '~/projects/settings/components/access_dropdown.vue';
+import GroupsAccessDropdown from '~/groups/settings/components/access_dropdown.vue';
 import { ACCESS_LEVELS, INHERITED_GROUPS, NON_INHERITED_GROUPS } from './constants';
 
 const mapUserToApprover = (user) => ({
@@ -66,12 +67,14 @@ export default {
     GlSprintf,
     GlToggle,
     AccessDropdown,
+    GroupsAccessDropdown,
   },
   directives: { GlTooltip },
   inject: {
     accessLevelsData: { default: [] },
     apiLink: {},
     docsLink: {},
+    entityType: { default: 'projects' },
   },
   props: {
     disabled: {
@@ -95,6 +98,12 @@ export default {
   computed: {
     hasSelectedApprovers() {
       return Boolean(this.approvers.length);
+    },
+    approverHelpText() {
+      return this.$options.i18n.approverHelp[this.entityType];
+    },
+    isProjectType() {
+      return this.entityType === 'projects';
     },
   },
   watch: {
@@ -196,9 +205,14 @@ export default {
   },
   i18n: {
     approverLabel: s__('ProtectedEnvironment|Approvers'),
-    approverHelp: s__(
-      'ProtectedEnvironments|Set which groups, access levels, or users are required to approve. Groups and users must be members of the project.',
-    ),
+    approverHelp: {
+      projects: s__(
+        'ProtectedEnvironments|Set which groups, access levels, or users are required to approve. Groups and users must be members of the project.',
+      ),
+      groups: s__(
+        'ProtectedEnvironments|Set which groups, access levels, or users are required to approve in this environment tier.',
+      ),
+    },
     approvalRulesLabel: s__('ProtectedEnvironments|Approval rules'),
     approvalsInvalid: s__('ProtectedEnvironments|Number of approvals must be between 1 and 5'),
     removeApprover: s__('ProtectedEnvironments|Remove approval rule'),
@@ -221,15 +235,26 @@ export default {
       :label="$options.i18n.approverLabel"
     >
       <template #label-description>
-        {{ $options.i18n.approverHelp }}
+        {{ approverHelpText }}
       </template>
       <access-dropdown
+        v-if="isProjectType"
         id="create-approver-dropdown"
         :label="$options.i18n.accessDropdownLabel"
         :access-levels-data="accessLevelsData"
         :access-level="$options.ACCESS_LEVELS.DEPLOY"
         :disabled="disabled"
         :items="approvers"
+        @select="updateApprovers"
+      />
+      <groups-access-dropdown
+        v-else
+        id="create-approver-dropdown"
+        :label="$options.i18n.accessDropdownLabel"
+        :access-levels-data="accessLevelsData"
+        :disabled="disabled"
+        :items="approvers"
+        show-users
         @select="updateApprovers"
       />
       <template #description>

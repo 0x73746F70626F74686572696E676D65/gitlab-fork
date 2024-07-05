@@ -6,7 +6,7 @@ describe('ee/protected_environments/store/edit/mutations', () => {
   let mockedState;
 
   beforeEach(() => {
-    mockedState = state({ projectId: '8' });
+    mockedState = state({ entityId: '8', entityType: 'projects' });
   });
 
   describe(types.REQUEST_PROTECTED_ENVIRONMENTS, () => {

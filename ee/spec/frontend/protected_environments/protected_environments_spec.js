@@ -65,9 +65,9 @@ describe('ee/protected_environments/protected_environments.vue', () => {
   const setPageMock = jest.fn(() => Promise.resolve());
   const fetchProtectedEnvironmentsMock = jest.fn(() => Promise.resolve());
 
-  const createStore = ({ pageInfo } = {}) => {
+  const createStore = ({ pageInfo, entityType } = {}) => {
     return new Vuex.Store({
-      state: { ...state, pageInfo },
+      state: { ...state, pageInfo, entityType },
       actions: {
         setPage: setPageMock,
         fetchProtectedEnvironments: fetchProtectedEnvironmentsMock,
@@ -78,9 +78,10 @@ describe('ee/protected_environments/protected_environments.vue', () => {
   const createComponent = ({
     environments = DEFAULT_ENVIRONMENTS,
     pageInfo = DEFAULT_PAGE_INFO,
+    entityType = 'projects',
   } = {}) => {
     wrapper = mountExtended(ProtectedEnvironments, {
-      store: createStore({ pageInfo }),
+      store: createStore({ pageInfo, entityType }),
       propsData: {
         environments,
       },
@@ -90,6 +91,7 @@ describe('ee/protected_environments/protected_environments.vue', () => {
       provide: {
         apiLink: '',
         docsLink: '',
+        entityType,
       },
       // Stub access dropdown since it triggers some requests that are out-of-scope here
       stubs: ['AccessDropdown', 'CreateProtectedEnvironment'],

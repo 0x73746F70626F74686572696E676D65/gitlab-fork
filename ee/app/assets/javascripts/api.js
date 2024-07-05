@@ -33,10 +33,10 @@ export default {
   issueMetricSingleImagePath:
     '/api/:version/projects/:id/issues/:issue_iid/metric_images/:image_id',
   environmentApprovalPath: '/api/:version/projects/:id/deployments/:deployment_id/approval',
-  protectedEnvironmentsPath: '/api/:version/projects/:id/protected_environments/',
+  protectedEnvironmentsPath: '/api/:version/:entity_type/:id/protected_environments/',
   mrStatusCheckRetryPath:
     '/api/:version/projects/:id/merge_requests/:merge_request_iid/status_checks/:external_status_check_id/retry',
-  protectedEnvironmentPath: '/api/:version/projects/:id/protected_environments/:name',
+  protectedEnvironmentPath: '/api/:version/:entity_type/:id/protected_environments/:name',
   aiCompletionsPath: '/api/:version/ai/experimentation/openai/completions',
   aiEmbeddingsPath: '/api/:version/ai/experimentation/openai/embeddings',
   aiChatPath: '/api/:version/ai/experimentation/openai/chat/completions',
@@ -272,26 +272,32 @@ export default {
     return this.deploymentApproval({ id, deploymentId, approve: false, representedAs, comment });
   },
 
-  protectedEnvironments(id, params = {}) {
-    const url = Api.buildUrl(this.protectedEnvironmentsPath).replace(':id', encodeURIComponent(id));
+  protectedEnvironments(id, entityType, params = {}) {
+    const url = Api.buildUrl(this.protectedEnvironmentsPath)
+      .replace(':entity_type', encodeURIComponent(entityType))
+      .replace(':id', encodeURIComponent(id));
     return axios.get(url, { params });
   },
 
-  createProtectedEnvironment(id, protectedEnvironment) {
-    const url = Api.buildUrl(this.protectedEnvironmentsPath).replace(':id', encodeURIComponent(id));
+  createProtectedEnvironment(id, entityType, protectedEnvironment) {
+    const url = Api.buildUrl(this.protectedEnvironmentsPath)
+      .replace(':entity_type', encodeURIComponent(entityType))
+      .replace(':id', encodeURIComponent(id));
     return axios.post(url, protectedEnvironment);
   },
 
-  updateProtectedEnvironment(id, protectedEnvironment) {
+  updateProtectedEnvironment(id, entityType, protectedEnvironment) {
     const url = Api.buildUrl(this.protectedEnvironmentPath)
+      .replace(':entity_type', encodeURIComponent(entityType))
       .replace(':id', encodeURIComponent(id))
       .replace(':name', encodeURIComponent(protectedEnvironment.name));
 
     return axios.put(url, protectedEnvironment);
   },
 
-  deleteProtectedEnvironment(id, { name }) {
+  deleteProtectedEnvironment(id, entityType, { name }) {
     const url = Api.buildUrl(this.protectedEnvironmentPath)
+      .replace(':entity_type', encodeURIComponent(entityType))
       .replace(':id', encodeURIComponent(id))
       .replace(':name', encodeURIComponent(name));
 

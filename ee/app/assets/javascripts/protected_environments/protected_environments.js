@@ -13,14 +13,18 @@ export const initProtectedEnvironments = () => {
     return null;
   }
 
-  const { projectId, apiLink, docsLink } = el.dataset;
+  // entityId is the ID of the project or group.
+  // entityType is either 'projects' or 'groups'.
+  const { entityId, apiLink, docsLink, entityType, tiers } = el.dataset;
   return new Vue({
     el,
     store: createStore({
       ...el.dataset,
     }),
     provide: {
-      projectId,
+      entityId,
+      entityType,
+      tiers: tiers ? JSON.parse(tiers) : [],
       accessLevelsData: gon?.deploy_access_levels?.roles ?? [],
       apiLink,
       docsLink,

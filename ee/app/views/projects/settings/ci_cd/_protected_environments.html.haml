@@ -11,7 +11,8 @@
       %p.gl-text-secondary
         = s_('ProtectedEnvironment|Only specified users can execute deployments in a protected environment.')
     .settings-content
-      #js-protected-environments{ data: { project_id: @project.id,
+      #js-protected-environments{ data: { entity_id: @project.id,
+                                      entity_type: 'projects',
                                       api_link: help_page_path('api/protected_environments'),
                                       docs_link: help_page_path('ci/environments/deployment_approvals', anchor: 'add-multiple-approval-rules') } }
 

@@ -31,7 +31,7 @@ describe('ee/protected_environments/store/edit/actions', () => {
   let mock;
 
   beforeEach(() => {
-    mockedState = state({ projectId: '8' });
+    mockedState = state({ entityId: '8', entityType: 'projects' });
     mock = new MockAdapter(axios);
     window.gon = { api_version: 'v4' };
   });
@@ -153,7 +153,7 @@ describe('ee/protected_environments/store/edit/actions', () => {
       type                                | rule                                                                                                     | url                               | response
       ${'group with integer inheritance'} | ${{ group_id: 1, user_id: null, access_level: null, group_inheritance_type: 1 }}                         | ${'/api/v4/groups/1/members/all'} | ${[{ name: 'root' }]}
       ${'group without inheritance'}      | ${{ group_id: 1, user_id: null, access_level: null, group_inheritance_type: 0 }}                         | ${'/api/v4/groups/1/members'}     | ${[{ name: 'root' }]}
-      ${'user'}                           | ${{ group_id: null, user_id: 1, access_level: null, group_ineritance_type: null }}                       | ${'/api/v4/users/1'}              | ${{ name: 'root' }}
+      ${'user'}                           | ${{ group_id: null, user_id: 1, access_level: null, group_inheritance_type: null }}                      | ${'/api/v4/users/1'}              | ${{ name: 'root' }}
       ${'access level'}                   | ${{ group_id: null, user_id: null, access_level: MAINTAINER_ACCESS_LEVEL, group_inheritance_type: '0' }} | ${'/api/v4/projects/8/members'}   | ${[{ name: 'root', access_level: MAINTAINER_ACCESS_LEVEL.toString() }]}
     `(
       'successfully fetches members for a given deploy access rule of type $type',
@@ -232,7 +232,7 @@ describe('ee/protected_environments/store/edit/actions', () => {
     it.each`
       type              | rule                                                                                                            | updatedRule
       ${'group'}        | ${{ id: 1, group_id: 1, user_id: null, access_level: null, group_inheritance_type: '1' }}                       | ${{ id: 1, group_id: 1, group_inheritance_type: '1', _destroy: true }}
-      ${'user'}         | ${{ id: 1, group_id: null, user_id: 1, access_level: null, group_ineritance_type: null }}                       | ${{ id: 1, user_id: 1, _destroy: true }}
+      ${'user'}         | ${{ id: 1, group_id: null, user_id: 1, access_level: null, group_inheritance_type: null }}                      | ${{ id: 1, user_id: 1, _destroy: true }}
       ${'access level'} | ${{ id: 1, group_id: null, user_id: null, access_level: MAINTAINER_ACCESS_LEVEL, group_inheritance_type: '0' }} | ${{ id: 1, access_level: MAINTAINER_ACCESS_LEVEL, group_inheritance_type: '0', _destroy: true }}
     `('marks a rule for deletion of type $type', ({ rule, updatedRule }) => {
       return testAction(

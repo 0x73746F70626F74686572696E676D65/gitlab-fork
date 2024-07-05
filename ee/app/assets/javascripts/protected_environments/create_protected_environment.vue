@@ -14,6 +14,7 @@ import axios from '~/lib/utils/axios_utils';
 import { __, s__ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import AccessDropdown from '~/projects/settings/components/access_dropdown.vue';
+import GroupsAccessDropdown from '~/groups/settings/components/access_dropdown.vue';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import AddApprovers from './add_approvers.vue';
 import { ACCESS_LEVELS } from './constants';
@@ -28,6 +29,7 @@ export default {
     GlFormGroup,
     GlCollapsibleListbox,
     AccessDropdown,
+    GroupsAccessDropdown,
     AddApprovers,
   },
   mixins: [glFeatureFlagsMixin()],
@@ -35,8 +37,10 @@ export default {
     accessLevelsData: { default: [] },
     apiLink: {},
     docsLink: {},
-    projectId: { default: '' },
+    entityId: { default: '' },
+    entityType: { default: 'projects' },
     searchUnprotectedEnvironmentsUrl: { default: '' },
+    tiers: { default: [] },
   },
   data() {
     return {
@@ -49,6 +53,7 @@ export default {
       environmentsLoading: false,
       errorMessage: '',
       loading: false,
+      environmentTier: '',
     };
   },
   computed: {
@@ -59,10 +64,26 @@ export default {
       return this.environment || this.$options.i18n.environmentText;
     },
     hasSelectedEnvironment() {
-      return Boolean(this.environment);
+      return Boolean(this.environment) || Boolean(this.environmentTier);
+    },
+    isProjectType() {
+      return this.entityType === 'projects';
+    },
+    environmentTierText() {
+      return this.environmentTier || this.$options.i18n.environmentTierText;
+    },
+    environmentTiers() {
+      return this.tiers.map((tier) => ({ text: tier, value: tier }));
+    },
+    deployerHelpText() {
+      return this.$options.i18n.deployerHelp[this.entityType];
+    },
+    addText() {
+      return this.$options.i18n.addText[this.entityType];
     },
   },
   mounted() {
+    if (!this.isProjectType) return;
     this.fetchEnvironments();
   },
   unmounted() {
@@ -114,11 +135,12 @@ export default {
       this.loading = true;
 
       const protectedEnvironment = {
-        name: this.environment,
+        name: this.environment || this.environmentTier,
         deploy_access_levels: this.deployers,
         approval_rules: this.approvers,
       };
-      Api.createProtectedEnvironment(this.projectId, protectedEnvironment)
+      const entityType = this.isProjectType ? 'projects' : 'groups';
+      Api.createProtectedEnvironment(this.entityId, entityType, protectedEnvironment)
         .then(() => {
           this.$emit('success');
           this.deployers = [];
@@ -141,14 +163,24 @@ export default {
   },
   i18n: {
     header: s__('ProtectedEnvironment|Protect an environment'),
-    addText: s__('ProtectedEnvironment|Add new protected environment'),
+    addText: {
+      projects: s__('ProtectedEnvironment|Add new protected environment'),
+      groups: s__('ProtectedEnvironment|Protect environment tier'),
+    },
     environmentLabel: s__('ProtectedEnvironment|Select environment'),
     environmentText: s__('ProtectedEnvironment|Select an environment'),
+    environmentTierLabel: s__('ProtectedEnvironment|Select environment tier'),
+    environmentTierText: s__('ProtectedEnvironment|Select environment tier'),
     approvalLabel: s__('ProtectedEnvironment|Required approvals'),
     deployerLabel: s__('ProtectedEnvironments|Allowed to deploy'),
-    deployerHelp: s__(
-      'ProtectedEnvironments|Set which groups, access levels, or users can deploy to this environment. Groups and users must be members of the project.',
-    ),
+    deployerHelp: {
+      projects: s__(
+        'ProtectedEnvironments|Set which groups, access levels, or users can deploy to this environment. Groups and users must be members of the project.',
+      ),
+      groups: s__(
+        'ProtectedEnvironments|Set which groups, access levels, or users can deploy in this environment tier.',
+      ),
+    },
     buttonText: s__('ProtectedEnvironment|Protect'),
     buttonTextCancel: __('Cancel'),
     accessDropdownLabel: s__('ProtectedEnvironments|Select users'),
@@ -162,9 +194,10 @@ export default {
         {{ errorMessage }}
       </gl-alert>
 
-      <h4 class="gl-mt-0">{{ $options.i18n.addText }}</h4>
+      <h4 class="gl-mt-0">{{ addText }}</h4>
 
       <gl-form-group
+        v-if="isProjectType"
         label-for="environment"
         data-testid="create-environment"
         :label="$options.i18n.environmentLabel"
@@ -180,6 +213,20 @@ export default {
         />
       </gl-form-group>
 
+      <gl-form-group
+        v-else
+        label-for="environment-tier"
+        data-testid="create-environment"
+        :label="$options.i18n.environmentTierLabel"
+      >
+        <gl-collapsible-listbox
+          id="create-environment"
+          v-model="environmentTier"
+          :toggle-text="environmentTierText"
+          :items="environmentTiers"
+        />
+      </gl-form-group>
+
       <gl-collapse :visible="hasSelectedEnvironment">
         <gl-form-group
           data-testid="create-deployer-dropdown"
@@ -187,9 +234,10 @@ export default {
           :label="$options.i18n.deployerLabel"
         >
           <template #label-description>
-            {{ $options.i18n.deployerHelp }}
+            {{ deployerHelpText }}
           </template>
           <access-dropdown
+            v-if="isProjectType"
             id="create-deployer-dropdown"
             :label="$options.i18n.accessDropdownLabel"
             :access-levels-data="accessLevelsData"
@@ -199,9 +247,19 @@ export default {
             groups-with-project-access
             @select="updateDeployers"
           />
+          <groups-access-dropdown
+            v-else
+            id="create-deployer-dropdown"
+            :label="$options.i18n.accessDropdownLabel"
+            :access-levels-data="accessLevelsData"
+            :disabled="disabled"
+            :items="deployers"
+            show-users
+            @select="updateDeployers"
+          />
         </gl-form-group>
         <add-approvers
-          :project-id="projectId"
+          :project-id="entityId"
           :approval-rules="approvers"
           @change="updateApprovers"
           @error="errorMessage = $event"

@@ -18,6 +18,7 @@ export default {
     Pagination,
     CreateProtectedEnvironment,
   },
+  inject: ['entityType'],
   props: {
     environments: {
       required: true,
@@ -27,7 +28,10 @@ export default {
   i18n: {
     title: s__('ProtectedEnvironments|Protected environments'),
     newProtectedEnvironment: s__('ProtectedEnvironments|Protect an environment'),
-    emptyMessage: s__('ProtectedEnvironment|No environments in this project are protected.'),
+    emptyMessage: {
+      projects: s__('ProtectedEnvironment|No environments in this project are protected.'),
+      groups: s__('ProtectedEnvironment|No environments in this group are protected.'),
+    },
   },
   data() {
     return {
@@ -57,6 +61,9 @@ export default {
     },
     showEmptyMessage() {
       return this.environments.length === 0 && !this.isAddFormVisible;
+    },
+    emptyMessage() {
+      return this.$options.i18n.emptyMessage[this.entityType];
     },
   },
   methods: {
@@ -166,7 +173,7 @@ export default {
       </gl-modal>
 
       <div v-if="showEmptyMessage" class="gl-new-card-empty gl-px-5 gl-py-4">
-        {{ $options.i18n.emptyMessage }}
+        {{ emptyMessage }}
       </div>
       <template v-else>
         <div
