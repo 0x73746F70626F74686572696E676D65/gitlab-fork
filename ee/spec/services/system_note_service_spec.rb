@@ -182,6 +182,40 @@ RSpec.describe SystemNoteService, feature_category: :team_planning do
     end
   end
 
+  describe '.add_to_merge_train_when_checks_pass' do
+    let(:sha) { double }
+
+    it 'calls MergeTrainService' do
+      expect_next_instance_of(SystemNotes::MergeTrainService) do |service|
+        expect(service).to receive(:add_when_checks_pass).with(sha)
+      end
+
+      described_class.add_to_merge_train_when_checks_pass(noteable, project, author, sha)
+    end
+  end
+
+  describe '.cancel_add_to_merge_train_when_checks_pass' do
+    it 'calls MergeTrainService' do
+      expect_next_instance_of(SystemNotes::MergeTrainService) do |service|
+        expect(service).to receive(:cancel_add_when_checks_pass)
+      end
+
+      described_class.cancel_add_to_merge_train_when_checks_pass(noteable, project, author)
+    end
+  end
+
+  describe '.abort_add_to_merge_train_when_checks_pass' do
+    let(:message) { double }
+
+    it 'calls MergeTrainService' do
+      expect_next_instance_of(SystemNotes::MergeTrainService) do |service|
+        expect(service).to receive(:abort_add_when_checks_pass).with(message)
+      end
+
+      described_class.abort_add_to_merge_train_when_checks_pass(noteable, project, author, message)
+    end
+  end
+
   describe '.change_vulnerability_state' do
     it 'calls VulnerabilitiesService' do
       expect_next_instance_of(SystemNotes::VulnerabilitiesService) do |service|

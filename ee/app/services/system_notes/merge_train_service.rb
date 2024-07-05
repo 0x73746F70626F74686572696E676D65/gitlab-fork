@@ -62,5 +62,30 @@ module SystemNotes
       body = "aborted automatic add to merge train because #{reason}"
       create_note(NoteSummary.new(noteable, project, author, body, action: 'merge'))
     end
+
+    # Called when 'add to merge train when checks pass' is executed
+    def add_when_checks_pass(_sha)
+      body = "enabled automatic add to merge train when checks pass"
+
+      create_note(NoteSummary.new(noteable, project, author, body, action: 'merge'))
+    end
+
+    # Called when 'add to merge train when checks pass' is canceled
+    def cancel_add_when_checks_pass
+      body = 'cancelled automatic add to merge train'
+
+      create_note(NoteSummary.new(noteable, project, author, body, action: 'merge'))
+    end
+
+    # Called when 'add to merge train when checks pass' is aborted
+    def abort_add_when_checks_pass(reason)
+      ::TodoService.new.merge_train_removed(noteable)
+
+      ##
+      # TODO: Abort message should be sent by the system, not a particular user.
+      # See https://gitlab.com/gitlab-org/gitlab/issues/29467.
+      body = "aborted automatic add to merge train because #{reason}"
+      create_note(NoteSummary.new(noteable, project, author, body, action: 'merge'))
+    end
   end
 end

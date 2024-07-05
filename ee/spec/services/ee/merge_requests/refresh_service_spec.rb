@@ -744,6 +744,14 @@ RSpec.describe MergeRequests::RefreshService, feature_category: :code_review_wor
       merge_request.reload
     end
 
+    context 'with add to merge train when checks pass strategy' do
+      let(:auto_merge_strategy) do
+        AutoMergeService::STRATEGY_ADD_TO_MERGE_TRAIN_WHEN_CHECKS_PASS
+      end
+
+      it_behaves_like 'maintained merge requests for auto merges'
+    end
+
     context 'with add to merge train when pipeline succeeds strategy' do
       let(:auto_merge_strategy) do
         AutoMergeService::STRATEGY_ADD_TO_MERGE_TRAIN_WHEN_PIPELINE_SUCCEEDS

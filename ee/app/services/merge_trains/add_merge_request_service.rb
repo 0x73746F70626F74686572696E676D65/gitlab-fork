@@ -16,7 +16,13 @@ module MergeTrains
 
       strategy = AutoMergeService::STRATEGY_MERGE_TRAIN
 
-      strategy = AutoMergeService::STRATEGY_ADD_TO_MERGE_TRAIN_WHEN_PIPELINE_SUCCEEDS if params[:when_pipeline_succeeds]
+      if params[:when_pipeline_succeeds]
+        strategy = if ::Feature.enabled?(:merge_when_checks_pass_merge_train, @merge_request.project)
+                     AutoMergeService::STRATEGY_ADD_TO_MERGE_TRAIN_WHEN_CHECKS_PASS
+                   else
+                     AutoMergeService::STRATEGY_ADD_TO_MERGE_TRAIN_WHEN_PIPELINE_SUCCEEDS
+                   end
+      end
 
       response = AutoMergeService.new(@merge_request.target_project, current_user, params.slice(:sha))
                               .execute(@merge_request, strategy)

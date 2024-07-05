@@ -5,6 +5,7 @@ import {
   MWCP_MERGE_STRATEGY,
   MT_MERGE_STRATEGY,
   MTWPS_MERGE_STRATEGY,
+  MTWCP_MERGE_STRATEGY,
 } from '~/vue_merge_request_widget/constants';
 
 function convertPropsToGraphqlState(props) {
@@ -112,6 +113,20 @@ describe('MRWidgetAutoMergeEnabled', () => {
         factory({ autoMergeStrategy: MWCP_MERGE_STRATEGY });
 
         expect(getStatusText()).toContain('to be merged automatically when all merge checks pass');
+      });
+
+      it('should return "to be added to the merge train..." if MTWCP is selected', () => {
+        factory({ autoMergeStrategy: MTWCP_MERGE_STRATEGY, mergeTrainsCount: 1 });
+
+        expect(getStatusText()).toContain(
+          'to be added to the merge train when all merge checks pass',
+        );
+      });
+
+      it('should return "start a merge train..." if MTWCP is selected', () => {
+        factory({ autoMergeStrategy: MTWCP_MERGE_STRATEGY, mergeTrainsCount: 0 });
+
+        expect(getStatusText()).toContain('to start a merge train when all merge checks pass');
       });
     });
 

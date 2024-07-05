@@ -6,6 +6,7 @@ import {
   MTWPS_MERGE_STRATEGY,
   MT_MERGE_STRATEGY,
   PIPELINE_FAILED_STATE,
+  MTWCP_MERGE_STRATEGY,
 } from '~/vue_merge_request_widget/constants';
 import CEReadyToMergeMixin from '~/vue_merge_request_widget/mixins/ready_to_merge';
 
@@ -42,6 +43,9 @@ export default {
       return __('Set to auto-merge');
     },
     autoMergeHelperText() {
+      if (this.preferredAutoMergeStrategy === MTWCP_MERGE_STRATEGY) {
+        return __('Add to merge train when all merge checks pass');
+      }
       if (this.preferredAutoMergeStrategy === MTWPS_MERGE_STRATEGY) {
         return __('Add to merge train when pipeline succeeds');
       }
@@ -54,7 +58,8 @@ export default {
     autoMergePopoverSettings() {
       if (
         this.preferredAutoMergeStrategy === MT_MERGE_STRATEGY ||
-        this.preferredAutoMergeStrategy === MTWPS_MERGE_STRATEGY
+        this.preferredAutoMergeStrategy === MTWPS_MERGE_STRATEGY ||
+        this.preferredAutoMergeStrategy === MTWCP_MERGE_STRATEGY
       ) {
         return {
           helpLink: MERGE_TRAINS_HELP,
@@ -86,7 +91,8 @@ export default {
 
       if (
         this.preferredAutoMergeStrategy === MT_MERGE_STRATEGY ||
-        this.preferredAutoMergeStrategy === MTWPS_MERGE_STRATEGY
+        this.preferredAutoMergeStrategy === MTWPS_MERGE_STRATEGY ||
+        this.preferredAutoMergeStrategy === MTWCP_MERGE_STRATEGY
       ) {
         return !this.mr.ffOnlyEnabled || this.mr.ffMergePossible;
       }
@@ -94,10 +100,14 @@ export default {
       return true;
     },
     shouldDisplayMergeImmediatelyDropdownOptions() {
-      return [MT_MERGE_STRATEGY, MTWPS_MERGE_STRATEGY].includes(this.preferredAutoMergeStrategy);
+      return [MT_MERGE_STRATEGY, MTWPS_MERGE_STRATEGY, MTWCP_MERGE_STRATEGY].includes(
+        this.preferredAutoMergeStrategy,
+      );
     },
     isMergeImmediatelyDangerous() {
-      return [MT_MERGE_STRATEGY, MTWPS_MERGE_STRATEGY].includes(this.preferredAutoMergeStrategy);
+      return [MT_MERGE_STRATEGY, MTWPS_MERGE_STRATEGY, MTWCP_MERGE_STRATEGY].includes(
+        this.preferredAutoMergeStrategy,
+      );
     },
     showFailedPipelineModalMergeTrain() {
       const pipelineFailed = this.status === PIPELINE_FAILED_STATE || this.isPipelineFailed;

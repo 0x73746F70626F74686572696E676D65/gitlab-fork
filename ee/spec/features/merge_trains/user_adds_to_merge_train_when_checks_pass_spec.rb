@@ -2,9 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe 'User adds to merge train when pipeline succeeds', :js, feature_category: :merge_trains do
+RSpec.describe 'User adds to merge train when all merge checks pass', :js, feature_category: :merge_trains do
   let(:project) { create(:project, :repository) }
-  let(:user) { create(:user) }
+  let(:user) { create(:user, :with_namespace) }
 
   let!(:merge_request) do
     create(:merge_request, :with_merge_request_pipeline,
@@ -15,7 +15,6 @@ RSpec.describe 'User adds to merge train when pipeline succeeds', :js, feature_c
   let(:pipeline) { merge_request.all_pipelines.first }
 
   before do
-    stub_feature_flags(merge_when_checks_pass_merge_train: false)
     stub_licensed_features(merge_pipelines: true, merge_trains: true)
     project.add_maintainer(user)
     project.update!(merge_pipelines_enabled: true, merge_trains_enabled: true)
@@ -25,7 +24,7 @@ RSpec.describe 'User adds to merge train when pipeline succeeds', :js, feature_c
     sign_in(user)
   end
 
-  it 'shows Start merge train when pipeline succeeds button and helper icon' do
+  it 'shows Start merge train when all merge checks pass button and helper icon' do
     visit project_merge_request_path(project, merge_request)
 
     expect(page).to have_button('Set to auto-merge')
@@ -43,7 +42,7 @@ RSpec.describe 'User adds to merge train when pipeline succeeds', :js, feature_c
       stub_licensed_features(merge_trains: false)
     end
 
-    it 'does not show Start merge train when pipeline succeeds button' do
+    it 'does not show Start merge train when all merge checks pass button' do
       visit project_merge_request_path(project, merge_request)
 
       expect(page).to have_button('Set to auto-merge')
@@ -51,7 +50,7 @@ RSpec.describe 'User adds to merge train when pipeline succeeds', :js, feature_c
     end
   end
 
-  context "when user clicks 'Start merge train when pipeline succeeds' button" do
+  context "when user clicks 'Start merge train when all merge checks pass' button" do
     before do
       visit project_merge_request_path(project, merge_request)
       click_button 'Set to auto-merge'
@@ -61,7 +60,7 @@ RSpec.describe 'User adds to merge train when pipeline succeeds', :js, feature_c
 
     it 'informs merge request that auto merge is enabled' do
       page.within('.mr-state-widget') do
-        expect(page).to have_content("Set by #{user.name} to start a merge train when the pipeline succeeds")
+        expect(page).to have_content("Set by #{user.name} to start a merge train when all merge checks pass")
         expect(page).to have_content('Source branch will not be deleted.')
         expect(page).to have_button('Cancel auto-merge')
       end
@@ -76,9 +75,9 @@ RSpec.describe 'User adds to merge train when pipeline succeeds', :js, feature_c
 
       it 'cancels automatic merge' do
         page.within('.mr-state-widget') do
-          expect(page).not_to have_content("Set by #{user.name} to start a merge train when the pipeline succeeds")
+          expect(page).not_to have_content("Set by #{user.name} to start a merge train when all merge checks pass")
           expect(page).to have_button('Set to auto-merge')
-          expect(page).to have_content('Add to merge train when pipeline succeeds')
+          expect(page).to have_content('Add to merge train when all merge checks pass')
         end
       end
     end
@@ -91,11 +90,11 @@ RSpec.describe 'User adds to merge train when pipeline succeeds', :js, feature_c
         target_project: project, target_branch: 'master')
     end
 
-    it 'shows Add to merge train when pipeline succeeds button' do
+    it 'shows Add to merge train when all merge checks pass button' do
       visit project_merge_request_path(project, merge_request)
 
       expect(page).to have_button('Set to auto-merge')
-      expect(page).to have_content('Add to merge train when pipeline succeeds')
+      expect(page).to have_content('Add to merge train when all merge checks pass')
     end
   end
 end

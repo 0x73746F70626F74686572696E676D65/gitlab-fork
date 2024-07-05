@@ -1,7 +1,11 @@
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { s__ } from '~/locale';
 import CEMergeRequestStore from '~/vue_merge_request_widget/stores/mr_widget_store';
-import { DETAILED_MERGE_STATUS, MWCP_MERGE_STRATEGY } from '~/vue_merge_request_widget/constants';
+import {
+  DETAILED_MERGE_STATUS,
+  MWCP_MERGE_STRATEGY,
+  MTWCP_MERGE_STRATEGY,
+} from '~/vue_merge_request_widget/constants';
 
 export default class MergeRequestStore extends CEMergeRequestStore {
   constructor(data) {
@@ -124,7 +128,7 @@ export default class MergeRequestStore extends CEMergeRequestStore {
     return (
       this.hasApprovalsAvailable &&
       this.isApprovalNeeded &&
-      this.preferredAutoMergeStrategy !== MWCP_MERGE_STRATEGY
+      ![MWCP_MERGE_STRATEGY, MTWCP_MERGE_STRATEGY].includes(this.preferredAutoMergeStrategy)
     );
   }
 

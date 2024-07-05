@@ -8,6 +8,7 @@ RSpec.describe AutoMergeService, feature_category: :code_review_workflow do
 
     it 'returns all strategies in preference order' do
       is_expected.to contain_exactly(AutoMergeService::STRATEGY_MERGE_TRAIN,
+        AutoMergeService::STRATEGY_ADD_TO_MERGE_TRAIN_WHEN_CHECKS_PASS,
         AutoMergeService::STRATEGY_ADD_TO_MERGE_TRAIN_WHEN_PIPELINE_SUCCEEDS,
         AutoMergeService::STRATEGY_MERGE_WHEN_CHECKS_PASS,
         AutoMergeService::STRATEGY_MERGE_WHEN_PIPELINE_SUCCEEDS)

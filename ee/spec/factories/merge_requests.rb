@@ -62,6 +62,12 @@ FactoryBot.modify do
       merge_user { author }
     end
 
+    trait :add_to_merge_train_when_checks_pass do
+      auto_merge_enabled { true }
+      auto_merge_strategy { AutoMergeService::STRATEGY_ADD_TO_MERGE_TRAIN_WHEN_CHECKS_PASS }
+      merge_user { author }
+    end
+
     trait :with_productivity_metrics do
       transient do
         metrics_data { {} }
