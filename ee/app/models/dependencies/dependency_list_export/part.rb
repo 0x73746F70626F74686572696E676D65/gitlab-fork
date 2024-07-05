@@ -12,12 +12,24 @@ module Dependencies # rubocop:disable Gitlab/BoundedContexts -- This is an exist
       belongs_to :dependency_list_export, class_name: 'Dependencies::DependencyListExport'
       belongs_to :organization, class_name: 'Organizations::Organization'
 
+      belongs_to :first_record, class_name: 'Sbom::Occurrence', foreign_key: :start_id # rubocop:disable Rails/InverseOf -- The inverse relation is not necessary
+      belongs_to :last_record, class_name: 'Sbom::Occurrence', foreign_key: :end_id # rubocop:disable Rails/InverseOf -- The inverse relation is not necessary
+
       validates :start_id, presence: true
       validates :end_id, presence: true
 
       def retrieve_upload(_identifier, paths)
         Upload.find_by(model: self, path: paths)
       end
+
+      def sbom_occurrences
+        exportable.sbom_occurrences(use_traversal_ids: true)
+                  .in_parent_group_after_and_including(first_record)
+                  .in_parent_group_before_and_including(last_record)
+                  .unarchived
+      end
+
+      delegate :exportable, to: :dependency_list_export, private: true
     end
   end
 end

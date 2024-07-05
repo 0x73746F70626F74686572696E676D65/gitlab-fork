@@ -23,6 +23,32 @@ RSpec.describe Dependencies::ExportWorker, type: :worker, feature_category: :dep
 
       expect(Dependencies::ExportService).to have_received(:execute).with(dependency_list_export)
     end
+
+    context 'when the exportable is a group' do
+      let(:dependency_list_export) { create(:dependency_list_export, exportable: group, project: nil) }
+
+      before do
+        allow(Dependencies::Export::SegmentCreatorService).to receive(:execute)
+      end
+
+      it 'delegates the execution to `Dependencies::Export::SegmentCreatorService`' do
+        export
+
+        expect(Dependencies::Export::SegmentCreatorService).to have_received(:execute).with(dependency_list_export)
+      end
+
+      context 'when the `use_segmented_dependency_list_export` FF is disabled' do
+        before do
+          stub_feature_flags(use_segmented_dependency_list_export: false)
+        end
+
+        it 'delegates the execution to `Dependencies::ExportService`' do
+          export
+
+          expect(Dependencies::ExportService).to have_received(:execute).with(dependency_list_export)
+        end
+      end
+    end
   end
 
   describe '.sidekiq_retries_exhausted' do

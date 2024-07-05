@@ -22,7 +22,18 @@ module Dependencies
     def perform(dependency_list_export_id)
       dependency_list_export = Dependencies::DependencyListExport.find(dependency_list_export_id)
 
+      if use_segmented_export?(dependency_list_export)
+        return Dependencies::Export::SegmentCreatorService.execute(dependency_list_export)
+      end
+
       Dependencies::ExportService.execute(dependency_list_export)
+    end
+
+    private
+
+    def use_segmented_export?(export)
+      export.exportable.is_a?(Group) &&
+        Feature.enabled?(:use_segmented_dependency_list_export, export.exportable)
     end
   end
 end

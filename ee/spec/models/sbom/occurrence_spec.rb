@@ -558,6 +558,62 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
     end
   end
 
+  describe 'group related scopes' do
+    let_it_be(:parent_group) { create(:group) }
+    let_it_be(:child_group_1) { create(:group, parent: parent_group) }
+    let_it_be(:child_group_2) { create(:group, parent: parent_group) }
+    let_it_be(:child_group_1_1) { create(:group, parent: child_group_1) }
+
+    let_it_be(:project_on_parent) { create(:project, group: parent_group) }
+    let_it_be(:project_on_child_1) { create(:project, group: child_group_1) }
+    let_it_be(:project_on_child_2) { create(:project, :archived, group: child_group_2) }
+    let_it_be(:project_on_child_1_1) { create(:project, group: child_group_1_1) }
+
+    let_it_be(:occurrence_on_project_on_parent) { create(:sbom_occurrence, project: project_on_parent) }
+    let_it_be(:occurrence_on_project_on_child_1) { create(:sbom_occurrence, project: project_on_child_1) }
+    let_it_be(:another_occurrence_on_project_on_child_1) { create(:sbom_occurrence, project: project_on_child_1) }
+    let_it_be(:occurrence_on_project_on_child_2) { create(:sbom_occurrence, project: project_on_child_2) }
+    let_it_be(:occurrence_on_project_on_child_1_1) { create(:sbom_occurrence, project: project_on_child_1_1) }
+
+    describe '.in_parent_group_after_and_including' do
+      subject { described_class.in_parent_group_after_and_including(another_occurrence_on_project_on_child_1) }
+
+      it do
+        is_expected.to match_array([
+          another_occurrence_on_project_on_child_1,
+          occurrence_on_project_on_child_2,
+          occurrence_on_project_on_child_1_1
+        ])
+      end
+    end
+
+    describe '.in_parent_group_before_and_including' do
+      subject { described_class.in_parent_group_before_and_including(another_occurrence_on_project_on_child_1) }
+
+      it do
+        is_expected.to match_array([
+          occurrence_on_project_on_parent,
+          occurrence_on_project_on_child_1,
+          another_occurrence_on_project_on_child_1
+        ])
+      end
+    end
+
+    describe '.order_traversal_ids_asc' do
+      subject { described_class.order_traversal_ids_asc }
+
+      it do
+        is_expected.to eq([
+          occurrence_on_project_on_parent,
+          occurrence_on_project_on_child_1,
+          another_occurrence_on_project_on_child_1,
+          occurrence_on_project_on_child_1_1,
+          occurrence_on_project_on_child_2
+        ])
+      end
+    end
+  end
+
   describe '#name' do
     let(:component) { build(:sbom_component, name: 'rails') }
     let(:occurrence) { build(:sbom_occurrence, component: component) }

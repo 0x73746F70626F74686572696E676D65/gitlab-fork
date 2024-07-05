@@ -959,7 +959,8 @@ module EE
       feature_available?(:code_owner_approval_required)
     end
 
-    def sbom_occurrences(with_totals: true)
+    def sbom_occurrences(with_totals: true, use_traversal_ids: false)
+      return Sbom::Occurrence.for_namespace_and_descendants(self) if use_traversal_ids
       return Sbom::Occurrence.where(project_id: all_projects_except_soft_deleted.select(:id)) unless with_totals
 
       sql = <<-SQL
