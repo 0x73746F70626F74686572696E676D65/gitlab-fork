@@ -58,6 +58,8 @@ export const updateableCustomRoleMember = {
   ...upgradedMember,
   isDirectMember: true,
   canUpdate: true,
+  memberPath: 'user/path/238',
+  namespace: 'user',
 };
 
 // eslint-disable-next-line import/export

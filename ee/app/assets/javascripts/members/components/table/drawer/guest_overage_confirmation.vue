@@ -73,7 +73,7 @@ export default {
   methods: {
     // Check to see if changing the role would increase the seat usage and cause an overage, and if so, show a warning
     // modal. Otherwise, act as if the overage warning was accepted and emit the confirm event.
-    async confirmOverage() {
+    async checkOverage() {
       try {
         if (this.shouldSkipConfirmationCheck) {
           this.emitConfirm();
