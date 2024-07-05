@@ -16561,6 +16561,8 @@ CREATE TABLE remote_development_agent_configs (
     workspaces_quota bigint DEFAULT '-1'::integer NOT NULL,
     workspaces_per_user_quota bigint DEFAULT '-1'::integer NOT NULL,
     project_id bigint,
+    default_max_hours_before_termination smallint DEFAULT 24 NOT NULL,
+    max_hours_before_termination_limit smallint DEFAULT 120 NOT NULL,
     CONSTRAINT check_72947a4495 CHECK ((char_length(gitlab_workspaces_proxy_namespace) <= 63)),
     CONSTRAINT check_9f5cd54d1c CHECK ((char_length(dns_zone) <= 256))
 );
