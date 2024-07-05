@@ -154,7 +154,8 @@ RSpec.describe 'Activate a subscription', feature_category: :subscription_manage
       'usersInLicenseCount' => nil,
       'billableUsersCount' => 1,
       'maximumUserCount' => 1,
-      'usersOverLicenseCount' => 0
+      'usersOverLicenseCount' => 0,
+      'trial' => nil
     }
   end
 end

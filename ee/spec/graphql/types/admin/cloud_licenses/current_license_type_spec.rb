@@ -2,8 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSchema.types['CurrentLicense'], :enable_admin_mode do
+RSpec.describe GitlabSchema.types['CurrentLicense'], :enable_admin_mode, feature_category: :plan_provisioning do
   include GraphqlHelpers
+  using RSpec::Parameterized::TableSyntax
 
   let_it_be(:admin) { create(:admin) }
   let_it_be(:licensee) do
@@ -22,7 +23,7 @@ RSpec.describe GitlabSchema.types['CurrentLicense'], :enable_admin_mode do
   end
 
   let(:fields) do
-    %w[last_sync billable_users_count maximum_user_count users_over_license_count]
+    %w[last_sync billable_users_count maximum_user_count users_over_license_count trial]
   end
 
   it { expect(described_class.graphql_name).to eq('CurrentLicense') }
@@ -43,16 +44,6 @@ RSpec.describe GitlabSchema.types['CurrentLicense'], :enable_admin_mode do
 
     def query_field(field_name)
       GitlabSchema.execute(query(field_name), context: { current_user: admin }).as_json
-    end
-
-    context 'when license is for a trial' do
-      it 'returns 0' do
-        create_current_license(licensee: licensee, restrictions: { trial: true })
-
-        result_as_json = query_field('usersOverLicenseCount')
-
-        expect(result_as_json['data']['currentLicense']['usersOverLicenseCount']).to eq(0)
-      end
     end
 
     it 'returns the number of users over the paid users in the license' do
@@ -92,6 +83,20 @@ RSpec.describe GitlabSchema.types['CurrentLicense'], :enable_admin_mode do
       end
 
       it { is_expected.to eq(20) }
+    end
+
+    describe 'trial' do
+      let(:field_name) { :trial }
+
+      where trial: [true, false]
+
+      with_them do
+        before do
+          allow(license).to receive(:trial?).and_return(trial)
+        end
+
+        it { is_expected.to eq(trial) }
+      end
     end
   end
 end

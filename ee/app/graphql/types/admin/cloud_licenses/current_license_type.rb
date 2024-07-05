@@ -27,13 +27,13 @@ module Types
 
         field :users_over_license_count, GraphQL::Types::Int,
           null: true,
-          description: 'Number of users over the paid users in the license.'
+          description: 'Number of users over the paid users in the license.',
+          method: :overage_with_historical_max
 
-        def users_over_license_count
-          return 0 if object.trial?
-
-          [object.overage_with_historical_max, 0].max
-        end
+        field :trial, GraphQL::Types::Boolean,
+          null: true,
+          description: 'Indicates if the license is a trial.',
+          method: :trial?
       end
     end
   end
