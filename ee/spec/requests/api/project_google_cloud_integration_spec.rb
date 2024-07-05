@@ -66,40 +66,6 @@ RSpec.describe API::ProjectGoogleCloudIntegration, feature_category: :integratio
     end
   end
 
-  describe 'GET /projects/:id/google_cloud/setup/wlif.sh' do
-    let(:path) { "/projects/#{project.id}/google_cloud/setup/wlif.sh" }
-    let(:params) { { google_cloud_project_id: google_cloud_project_id } }
-
-    it 'returns 404' do
-      get(api(path, owner), params: params)
-
-      expect(response).to have_gitlab_http_status(:not_found)
-    end
-
-    context 'when SaaS feature is enabled' do
-      before do
-        stub_saas_features(google_cloud_support: true)
-      end
-
-      it_behaves_like 'an endpoint generating a bash script for Google Cloud'
-
-      it 'includes attribute mapping' do
-        get(api(path, owner), params: params)
-        expect(response.body).to include('--attribute-mapping="')
-        expect(response.body).to include('google.subject=assertion.sub')
-        expect(response.body).to include('attribute.user_access_level=assertion.user_access_level')
-        expect(response.body).to include('attribute.reporter_access=assertion.reporter_access')
-      end
-
-      it 'uses the correct gcloud project flag' do
-        get(api(path, owner), params: params)
-
-        expect(response.body).to include(' --project=')
-        expect(response.body).not_to include(' -project=')
-      end
-    end
-  end
-
   describe 'GET /projects/:id/google_cloud/setup/integrations.sh' do
     let(:path) { "/projects/#{project.id}/google_cloud/setup/integrations.sh" }
     let(:params) do
