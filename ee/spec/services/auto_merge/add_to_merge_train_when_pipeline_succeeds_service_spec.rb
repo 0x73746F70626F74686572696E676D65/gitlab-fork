@@ -137,53 +137,63 @@ RSpec.describe AutoMerge::AddToMergeTrainWhenPipelineSucceedsService, feature_ca
   describe '#available_for?' do
     subject { service.available_for?(merge_request) }
 
-    it { is_expected.to eq(true) }
-
-    it 'memoizes the result' do
-      expect(merge_request).to receive(:can_be_merged_by?).once.and_call_original
-
-      2.times { is_expected.to be_truthy }
-    end
-
-    context 'when merge trains option is disabled' do
+    context 'when merge_when_checks_pass_merge_train is false' do
       before do
-        expect(merge_request.project).to receive(:merge_trains_enabled?) { false }
+        stub_feature_flags(merge_when_checks_pass_merge_train: false)
       end
 
+      it { is_expected.to eq(true) }
+
+      it 'memoizes the result' do
+        expect(merge_request).to receive(:can_be_merged_by?).once.and_call_original
+
+        2.times { is_expected.to be_truthy }
+      end
+
+      context 'when merge trains option is disabled' do
+        before do
+          expect(merge_request.project).to receive(:merge_trains_enabled?) { false }
+        end
+
+        it { is_expected.to eq(false) }
+      end
+
+      context 'when the latest pipeline in the merge request is completed' do
+        before do
+          pipeline.succeed!
+        end
+
+        it { is_expected.to eq(false) }
+      end
+
+      context 'when merge request is not mergeable' do
+        before do
+          merge_request.update!(title: merge_request.draft_title)
+        end
+
+        it { is_expected.to eq(false) }
+      end
+
+      context 'when there is an open MR dependency' do
+        before do
+          stub_licensed_features(blocking_merge_requests: true)
+          create(:merge_request_block, blocked_merge_request: merge_request)
+        end
+
+        it { is_expected.to be_falsy }
+      end
+
+      context 'when the user does not have permission to merge' do
+        before do
+          allow(merge_request).to receive(:can_be_merged_by?) { false }
+        end
+
+        it { is_expected.to be_falsy }
+      end
+    end
+
+    context 'when merge_when_checks_pass_merge_train is true' do
       it { is_expected.to eq(false) }
-    end
-
-    context 'when the latest pipeline in the merge request is completed' do
-      before do
-        pipeline.succeed!
-      end
-
-      it { is_expected.to eq(false) }
-    end
-
-    context 'when merge request is not mergeable' do
-      before do
-        merge_request.update!(title: merge_request.draft_title)
-      end
-
-      it { is_expected.to eq(false) }
-    end
-
-    context 'when there is an open MR dependency' do
-      before do
-        stub_licensed_features(blocking_merge_requests: true)
-        create(:merge_request_block, blocked_merge_request: merge_request)
-      end
-
-      it { is_expected.to be_falsy }
-    end
-
-    context 'when the user does not have permission to merge' do
-      before do
-        allow(merge_request).to receive(:can_be_merged_by?) { false }
-      end
-
-      it { is_expected.to be_falsy }
     end
   end
 end

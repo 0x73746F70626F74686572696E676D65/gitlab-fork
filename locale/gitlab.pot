@@ -3293,6 +3293,9 @@ msgstr ""
 msgid "Add to merge train"
 msgstr ""
 
+msgid "Add to merge train when all merge checks pass"
+msgstr ""
+
 msgid "Add to merge train when pipeline succeeds"
 msgstr ""
 
@@ -63337,6 +63340,9 @@ msgstr ""
 msgid "mrWidget|Revoke approval"
 msgstr ""
 
+msgid "mrWidget|Set by %{merge_author} to be added to the merge train when all merge checks pass"
+msgstr ""
+
 msgid "mrWidget|Set by %{merge_author} to be added to the merge train when the pipeline succeeds"
 msgstr ""
 
@@ -63344,6 +63350,9 @@ msgid "mrWidget|Set by %{merge_author} to be merged automatically when all merge
 msgstr ""
 
 msgid "mrWidget|Set by %{merge_author} to be merged automatically when the pipeline succeeds"
+msgstr ""
+
+msgid "mrWidget|Set by %{merge_author} to start a merge train when all merge checks pass"
 msgstr ""
 
 msgid "mrWidget|Set by %{merge_author} to start a merge train when the pipeline succeeds"

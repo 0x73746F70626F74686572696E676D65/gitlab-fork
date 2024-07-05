@@ -46,7 +46,21 @@ RSpec.describe Mutations::MergeRequests::Accept do
       expect(result).to include(merge_request: be_auto_merge_enabled)
     end
 
+    it "can use the ADD_TO_MERGE_TRAIN_WHEN_CHECKS_PASS strategy" do
+      enum = ::Types::MergeStrategyEnum.values['ADD_TO_MERGE_TRAIN_WHEN_CHECKS_PASS']
+      merge_request = create(:merge_request, :with_head_pipeline, source_project: project)
+
+      args = mutation_arguments(merge_request).merge(
+        auto_merge_strategy: enum.value
+      )
+      result = mutation.resolve(**args)
+
+      expect(result).not_to include(merge_request: be_merged)
+      expect(result).to include(merge_request: be_auto_merge_enabled)
+    end
+
     it "can use the ADD_TO_MERGE_TRAIN_WHEN_PIPELINE_SUCCEEDS strategy" do
+      stub_feature_flags(merge_when_checks_pass_merge_train: false)
       enum = ::Types::MergeStrategyEnum.values['ADD_TO_MERGE_TRAIN_WHEN_PIPELINE_SUCCEEDS']
       merge_request = create(:merge_request, :with_head_pipeline, source_project: project)
 

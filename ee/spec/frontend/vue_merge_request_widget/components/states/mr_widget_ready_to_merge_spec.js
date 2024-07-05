@@ -11,6 +11,7 @@ import {
   MWCP_MERGE_STRATEGY,
   MT_MERGE_STRATEGY,
   MTWPS_MERGE_STRATEGY,
+  MTWCP_MERGE_STRATEGY,
 } from '~/vue_merge_request_widget/constants';
 
 describe('ReadyToMerge', () => {
@@ -107,6 +108,7 @@ describe('ReadyToMerge', () => {
     wrapper.findComponent(MergeImmediatelyConfirmationDialog);
   const findMergeTrainRestartTrainConfirmationDialog = () =>
     wrapper.findComponent(MergeTrainRestartTrainConfirmationDialog);
+  const findMergeHelperText = () => wrapper.find('[data-testid="auto-merge-helper-text"]');
 
   describe('Merge Immediately Dropdown', () => {
     it('should return false if auto merge is not available', () => {
@@ -370,5 +372,12 @@ describe('ReadyToMerge', () => {
 
       expect(findMergeButton().props('disabled')).toBe(false);
     });
+  });
+
+  it('should show merge help text for MTWCP merge strategy', () => {
+    createComponent({ availableAutoMergeStrategies: [MTWCP_MERGE_STRATEGY] });
+
+    expect(findMergeButton().text()).toBe('Set to auto-merge');
+    expect(findMergeHelperText().text()).toBe('Add to merge train when all merge checks pass');
   });
 });

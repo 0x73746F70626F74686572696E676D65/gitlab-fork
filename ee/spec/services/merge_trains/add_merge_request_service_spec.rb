@@ -106,6 +106,28 @@ RSpec.describe MergeTrains::AddMergeRequestService, feature_category: :continuou
 
           expect(merge_request.merge_train_car).not_to be_present
         end
+
+        context 'when merge_when_checks_pass_merge_train is off' do
+          before do
+            stub_feature_flags(merge_when_checks_pass_merge_train: false)
+          end
+
+          context 'when pipeline is not completed' do
+            let(:pipeline_status) { :running }
+
+            it 'returns success' do
+              is_expected.to be_success
+            end
+
+            it 'waits to add to merge train' do
+              subject
+
+              merge_request.reload
+
+              expect(merge_request.merge_train_car).not_to be_present
+            end
+          end
+        end
       end
     end
 

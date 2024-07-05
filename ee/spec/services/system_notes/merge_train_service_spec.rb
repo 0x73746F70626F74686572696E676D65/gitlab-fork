@@ -121,4 +121,56 @@ RSpec.describe SystemNotes::MergeTrainService, feature_category: :merge_trains d
 
     it_behaves_like 'creates a removed merge train TODO'
   end
+
+  describe '#add_when_checks_pass' do
+    subject { described_class.new(noteable: noteable, project: project, author: author).add_when_checks_pass(pipeline.sha) }
+
+    let(:pipeline) { build(:ci_pipeline) }
+
+    let(:noteable) do
+      create(:merge_request, source_project: project, target_project: project)
+    end
+
+    it_behaves_like 'a system note' do
+      let(:action) { 'merge' }
+    end
+
+    it "posts the 'add to merge train when checks pass' system note" do
+      expect(subject.note).to match(%r{enabled automatic add to merge train when checks pass})
+    end
+  end
+
+  describe '#cancel_add_when_checks_pass' do
+    subject { described_class.new(noteable: noteable, project: project, author: author).cancel_add_when_checks_pass }
+
+    let(:noteable) do
+      create(:merge_request, source_project: project, target_project: project)
+    end
+
+    it_behaves_like 'a system note' do
+      let(:action) { 'merge' }
+    end
+
+    it "posts the 'add to merge train when checks pass' system note" do
+      expect(subject.note).to eq 'cancelled automatic add to merge train'
+    end
+  end
+
+  describe '#abort_add_when_checks_pass' do
+    subject { described_class.new(noteable: noteable, project: project, author: author).abort_add_when_checks_pass('target branch was changed') }
+
+    let(:noteable) do
+      create(:merge_request, source_project: project, target_project: project)
+    end
+
+    it_behaves_like 'a system note' do
+      let(:action) { 'merge' }
+    end
+
+    it "posts the 'add to merge train when checks pass' system note" do
+      expect(subject.note).to eq 'aborted automatic add to merge train because target branch was changed'
+    end
+
+    it_behaves_like 'creates a removed merge train TODO'
+  end
 end
