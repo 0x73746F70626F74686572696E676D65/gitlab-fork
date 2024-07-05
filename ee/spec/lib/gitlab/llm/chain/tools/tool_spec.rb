@@ -75,6 +75,19 @@ RSpec.describe Gitlab::Llm::Chain::Tools::Tool, feature_category: :duo_chat do
         subject.execute
       end
     end
+
+    context 'when forbidden error is returned' do
+      before do
+        allow(subject).to receive(:authorize).and_return(true)
+      end
+
+      it 'returns forbidden answer' do
+        allow(subject).to receive(:perform).and_raise(::Gitlab::AiGateway::ForbiddenError)
+        answer = subject.execute
+
+        expect(answer.content).to include('this question is not supported in your Duo Pro subscription')
+      end
+    end
   end
 
   describe '#perform' do
@@ -124,15 +137,15 @@ RSpec.describe Gitlab::Llm::Chain::Tools::Tool, feature_category: :duo_chat do
   describe '.full_definition' do
     let(:definition) do
       <<~XML.chomp
-       <tool>
-       <tool_name>TEST_TOOL</tool_name>
-       <description>
-       #{expected_description}
-       </description>
-       <example>
-       EXAMPLE
-       </example>
-       </tool>
+        <tool>
+        <tool_name>TEST_TOOL</tool_name>
+        <description>
+        #{expected_description}
+        </description>
+        <example>
+        EXAMPLE
+        </example>
+        </tool>
       XML
     end
 

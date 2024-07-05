@@ -43,6 +43,8 @@ module Gitlab
             return not_found unless authorize
 
             perform(&block)
+          rescue ::Gitlab::AiGateway::ForbiddenError => e
+            access_forbidden(e)
           end
 
           def authorize
@@ -128,6 +130,16 @@ module Gitlab
 
           def prompt_options
             options
+          end
+
+          def access_forbidden(_error)
+            content = <<~MESSAGE
+              I'm sorry, this question is not supported in your Duo Pro subscription. You might consider upgrading to Duo Enterprise. Selected tool: #{self.class.name}
+
+              [View a list of questions and the related subscriptions](#{::Gitlab::Routing.url_helpers.help_page_url('ee/user/gitlab_duo_chat_examples')}).
+            MESSAGE
+
+            Answer.error_answer(context: context, content: content, error_code: "M3005")
           end
         end
       end

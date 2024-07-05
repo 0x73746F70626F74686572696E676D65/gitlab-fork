@@ -212,7 +212,7 @@ RSpec.describe Gitlab::Llm::AiGateway::Client, feature_category: :ai_abstraction
         let(:response_body) { expected_response.to_json }
         let(:failure) do
           instance_double(HTTParty::Response,
-            code: 400,
+            code: http_code,
             success?: false,
             parsed_response: response_body,
             headers: response_headers
@@ -222,13 +222,31 @@ RSpec.describe Gitlab::Llm::AiGateway::Client, feature_category: :ai_abstraction
         before do
           allow(Gitlab::HTTP).to receive(:post).and_return(failure)
           allow(logger).to receive(:error)
+          allow(failure).to receive(:forbidden?).and_return(forbidden_status)
         end
 
-        it 'raises error' do
-          expect { ai_client.stream(endpoint: endpoint, body: expected_body) }
-            .to raise_error(Gitlab::Llm::AiGateway::Client::ConnectionError)
+        context 'when there is problem with connection' do
+          let(:http_code) { 400 }
+          let(:forbidden_status) { false }
 
-          expect(logger).to have_received(:error).with(message: "Received error from AI gateway", response: "")
+          it 'raises error' do
+            expect { ai_client.stream(endpoint: endpoint, body: expected_body) }
+              .to raise_error(Gitlab::Llm::AiGateway::Client::ConnectionError)
+
+            expect(logger).to have_received(:error).with(message: "Received error from AI gateway", response: "")
+          end
+        end
+
+        context 'when instance do not have access to feature' do
+          let(:http_code) { 403 }
+          let(:forbidden_status) { true }
+
+          it 'raises error' do
+            expect { ai_client.stream(endpoint: endpoint, body: expected_body) }
+              .to raise_error(Gitlab::AiGateway::ForbiddenError)
+
+            expect(logger).to have_received(:error).with(message: "Received error from AI gateway", response: "")
+          end
         end
       end
     end
