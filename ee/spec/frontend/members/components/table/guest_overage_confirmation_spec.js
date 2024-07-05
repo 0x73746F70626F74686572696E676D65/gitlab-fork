@@ -1,7 +1,7 @@
 import { GlModal, GlLink } from '@gitlab/ui';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import GuestOverageConfirmation from 'ee/members/components/table/guest_overage_confirmation.vue';
+import GuestOverageConfirmation from 'ee/members/components/table/drawer/guest_overage_confirmation.vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import getBillableUserCountChanges from 'ee/invite_members/graphql/queries/billable_users_count.query.graphql';
@@ -50,7 +50,7 @@ describe('Guest overage confirmation', () => {
       stubs: { GlModal: stubComponent(GlModal) },
     });
 
-    wrapper.vm.confirmOverage();
+    wrapper.vm.checkOverage();
     return waitForPromises();
   };
 

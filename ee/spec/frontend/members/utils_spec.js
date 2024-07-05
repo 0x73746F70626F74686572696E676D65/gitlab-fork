@@ -12,7 +12,6 @@ import showGlobalToast from '~/vue_shared/plugins/global_toast';
 import { customRoles } from './mock_data';
 
 jest.mock('~/vue_shared/plugins/global_toast');
-jest.mock('lodash/uniqueId', () => (prefix) => `${prefix}0`);
 jest.mock('~/members/utils', () => ({
   ...jest.requireActual('~/members/utils'),
   roleDropdownItems: jest.fn().mockReturnValue({ flatten: [] }),

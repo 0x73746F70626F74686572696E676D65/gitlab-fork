@@ -8,26 +8,25 @@ import MembersTableCell from '~/members/components/table/members_table_cell.vue'
 import RoleSelector from '~/members/components/table/drawer/role_selector.vue';
 import { roleDropdownItems } from 'ee/members/utils';
 import waitForPromises from 'helpers/wait_for_promises';
-import GuestOverageConfirmation from 'ee/members/components/table/guest_overage_confirmation.vue';
+import GuestOverageConfirmation from 'ee/members/components/table/drawer/guest_overage_confirmation.vue';
 import { stubComponent } from 'helpers/stub_component';
-import { member as baseRoleMember, updateableCustomRoleMember } from '../../mock_data';
+import { member as baseRoleMember, updateableCustomRoleMember } from '../../../mock_data';
 
 describe('Role details drawer', () => {
   const { permissions } = updateableCustomRoleMember.customRoles[1];
   const dropdownItems = roleDropdownItems(updateableCustomRoleMember);
   const customRole1 = dropdownItems.flatten[7];
   const customRole2 = dropdownItems.flatten[8];
-  const confirmOverageMock = jest.fn();
+  const checkOverageStub = jest.fn();
   let axiosMock;
   let wrapper;
 
-  const createWrapper = ({ member = updateableCustomRoleMember, namespace = 'user' } = {}) => {
+  const createWrapper = ({ member = updateableCustomRoleMember } = {}) => {
     wrapper = shallowMountExtended(RoleDetailsDrawer, {
       propsData: { member, memberPath: 'user/path/:id' },
       provide: {
         currentUserId: 1,
         canManageMembers: true,
-        namespace,
         group: { path: 'group/path' },
       },
       stubs: {
@@ -35,7 +34,7 @@ describe('Role details drawer', () => {
         MembersTableCell,
         GlSprintf,
         GuestOverageConfirmation: stubComponent(GuestOverageConfirmation, {
-          methods: { confirmOverage: confirmOverageMock },
+          methods: { checkOverage: checkOverageStub },
         }),
       },
     });
@@ -152,7 +151,7 @@ describe('Role details drawer', () => {
     });
 
     it('checks overage', () => {
-      expect(confirmOverageMock).toHaveBeenCalledTimes(1);
+      expect(checkOverageStub).toHaveBeenCalledTimes(1);
     });
   });
 
