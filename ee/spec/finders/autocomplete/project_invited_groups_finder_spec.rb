@@ -86,16 +86,6 @@ RSpec.describe Autocomplete::ProjectInvitedGroupsFinder, feature_category: :grou
           )
         end
       end
-
-      context 'and the allow_members_to_see_invited_groups_in_access_dropdowns feature flag is disabled' do
-        before do
-          stub_feature_flags(allow_members_to_see_invited_groups_in_access_dropdowns: false)
-        end
-
-        it 'returns groups invited to the project that the user can see' do
-          expect(finder.execute).to contain_exactly(public_group, private_group_with_membership)
-        end
-      end
     end
 
     context 'and the user is a maintainer of the project' do
