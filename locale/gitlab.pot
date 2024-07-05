@@ -35963,6 +35963,9 @@ msgstr ""
 msgid "ObservabilityMetrics|is not like"
 msgstr ""
 
+msgid "Observability|%{events} events"
+msgstr ""
+
 msgid "Observability|Enable"
 msgstr ""
 
@@ -35975,7 +35978,13 @@ msgstr ""
 msgid "Observability|Error: Failed to load page. Try reloading the page."
 msgstr ""
 
+msgid "Observability|Failed to load observability usage data."
+msgstr ""
+
 msgid "Observability|Get started with GitLab Observability"
+msgstr ""
+
+msgid "Observability|Includes Logs, Traces and Metrics. %{learnMoreLink}"
 msgstr ""
 
 msgid "Observability|Last 1 hour"
@@ -36018,6 +36027,9 @@ msgid "Observability|To widen your search, change or remove filters above"
 msgstr ""
 
 msgid "Observability|Tracing, Metrics & Logs"
+msgstr ""
+
+msgid "Observability|Usage breakdown"
 msgstr ""
 
 msgid "Observability|View our %{docsLink} for further instructions on how to use these features."
