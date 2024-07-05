@@ -613,6 +613,23 @@ RETURN NULL;
 END
 $$;
 
+CREATE FUNCTION sync_issues_dates_with_work_item_dates_sources() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+UPDATE
+  issues
+SET
+  start_date = NEW.start_date,
+  due_date = NEW.due_date
+WHERE
+  issues.id = NEW.issue_id;
+
+RETURN NULL;
+
+END
+$$;
+
 CREATE FUNCTION table_sync_function_0992e728d3() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -31713,6 +31730,8 @@ CREATE TRIGGER trigger_namespaces_traversal_ids_on_update AFTER UPDATE ON namesp
 CREATE TRIGGER trigger_projects_parent_id_on_insert AFTER INSERT ON projects FOR EACH ROW EXECUTE FUNCTION insert_projects_sync_event();
 
 CREATE TRIGGER trigger_projects_parent_id_on_update AFTER UPDATE ON projects FOR EACH ROW WHEN ((old.namespace_id IS DISTINCT FROM new.namespace_id)) EXECUTE FUNCTION insert_projects_sync_event();
+
+CREATE TRIGGER trigger_sync_issues_dates_with_work_item_dates_sources AFTER INSERT OR UPDATE OF start_date, due_date ON work_item_dates_sources FOR EACH ROW EXECUTE FUNCTION sync_issues_dates_with_work_item_dates_sources();
 
 CREATE TRIGGER trigger_update_details_on_namespace_insert AFTER INSERT ON namespaces FOR EACH ROW WHEN (((new.type)::text <> 'Project'::text)) EXECUTE FUNCTION update_namespace_details_from_namespaces();
 
