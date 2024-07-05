@@ -378,7 +378,7 @@ You will notice this looks very different than the [standard Service class patte
 Since all of our domain logic is in the domain layer and models, the Service layer is cohesive - it only has a limited set of explicit and specific responsibilities:
 
 1. Accept the arguments passed from the API layer, and pass them to the correct `Main` class in the Domain Logic layer.
-2. Inject additional dependencies, such as [Remote Development Settings](remote-development-settings) and logger, into the Domain Logic layer.
+2. Inject additional dependencies, such as [Remote Development Settings](#remote-development-settings) and logger, into the Domain Logic layer.
 3. Convert the "`response_hash`" return value from the Domain Logic layer into a `ServiceResponse` object.
 4. [Enforce at runtime](#enforcement-of-patterns) the [Functional Patterns](#functional-patterns) used within the domain.
 
