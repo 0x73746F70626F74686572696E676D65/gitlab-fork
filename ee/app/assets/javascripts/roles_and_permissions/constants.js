@@ -23,3 +23,6 @@ export const TABLE_FIELDS = [
     tdClass: 'gl-text-right gl-p-3!',
   },
 ];
+
+export const VIEW_ADMIN_APPLICATION_SETTINGS_ROLES_AND_PERMISSIONS_PAGELOAD =
+  'view_admin_application_settings_roles_and_permissions_pageload';
