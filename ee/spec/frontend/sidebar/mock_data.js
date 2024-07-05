@@ -45,6 +45,7 @@ export const mockIteration2 = {
 export const mockEpic1 = {
   __typename: 'Epic',
   id: 'gid://gitlab/Epic/1',
+  iid: '1',
   title: 'Foobar Epic',
   webUrl: 'http://gdk.test:3000/groups/gitlab-org/-/epics/1',
   state: 'opened',
@@ -52,8 +53,22 @@ export const mockEpic1 = {
 
 export const mockWorkItemEpic1 = {
   id: 'gid://gitlab/WorkItem/727',
-  title: 'Work item Epic',
+  iid: '3',
+  title: 'Work item Epic 1',
   webUrl: 'http://127.0.0.1:3000/groups/gitlab-org/-/work_items/130',
+  state: 'OPEN',
+  workItemType: {
+    id: 'gid://gitlab/WorkItems::Type/3284',
+    name: 'Epic',
+    __typename: 'WorkItemType',
+  },
+};
+
+export const mockWorkItemEpic2 = {
+  id: 'gid://gitlab/WorkItem/728',
+  iid: '4',
+  title: 'Work item Epic 2',
+  webUrl: 'http://127.0.0.1:3000/groups/gitlab-org/-/work_items/131',
   state: 'OPEN',
   workItemType: {
     id: 'gid://gitlab/WorkItems::Type/3284',
@@ -65,6 +80,7 @@ export const mockWorkItemEpic1 = {
 export const mockEpic2 = {
   __typename: 'Epic',
   id: 'gid://gitlab/Epic/2',
+  iid: '2',
   title: 'Awesome Epic',
   webUrl: 'http://gdk.test:3000/groups/gitlab-org/-/epics/2',
   state: 'opened',
@@ -101,7 +117,7 @@ export const mockGroupWorkItemEpicsResponse = {
     workspace: {
       id: '1',
       attributes: {
-        nodes: [mockEpic1, mockEpic2, mockWorkItemEpic1],
+        nodes: [mockWorkItemEpic1, mockWorkItemEpic2],
       },
       __typename: 'EpicConnection',
     },

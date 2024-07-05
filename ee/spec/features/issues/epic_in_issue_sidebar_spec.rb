@@ -170,7 +170,7 @@ RSpec.describe 'Epic in issue sidebar', :js, feature_category: :team_planning do
         click_edit
 
         aggregate_failures do
-          expect(page).to have_selector('.gl-dropdown-contents .gl-dropdown-item', count: 8)
+          expect(page).to have_selector('.gl-dropdown-contents .gl-dropdown-item', count: 5)
           expect(page).to have_content 'No epic'
           expect(page).to have_content epic1.title
           expect(page).to have_content epic2.title
