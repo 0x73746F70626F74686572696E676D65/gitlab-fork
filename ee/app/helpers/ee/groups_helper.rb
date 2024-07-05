@@ -119,7 +119,7 @@ module EE
     end
 
     def duo_pro_trial_link(group)
-      if group.subscription_add_on_purchases.for_gitlab_duo_pro.none?
+      if GitlabSubscriptions::DuoPro.no_add_on_purchase_for_namespace?(group)
         return { duo_pro_trial_href: new_trials_duo_pro_path(namespace_id: group.id) }
       end
 
