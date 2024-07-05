@@ -6,12 +6,12 @@ const supportLink = `${PROMO_URL}/support/`;
 
 const NO_SEATS_AVAILABLE_ERROR = {
   title: s__('Billing|No seats available'),
-  message: s__('Billing|You have assigned all available GitLab Duo Pro add-on seats.'),
+  message: s__('Billing|You have assigned all available GitLab Duo add-on seats.'),
   links: {},
 };
 
 const GENERAL_ADD_ON_ASSIGNMENT_ERROR = {
-  title: s__('Billing|Error assigning GitLab Duo Pro add-on'),
+  title: s__('Billing|Error assigning GitLab Duo add-on'),
   message: s__(
     'Billing|Something went wrong when assigning the add-on to this member. If the problem persists, please %{supportLinkStart}contact support%{supportLinkEnd}.',
   ),
@@ -19,7 +19,7 @@ const GENERAL_ADD_ON_ASSIGNMENT_ERROR = {
 };
 
 const GENERAL_ADD_ON_UNASSIGNMENT_ERROR = {
-  title: s__('Billing|Error un-assigning GitLab Duo Pro add-on'),
+  title: s__('Billing|Error un-assigning GitLab Duo add-on'),
   message: s__(
     'Billing|Something went wrong when un-assigning the add-on to this member. If the problem persists, please %{supportLinkStart}contact support%{supportLinkEnd}.',
   ),
@@ -29,13 +29,13 @@ const GENERAL_ADD_ON_UNASSIGNMENT_ERROR = {
 const NOT_ENOUGH_SEATS_ERROR = {
   title: s__('Billing|Not enough seats'),
   message: s__(
-    'Billing|There are not enough seats to assign the GitLab Duo Pro add-on to all selected members.',
+    'Billing|There are not enough seats to assign the GitLab Duo add-on to all selected members.',
   ),
   links: {},
 };
 
 const GENERAL_ADD_ON_BULK_ASSIGNMENT_ERROR = {
-  title: s__('Billing|Error assigning GitLab Duo Pro add-on'),
+  title: s__('Billing|Error assigning GitLab Duo add-on'),
   message: s__(
     'Billing|Something went wrong when assigning the add-on for the selected members. If the problem persists, please %{supportLinkStart}contact support%{supportLinkEnd}.',
   ),
@@ -43,7 +43,7 @@ const GENERAL_ADD_ON_BULK_ASSIGNMENT_ERROR = {
 };
 
 const GENERAL_ADD_ON_BULK_UNASSIGNMENT_ERROR = {
-  title: s__('Billing|Error un-assigning GitLab Duo Pro add-on'),
+  title: s__('Billing|Error un-assigning GitLab Duo add-on'),
   message: s__(
     'Billing|Something went wrong when un-assigning the add-on to the selected members. If the problem persists, please %{supportLinkStart}contact support%{supportLinkEnd}.',
   ),
@@ -52,14 +52,14 @@ const GENERAL_ADD_ON_BULK_UNASSIGNMENT_ERROR = {
 
 export const ADDON_PURCHASE_FETCH_ERROR = {
   message: s__(
-    'Billing|An error occurred while loading details for the GitLab Duo Pro add-on. If the problem persists, please %{supportLinkStart}contact support%{supportLinkEnd}.',
+    'Billing|An error occurred while loading details for the GitLab Duo add-on. If the problem persists, please %{supportLinkStart}contact support%{supportLinkEnd}.',
   ),
   links: { supportLink },
 };
 
 export const ADD_ON_ELIGIBLE_USERS_FETCH_ERROR = {
   message: s__(
-    'Billing|An error occurred while loading users of the GitLab Duo Pro add-on. If the problem persists, please %{supportLinkStart}contact support%{supportLinkEnd}.',
+    'Billing|An error occurred while loading users of the GitLab Duo add-on. If the problem persists, please %{supportLinkStart}contact support%{supportLinkEnd}.',
   ),
   links: { supportLink },
 };

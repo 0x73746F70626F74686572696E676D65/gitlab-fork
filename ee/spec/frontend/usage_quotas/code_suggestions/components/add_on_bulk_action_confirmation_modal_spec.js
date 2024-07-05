@@ -38,7 +38,7 @@ describe('Add On Bulk Action Confirmation Modal', () => {
       createComponent();
 
       expect(findModalBodyText()).toBe(
-        'This action will assign a GitLab Duo Pro seat to 1 user. Are you sure you want to continue?',
+        'This action will assign a GitLab Duo seat to 1 user. Are you sure you want to continue?',
       );
       expect(findAssignSeatsButton().exists()).toBe(true);
       expect(findRemoveSeatsButton().exists()).toBe(false);
@@ -50,7 +50,7 @@ describe('Add On Bulk Action Confirmation Modal', () => {
       });
 
       expect(findModalBodyText()).toBe(
-        'This action will assign a GitLab Duo Pro seat to 2 users. Are you sure you want to continue?',
+        'This action will assign a GitLab Duo seat to 2 users. Are you sure you want to continue?',
       );
     });
 
@@ -70,7 +70,7 @@ describe('Add On Bulk Action Confirmation Modal', () => {
       });
 
       expect(findModalBodyText()).toBe(
-        'This action will remove GitLab Duo Pro seat from 1 user. Are you sure you want to continue?',
+        'This action will remove GitLab Duo seat from 1 user. Are you sure you want to continue?',
       );
       expect(findRemoveSeatsButton().exists()).toBe(true);
       expect(findAssignSeatsButton().exists()).toBe(false);
@@ -83,7 +83,7 @@ describe('Add On Bulk Action Confirmation Modal', () => {
       });
 
       expect(findModalBodyText()).toBe(
-        'This action will remove GitLab Duo Pro seats from 2 users. Are you sure you want to continue?',
+        'This action will remove GitLab Duo seats from 2 users. Are you sure you want to continue?',
       );
     });
 

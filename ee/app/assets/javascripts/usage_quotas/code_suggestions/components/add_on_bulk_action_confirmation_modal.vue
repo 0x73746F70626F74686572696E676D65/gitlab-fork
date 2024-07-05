@@ -42,14 +42,14 @@ export default {
 
       if (this.isBulkActionToAssignSeats) {
         actionText = n__(
-          'Billing|This action will assign a GitLab Duo Pro seat to 1 user',
-          'Billing|This action will assign a GitLab Duo Pro seat to %d users',
+          'Billing|This action will assign a GitLab Duo seat to 1 user',
+          'Billing|This action will assign a GitLab Duo seat to %d users',
           this.userCount,
         );
       } else {
         actionText = n__(
-          'Billing|This action will remove GitLab Duo Pro seat from 1 user',
-          'Billing|This action will remove GitLab Duo Pro seats from %d users',
+          'Billing|This action will remove GitLab Duo seat from 1 user',
+          'Billing|This action will remove GitLab Duo seats from %d users',
           this.userCount,
         );
       }
