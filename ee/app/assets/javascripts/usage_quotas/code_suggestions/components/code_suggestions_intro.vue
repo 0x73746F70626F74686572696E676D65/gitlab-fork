@@ -17,9 +17,9 @@ export default {
     purchaseSeats: __('Purchase seats'),
     trial: __('Start a trial'),
     description: s__(
-      `CodeSuggestions|Enhance your coding experience with intelligent recommendations. %{linkStart}GitLab Duo Pro%{linkEnd} offers features that use generative AI to suggest code.`,
+      `CodeSuggestions|Enhance your coding experience with intelligent recommendations. %{linkStart}GitLab Duo%{linkEnd} offers features that use generative AI to suggest code.`,
     ),
-    title: s__('CodeSuggestions|Introducing GitLab Duo Pro'),
+    title: s__('CodeSuggestions|Introducing GitLab Duo'),
   },
   directives: {
     SafeHtml,

@@ -8574,13 +8574,13 @@ msgstr ""
 msgid "Billing|An error occurred while loading billable members list."
 msgstr ""
 
-msgid "Billing|An error occurred while loading details for the GitLab Duo Pro add-on. If the problem persists, please %{supportLinkStart}contact support%{supportLinkEnd}."
+msgid "Billing|An error occurred while loading details for the GitLab Duo add-on. If the problem persists, please %{supportLinkStart}contact support%{supportLinkEnd}."
 msgstr ""
 
 msgid "Billing|An error occurred while loading pending members list"
 msgstr ""
 
-msgid "Billing|An error occurred while loading users of the GitLab Duo Pro add-on. If the problem persists, please %{supportLinkStart}contact support%{supportLinkEnd}."
+msgid "Billing|An error occurred while loading users of the GitLab Duo add-on. If the problem persists, please %{supportLinkStart}contact support%{supportLinkEnd}."
 msgstr ""
 
 msgid "Billing|An error occurred while removing a billable member."
@@ -8613,10 +8613,10 @@ msgstr ""
 msgid "Billing|Enter at least three characters to search."
 msgstr ""
 
-msgid "Billing|Error assigning GitLab Duo Pro add-on"
+msgid "Billing|Error assigning GitLab Duo add-on"
 msgstr ""
 
-msgid "Billing|Error un-assigning GitLab Duo Pro add-on"
+msgid "Billing|Error un-assigning GitLab Duo add-on"
 msgstr ""
 
 msgid "Billing|Explore paid plans"
@@ -8675,16 +8675,16 @@ msgstr ""
 msgid "Billing|Something went wrong when un-assigning the add-on to this member. If the problem persists, please %{supportLinkStart}contact support%{supportLinkEnd}."
 msgstr ""
 
-msgid "Billing|There are not enough seats to assign the GitLab Duo Pro add-on to all selected members."
+msgid "Billing|There are not enough seats to assign the GitLab Duo add-on to all selected members."
 msgstr ""
 
-msgid "Billing|This action will assign a GitLab Duo Pro seat to 1 user"
-msgid_plural "Billing|This action will assign a GitLab Duo Pro seat to %d users"
+msgid "Billing|This action will assign a GitLab Duo seat to 1 user"
+msgid_plural "Billing|This action will assign a GitLab Duo seat to %d users"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "Billing|This action will remove GitLab Duo Pro seat from 1 user"
-msgid_plural "Billing|This action will remove GitLab Duo Pro seats from %d users"
+msgid "Billing|This action will remove GitLab Duo seat from 1 user"
+msgid_plural "Billing|This action will remove GitLab Duo seats from %d users"
 msgstr[0] ""
 msgstr[1] ""
 
@@ -8709,7 +8709,7 @@ msgstr ""
 msgid "Billing|You can upgrade to a paid tier to get access to more features."
 msgstr ""
 
-msgid "Billing|You have assigned all available GitLab Duo Pro add-on seats."
+msgid "Billing|You have assigned all available GitLab Duo add-on seats."
 msgstr ""
 
 msgid "Billing|Your group recently changed to use the Free plan. %{over_limit_message} You can free up space for new members by removing those who no longer need access or toggling them to over-limit. To get an unlimited number of members, you can %{link_start}upgrade%{link_end} to a paid tier."
@@ -12845,7 +12845,7 @@ msgstr ""
 msgid "CodeSuggestions|Boost productivity across the software development life cycle by using Code Suggestions and GitLab Duo Chat as part of the %{duoLinkStart}GitLab Duo Pro%{duoLinkEnd} add-on. You can now try GitLab Duo Pro for free for %{days} days, no credit card required."
 msgstr ""
 
-msgid "CodeSuggestions|Enhance your coding experience with intelligent recommendations. %{linkStart}GitLab Duo Pro%{linkEnd} offers features that use generative AI to suggest code."
+msgid "CodeSuggestions|Enhance your coding experience with intelligent recommendations. %{linkStart}GitLab Duo%{linkEnd} offers features that use generative AI to suggest code."
 msgstr ""
 
 msgid "CodeSuggestions|GitLab Duo"
@@ -12857,7 +12857,7 @@ msgstr ""
 msgid "CodeSuggestions|GitLab Duo Pro"
 msgstr ""
 
-msgid "CodeSuggestions|Introducing GitLab Duo Pro"
+msgid "CodeSuggestions|Introducing GitLab Duo"
 msgstr ""
 
 msgid "CodeSuggestions|Introducing the GitLab Duo Pro add-on"

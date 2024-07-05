@@ -54,7 +54,7 @@ RSpec.describe 'Groups > Usage Quotas > Code Suggestions tab', :js, :saas, featu
             find_by_testid('assign-seats-button').click
             expect(page).to have_content('Confirm bulk seat assignment')
             expect(page).to have_content(
-              'This action will assign a GitLab Duo Pro seat to 4 users. ' \
+              'This action will assign a GitLab Duo seat to 4 users. ' \
               'Are you sure you want to continue?'
             )
 
@@ -82,7 +82,7 @@ RSpec.describe 'Groups > Usage Quotas > Code Suggestions tab', :js, :saas, featu
             find_by_testid('assign-confirmation-button').click
             wait_for_requests
 
-            expect(page).to have_content('There are not enough seats to assign the GitLab Duo Pro add-on')
+            expect(page).to have_content('There are not enough seats to assign the GitLab Duo add-on')
             expect(add_on_purchase.reload.assigned_users).to eq([])
           end
         end
@@ -108,7 +108,7 @@ RSpec.describe 'Groups > Usage Quotas > Code Suggestions tab', :js, :saas, featu
           find_by_testid('unassign-seats-button').click
           expect(page).to have_content('Confirm bulk seat removal')
           expect(page).to have_content(
-            'This action will remove GitLab Duo Pro seats from 7 users. ' \
+            'This action will remove GitLab Duo seats from 7 users. ' \
             'Are you sure you want to continue?'
           )
 
