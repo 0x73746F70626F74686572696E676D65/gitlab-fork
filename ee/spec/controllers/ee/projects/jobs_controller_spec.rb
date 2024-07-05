@@ -6,6 +6,7 @@ RSpec.describe Projects::JobsController, feature_category: :continuous_integrati
   describe 'GET #show', :clean_gitlab_redis_shared_state do
     context 'when requesting JSON' do
       let_it_be(:user) { create(:user) }
+      let_it_be(:project) { create(:project) }
 
       let(:merge_request) { create(:merge_request, source_project: project) }
       let(:runner) { create(:ci_runner, :instance, description: 'Shared runner') }
@@ -19,6 +20,13 @@ RSpec.describe Projects::JobsController, feature_category: :continuous_integrati
         allow_next_instance_of(Ci::Build) do |instance|
           allow(instance).to receive(:merge_request).and_return(merge_request)
         end
+      end
+
+      it 'pushes the root_cause_analysis_duo feature flag' do
+        expect(controller).to receive(:push_frontend_feature_flag).with(:root_cause_analysis_duo, user)
+        expect(controller).to receive(:push_frontend_feature_flag).and_call_original
+
+        get_show(id: job.id, format: :json)
       end
 
       context 'with shared runner that has quota' do

@@ -288,6 +288,14 @@ client_subscription_id: 'someid' }
         end
       end
 
+      context 'when /rca is used' do
+        let(:command) { '/rca' }
+
+        it_behaves_like 'slash command execution' do
+          let(:expected_tool) { ::Gitlab::Llm::Chain::Tools::TroubleshootJob::Executor }
+        end
+      end
+
       context 'when /tests is used' do
         let(:command) { '/tests' }
 

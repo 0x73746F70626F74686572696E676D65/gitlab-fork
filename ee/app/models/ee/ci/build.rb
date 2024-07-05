@@ -28,7 +28,7 @@ module EE
       }.freeze
 
       prepended do
-        include Ai::Model
+        include ::Ai::Model
         include UsageStatistics
         include FromUnion
 

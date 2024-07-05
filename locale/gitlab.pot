@@ -54123,6 +54123,12 @@ msgstr ""
 msgid "This command is used for explaining vulnerabilities and can only be invoked from a vulnerability detail page."
 msgstr ""
 
+msgid "This command is used for troubleshooting jobs and can only be invoked from a failed job log page."
+msgstr ""
+
+msgid "This command is used for troubleshooting jobs and can only be invoked from a job log page."
+msgstr ""
+
 msgid "This comment changed after you started editing it. Review the %{startTag}updated comment%{endTag} to ensure information is not lost."
 msgstr ""
 
