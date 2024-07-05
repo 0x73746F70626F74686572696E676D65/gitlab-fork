@@ -12,6 +12,7 @@ import {
 import { mapState, mapActions, mapGetters } from 'vuex';
 import { s__, __ } from '~/locale';
 import AccessDropdown from '~/projects/settings/components/access_dropdown.vue';
+import GroupsAccessDropdown from '~/groups/settings/components/access_dropdown.vue';
 import ShowMore from '~/vue_shared/components/show_more.vue';
 import { ACCESS_LEVELS, DEPLOYER_RULE_KEY, APPROVER_RULE_KEY, INHERITED_GROUPS } from './constants';
 import EditProtectedEnvironmentRulesCard from './edit_protected_environment_rules_card.vue';
@@ -28,6 +29,7 @@ export default {
     GlIcon,
     GlToggle,
     AccessDropdown,
+    GroupsAccessDropdown,
     ProtectedEnvironments,
     EditProtectedEnvironmentRulesCard,
     AddRuleModal,
@@ -37,12 +39,12 @@ export default {
   directives: {
     GlTooltip,
   },
-  inject: { accessLevelsData: { default: [] } },
+  inject: { accessLevelsData: { default: [] }, entityType: { default: 'projects' } },
   data() {
     return { isAddingRule: false, addingEnvironment: null, addingRule: '' };
   },
   computed: {
-    ...mapState(['projectId', 'loading', 'protectedEnvironments', 'editingRules']),
+    ...mapState(['entityId', 'loading', 'protectedEnvironments', 'editingRules']),
     ...mapGetters(['getUsersForRule']),
     isAddingDeploymentRule() {
       return this.addingRule === DEPLOYER_RULE_KEY;
@@ -51,6 +53,9 @@ export default {
       return this.isAddingDeploymentRule
         ? this.$options.i18n.addDeploymentRuleModalTitle
         : this.$options.i18n.addApprovalRuleModalTitle;
+    },
+    isProjectType() {
+      return this.entityType === 'projects';
     },
   },
   mounted() {
@@ -128,6 +133,7 @@ export default {
           data-testid="create-deployer-dropdown"
         >
           <access-dropdown
+            v-if="isProjectType"
             id="update-deployer-dropdown"
             class="gl-w-3/10"
             :label="$options.i18n.accessDropdownLabel"
@@ -136,11 +142,20 @@ export default {
             :access-level="$options.ACCESS_LEVELS.DEPLOY"
             @hidden="setRule({ environment: addingEnvironment, newRules: $event })"
           />
+          <groups-access-dropdown
+            v-else
+            id="update-deployer-dropdown"
+            class="gl-w-3/10"
+            :label="$options.i18n.accessDropdownLabel"
+            :access-levels-data="accessLevelsData"
+            show-users
+            @hidden="setRule({ environment: addingEnvironment, newRules: $event })"
+          />
         </gl-form-group>
       </template>
       <template v-else #add-rule-form>
         <add-approvers
-          :project-id="projectId"
+          :project-id="entityId"
           @change="setRule({ environment: addingEnvironment, newRules: $event })"
         />
       </template>

@@ -10,7 +10,7 @@ import {
 import * as types from './mutation_types';
 
 const fetchUsersForRuleForProject = (
-  projectId,
+  entityId,
   {
     user_id: userId,
     group_id: groupId,
@@ -27,7 +27,7 @@ const fetchUsersForRuleForProject = (
     );
   }
 
-  return getProjectMembers(projectId, groupInheritanceType === INHERITED_GROUPS).then(({ data }) =>
+  return getProjectMembers(entityId, groupInheritanceType === INHERITED_GROUPS).then(({ data }) =>
     data.filter(({ access_level: memberAccessLevel }) => memberAccessLevel >= accessLevel),
   );
 };
@@ -39,7 +39,7 @@ export const fetchProtectedEnvironments = ({ state, commit, dispatch }) => {
     page: state.pageInfo?.page ?? null,
   };
 
-  return Api.protectedEnvironments(state.projectId, params)
+  return Api.protectedEnvironments(state.entityId, state.entityType, params)
     .then(({ data, headers }) => {
       commit(types.RECEIVE_PROTECTED_ENVIRONMENTS_SUCCESS, data);
       dispatch('fetchAllMembers');
@@ -78,7 +78,7 @@ export const fetchAllMembersForEnvironment = ({ dispatch }, environment) => {
 };
 
 export const fetchMembers = ({ state, commit }, { type, rule }) => {
-  return fetchUsersForRuleForProject(state.projectId, rule)
+  return fetchUsersForRuleForProject(state.entityId, rule)
     .then((users) => {
       commit(types.RECEIVE_MEMBER_SUCCESS, { type, rule, users });
     })
@@ -135,7 +135,7 @@ export const updateRule = ({ dispatch, state, commit }, { environment, ruleKey, 
 export const updateEnvironment = ({ state, commit, dispatch }, environment) => {
   commit(types.REQUEST_UPDATE_PROTECTED_ENVIRONMENT);
 
-  return Api.updateProtectedEnvironment(state.projectId, environment)
+  return Api.updateProtectedEnvironment(state.entityId, state.entityType, environment)
     .then(({ data }) => {
       commit(types.RECEIVE_UPDATE_PROTECTED_ENVIRONMENT_SUCCESS, data);
       dispatch('fetchAllMembersForEnvironment', data);
@@ -157,7 +157,7 @@ export const editRule = ({ commit }, rule) => commit(types.EDIT_RULE, rule);
 export const unprotectEnvironment = ({ state, commit, dispatch }, environment) => {
   commit(types.REQUEST_UPDATE_PROTECTED_ENVIRONMENT);
 
-  return Api.deleteProtectedEnvironment(state.projectId, environment)
+  return Api.deleteProtectedEnvironment(state.entityId, state.entityType, environment)
     .then(() => {
       commit(types.DELETE_PROTECTED_ENVIRONMENT_SUCCESS, environment);
 

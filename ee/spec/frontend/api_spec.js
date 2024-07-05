@@ -311,12 +311,23 @@ describe('Api', () => {
   });
 
   describe('protectedEnvironments', () => {
-    it('fetches all protected environments', () => {
+    it('fetches all protected environments for projects', () => {
       const response = [{ name: 'staging ' }];
       const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/projects/1/protected_environments/`;
       mock.onGet(expectedUrl).reply(HTTP_STATUS_OK, response);
 
-      return Api.protectedEnvironments(1).then(({ data, config }) => {
+      return Api.protectedEnvironments(1, 'projects').then(({ data, config }) => {
+        expect(data).toEqual(response);
+        expect(config.url).toEqual(expectedUrl);
+      });
+    });
+
+    it('fetches all protected environments for groups', () => {
+      const response = [{ name: 'staging ' }];
+      const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/groups/1/protected_environments/`;
+      mock.onGet(expectedUrl).reply(HTTP_STATUS_OK, response);
+
+      return Api.protectedEnvironments(1, 'groups').then(({ data, config }) => {
         expect(data).toEqual(response);
         expect(config.url).toEqual(expectedUrl);
       });
@@ -324,12 +335,23 @@ describe('Api', () => {
   });
 
   describe('updateProtectedEnvironment', () => {
-    it('puts changes to a protected environment', () => {
+    it('puts changes to a protected environment for projects', () => {
       const response = { name: 'staging' };
       const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/projects/1/protected_environments/staging`;
       mock.onPut(expectedUrl, response).reply(HTTP_STATUS_OK, response);
 
-      return Api.updateProtectedEnvironment(1, response).then(({ data, config }) => {
+      return Api.updateProtectedEnvironment(1, 'projects', response).then(({ data, config }) => {
+        expect(data).toEqual(response);
+        expect(config.url).toBe(expectedUrl);
+      });
+    });
+
+    it('puts changes to a protected environment for groups', () => {
+      const response = { name: 'staging' };
+      const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/groups/1/protected_environments/staging`;
+      mock.onPut(expectedUrl, response).reply(HTTP_STATUS_OK, response);
+
+      return Api.updateProtectedEnvironment(1, 'groups', response).then(({ data, config }) => {
         expect(data).toEqual(response);
         expect(config.url).toBe(expectedUrl);
       });
@@ -337,13 +359,25 @@ describe('Api', () => {
   });
 
   describe('deleteProtectedEnvironment', () => {
-    it('deletes a protected environment', () => {
+    it('deletes a protected environment for projects', () => {
       const environment = { name: 'staging' };
       const response = {};
       const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/projects/1/protected_environments/staging`;
       mock.onDelete(expectedUrl, environment).reply(HTTP_STATUS_OK, response);
 
-      return Api.deleteProtectedEnvironment(1, environment).then(({ data, config }) => {
+      return Api.deleteProtectedEnvironment(1, 'projects', environment).then(({ data, config }) => {
+        expect(data).toEqual(response);
+        expect(config.url).toBe(expectedUrl);
+      });
+    });
+
+    it('deletes a protected environment for groups', () => {
+      const environment = { name: 'staging' };
+      const response = {};
+      const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/groups/1/protected_environments/staging`;
+      mock.onDelete(expectedUrl, environment).reply(HTTP_STATUS_OK, response);
+
+      return Api.deleteProtectedEnvironment(1, 'groups', environment).then(({ data, config }) => {
         expect(data).toEqual(response);
         expect(config.url).toBe(expectedUrl);
       });

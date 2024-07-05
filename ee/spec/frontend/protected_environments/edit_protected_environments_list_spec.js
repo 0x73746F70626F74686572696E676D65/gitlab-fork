@@ -8,8 +8,8 @@ import { mountExtended, extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { TEST_HOST } from 'helpers/test_constants';
 import axios from '~/lib/utils/axios_utils';
-import { s__ } from '~/locale';
 import AccessDropdown from '~/projects/settings/components/access_dropdown.vue';
+import GroupsAccessDropdown from '~/groups/settings/components/access_dropdown.vue';
 import { createStore } from 'ee/protected_environments/store/edit';
 import AddRuleModal from 'ee/protected_environments/add_rule_modal.vue';
 import AddApprovers from 'ee/protected_environments/add_approvers.vue';
@@ -104,8 +104,8 @@ describe('ee/protected_environments/edit_protected_environments_list.vue', () =>
   let wrapper;
   let mock;
 
-  const createComponent = async () => {
-    store = createStore({ projectId: DEFAULT_PROJECT_ID });
+  const createComponent = async ({ entityType = 'projects' } = {}) => {
+    store = createStore({ entityId: DEFAULT_PROJECT_ID, entityType });
 
     wrapper = mountExtended(EditProtectedEnvironmentsList, {
       store,
@@ -113,372 +113,530 @@ describe('ee/protected_environments/edit_protected_environments_list.vue', () =>
         accessLevelsData: DEFAULT_ACCESS_LEVELS_DATA,
         apiLink: API_LINK,
         docsLink: DOCS_LINK,
+        entityType,
       },
     });
 
     await waitForPromises();
   };
 
-  const findDeployerDeleteButton = () =>
-    wrapper.findByTitle(s__('ProtectedEnvironments|Delete deployer rule'));
-  const findApproverDeleteButton = () =>
-    wrapper.findByTitle(s__('ProtectedEnvironments|Delete approver rule'));
-  const findApproverEditButton = (w = wrapper) =>
-    w.findByRole('button', { name: s__('ProtectedEnvironments|Edit') });
+  const findDeployerDeleteButton = () => wrapper.findByTitle('Delete deployer rule');
+  const findApproverDeleteButton = () => wrapper.findByTitle('Delete approver rule');
+  const findApproverEditButton = (w = wrapper) => w.findByRole('button', { name: 'Edit' });
   const findInheritanceToggle = (w = wrapper) => w.findComponent(GlToggle);
-  const findApproverSaveButton = () =>
-    wrapper.findByRole('button', { name: s__('ProtectedEnvironments|Save') });
+  const findApproverSaveButton = () => wrapper.findByRole('button', { name: 'Save' });
   const findApprovalsInput = () =>
-    wrapper.findByRole('textbox', { name: s__('ProtectedEnvironments|Required approval count') });
+    wrapper.findByRole('textbox', { name: 'Required approval count' });
   const findProtectedEnvironments = () => wrapper.findComponent(ProtectedEnvironments);
   const findItemToggleButton = () => wrapper.findByTestId('protected-environment-item-toggle');
+  const findAddRuleModal = () => wrapper.findComponent(AddRuleModal);
+  const findAddApprovers = () => wrapper.findComponent(AddApprovers);
 
-  beforeEach(() => {
-    mock = new MockAdapter(axios);
-    window.gon = { api_version: 'v4' };
-    mock
-      .onGet('/api/v4/projects/8/protected_environments/')
-      .reply(HTTP_STATUS_OK, DEFAULT_ENVIRONMENTS);
-    mock
-      .onGet('/api/v4/groups/1/members/all')
-      .reply(HTTP_STATUS_OK, [{ name: 'root', avatar_url: '/avatar.png' }]);
-    mock
-      .onGet('/api/v4/users/1')
-      .reply(HTTP_STATUS_OK, { name: 'root', avatar_url: '/avatar.png' });
-    mock.onGet('/api/v4/projects/8/members').reply(HTTP_STATUS_OK, [
-      {
-        name: 'root',
-        access_level: MAINTAINER_ACCESS_LEVEL.toString(),
-        avatar_url: '/avatar.png',
-      },
-    ]);
-  });
-
-  afterEach(() => {
-    mock.restore();
-    mock.resetHistory();
-  });
-
-  it('shows a header for the protected environment', async () => {
-    await createComponent();
-
-    expect(wrapper.findByRole('button', { name: 'staging' }).exists()).toBe(true);
-  });
-
-  it('shows member avatars in each row', async () => {
-    await createComponent();
-
-    const avatars = wrapper.findAllComponents(GlAvatar).wrappers;
-
-    expect(avatars).toHaveLength(6);
-    avatars.forEach((avatar) => expect(avatar.props('src')).toBe('/avatar.png'));
-  });
-
-  it('shows the description of the rule', async () => {
-    const [{ deploy_access_levels: deployAccessLevels, approval_rules: approvalRules }] =
-      DEFAULT_ENVIRONMENTS;
-
-    const ruleDescriptions = [
-      ...deployAccessLevels.map((d) => d.access_level_description),
-      ...approvalRules.map((a) => a.access_level_description),
-    ];
-
-    await createComponent();
-
-    const descriptions = wrapper.findAllByTestId('rule-description').wrappers;
-
-    descriptions.forEach((description, i) => {
-      expect(description.text()).toBe(ruleDescriptions[i]);
+  describe('on the project level', () => {
+    beforeEach(() => {
+      mock = new MockAdapter(axios);
+      window.gon = { api_version: 'v4' };
+      mock
+        .onGet('/api/v4/projects/8/protected_environments/')
+        .reply(HTTP_STATUS_OK, DEFAULT_ENVIRONMENTS);
+      mock
+        .onGet('/api/v4/groups/1/members/all')
+        .reply(HTTP_STATUS_OK, [{ name: 'root', avatar_url: '/avatar.png' }]);
+      mock
+        .onGet('/api/v4/users/1')
+        .reply(HTTP_STATUS_OK, { name: 'root', avatar_url: '/avatar.png' });
+      mock.onGet('/api/v4/projects/8/members').reply(HTTP_STATUS_OK, [
+        {
+          name: 'root',
+          access_level: MAINTAINER_ACCESS_LEVEL.toString(),
+          avatar_url: '/avatar.png',
+        },
+      ]);
     });
-  });
 
-  describe('add deployer rule', () => {
-    let environment;
-    let dropdown;
-    let modal;
+    afterEach(() => {
+      mock.restore();
+      mock.resetHistory();
+    });
 
-    beforeEach(async () => {
-      [environment] = DEFAULT_ENVIRONMENTS;
+    it('shows a header for the protected environment', async () => {
+      await createComponent();
+
+      expect(wrapper.findByRole('button', { name: 'staging' }).exists()).toBe(true);
+    });
+
+    it('shows member avatars in each row', async () => {
+      await createComponent();
+
+      const avatars = wrapper.findAllComponents(GlAvatar).wrappers;
+
+      expect(avatars).toHaveLength(6);
+      avatars.forEach((avatar) => expect(avatar.props('src')).toBe('/avatar.png'));
+    });
+
+    it('shows the description of the rule', async () => {
+      const [{ deploy_access_levels: deployAccessLevels, approval_rules: approvalRules }] =
+        DEFAULT_ENVIRONMENTS;
+
+      const ruleDescriptions = [
+        ...deployAccessLevels.map((d) => d.access_level_description),
+        ...approvalRules.map((a) => a.access_level_description),
+      ];
 
       await createComponent();
 
-      wrapper
-        .findComponent(EditProtectedEnvironmentRulesCard)
-        .vm.$emit('addRule', { environment, ruleKey: DEPLOYER_RULE_KEY });
+      const descriptions = wrapper.findAllByTestId('rule-description').wrappers;
 
-      await nextTick();
-
-      dropdown = wrapper.findComponent(AccessDropdown);
-      modal = wrapper.findComponent(AddRuleModal);
-    });
-
-    it('titles the modal appropriately', () => {
-      expect(modal.props('title')).toBe(s__('ProtectedEnvironments|Create deployment rule'));
-    });
-
-    it('puts the access level dropdown into the modal form', () => {
-      expect(dropdown.exists()).toBe(true);
-    });
-
-    it('sends new rules to be added', async () => {
-      mock.onPut().reply(HTTP_STATUS_OK);
-
-      const rule = [{ user_id: 5 }];
-      dropdown.vm.$emit('hidden', rule);
-
-      modal.vm.$emit('saveRule');
-
-      await waitForPromises();
-
-      expect(mock.history.put).toHaveLength(1);
-
-      const [{ data }] = mock.history.put;
-      expect(JSON.parse(data)).toMatchObject({ ...environment, deploy_access_levels: rule });
-    });
-  });
-
-  describe('deployer delete rule', () => {
-    it('sends the deleted rule with _destroy set', async () => {
-      const [environment] = DEFAULT_ENVIRONMENTS;
-
-      await createComponent();
-
-      findItemToggleButton().vm.$emit('click');
-
-      const button = findDeployerDeleteButton();
-
-      mock.onPut().reply(HTTP_STATUS_OK);
-
-      const destroyedRule = {
-        access_level: DEVELOPER_ACCESS_LEVEL,
-        access_level_description: 'Deployers + Maintainers',
-        _destroy: true,
-      };
-
-      button.trigger('click');
-
-      await waitForPromises();
-
-      expect(mock.history.put).toHaveLength(1);
-
-      const [{ data }] = mock.history.put;
-      expect(JSON.parse(data)).toMatchObject({
-        name: environment.name,
-        deploy_access_levels: [destroyedRule],
+      descriptions.forEach((description, i) => {
+        expect(description.text()).toBe(ruleDescriptions[i]);
       });
     });
 
-    it('hides the button if there is only one rule', async () => {
-      const [environment] = DEFAULT_ENVIRONMENTS;
-      const [rule] = environment.deploy_access_levels;
-      mock.onGet('/api/v4/projects/8/protected_environments/').reply(HTTP_STATUS_OK, [
+    describe('add deployer rule', () => {
+      let environment;
+      let dropdown;
+
+      beforeEach(async () => {
+        [environment] = DEFAULT_ENVIRONMENTS;
+
+        await createComponent();
+
+        wrapper
+          .findComponent(EditProtectedEnvironmentRulesCard)
+          .vm.$emit('addRule', { environment, ruleKey: DEPLOYER_RULE_KEY });
+
+        await nextTick();
+
+        dropdown = wrapper.findComponent(AccessDropdown);
+      });
+
+      it('titles the modal appropriately', () => {
+        expect(findAddRuleModal().props('title')).toBe('Create deployment rule');
+      });
+
+      it('puts the access level dropdown into the modal form', () => {
+        expect(dropdown.exists()).toBe(true);
+      });
+
+      it('sends new rules to be added', async () => {
+        mock.onPut().reply(HTTP_STATUS_OK);
+
+        const rule = [{ user_id: 5 }];
+        dropdown.vm.$emit('hidden', rule);
+
+        findAddRuleModal().vm.$emit('saveRule');
+
+        await waitForPromises();
+
+        expect(mock.history.put).toHaveLength(1);
+
+        const [{ data }] = mock.history.put;
+        expect(JSON.parse(data)).toMatchObject({ ...environment, deploy_access_levels: rule });
+      });
+    });
+
+    describe('deployer delete rule', () => {
+      it('sends the deleted rule with _destroy set', async () => {
+        const [environment] = DEFAULT_ENVIRONMENTS;
+
+        await createComponent();
+
+        findItemToggleButton().vm.$emit('click');
+
+        const button = findDeployerDeleteButton();
+
+        mock.onPut().reply(HTTP_STATUS_OK);
+
+        const destroyedRule = {
+          access_level: DEVELOPER_ACCESS_LEVEL,
+          access_level_description: 'Deployers + Maintainers',
+          _destroy: true,
+        };
+
+        button.trigger('click');
+
+        await waitForPromises();
+
+        expect(mock.history.put).toHaveLength(1);
+
+        const [{ data }] = mock.history.put;
+        expect(JSON.parse(data)).toMatchObject({
+          name: environment.name,
+          deploy_access_levels: [destroyedRule],
+        });
+      });
+
+      it('hides the button if there is only one rule', async () => {
+        const [environment] = DEFAULT_ENVIRONMENTS;
+        const [rule] = environment.deploy_access_levels;
+        mock.onGet('/api/v4/projects/8/protected_environments/').reply(HTTP_STATUS_OK, [
+          {
+            ...environment,
+            deploy_access_levels: [rule],
+          },
+        ]);
+
+        await createComponent();
+
+        findItemToggleButton().vm.$emit('click');
+
+        const button = findDeployerDeleteButton();
+
+        expect(button.exists()).toBe(false);
+      });
+    });
+
+    describe('add approval rule', () => {
+      let environment;
+
+      beforeEach(async () => {
+        [environment] = DEFAULT_ENVIRONMENTS;
+
+        await createComponent();
+
+        wrapper
+          .findComponent(EditProtectedEnvironmentRulesCard)
+          .vm.$emit('addRule', { environment, ruleKey: APPROVER_RULE_KEY });
+
+        await nextTick();
+      });
+
+      it('titles the modal appropriately', () => {
+        expect(findAddRuleModal().props('title')).toBe('Create approval rule');
+      });
+
+      it('puts the access level dropdown into the modal form', () => {
+        expect(findAddApprovers().exists()).toBe(true);
+      });
+
+      it('sends new rules to be added', async () => {
+        mock.onPut().reply(HTTP_STATUS_OK);
+
+        const rule = [{ user_id: 5, required_approvals: 3 }];
+        findAddApprovers().vm.$emit('change', rule);
+
+        findAddRuleModal().vm.$emit('saveRule');
+
+        await waitForPromises();
+
+        expect(mock.history.put).toHaveLength(1);
+
+        const [{ data }] = mock.history.put;
+        expect(JSON.parse(data)).toMatchObject({ ...environment, approval_rules: rule });
+      });
+    });
+
+    describe('approver delete rule', () => {
+      it('sends the deleted rule with _destroy set', async () => {
+        const [environment] = DEFAULT_ENVIRONMENTS;
+
+        await createComponent();
+
+        wrapper.findComponent(GlButton).vm.$emit('click');
+
+        const button = findApproverDeleteButton();
+
+        mock.onPut().reply(HTTP_STATUS_OK);
+
+        const destroyedRule = {
+          access_level: DEVELOPER_ACCESS_LEVEL,
+          access_level_description: 'Deployers + Maintainers',
+          _destroy: true,
+        };
+
+        button.trigger('click');
+
+        await waitForPromises();
+
+        expect(mock.history.put).toHaveLength(1);
+
+        const [{ data }] = mock.history.put;
+        expect(JSON.parse(data)).toMatchObject({
+          name: environment.name,
+          approval_rules: [destroyedRule],
+        });
+      });
+    });
+
+    describe('approver edit rule', () => {
+      let environment;
+
+      beforeEach(async () => {
+        [environment] = DEFAULT_ENVIRONMENTS;
+        await createComponent();
+
+        findItemToggleButton().vm.$emit('click');
+
+        await nextTick();
+      });
+
+      it('allows editing of an approval rule', async () => {
+        const [rule] = environment.approval_rules;
+        const value = '2';
+
+        mock.onPut().reply(HTTP_STATUS_OK);
+
+        const button = findApproverEditButton();
+
+        await button.trigger('click');
+
+        const input = findApprovalsInput();
+
+        expect(input.exists()).toBe(true);
+
+        await input.setValue(value);
+
+        findApproverSaveButton().trigger('click');
+
+        await waitForPromises();
+
+        expect(mock.history.put.length).toBe(1);
+        const [{ data }] = mock.history.put;
+        expect(JSON.parse(data)).toMatchObject({
+          name: environment.name,
+          approval_rules: [
+            {
+              id: rule.id,
+              access_level: rule.access_level,
+              access_level_description: rule.access_level_description,
+              required_approvals: value,
+            },
+          ],
+        });
+      });
+
+      it('shows a toggle for group ID rules', async () => {
+        const [, rule] = environment.approval_rules;
+        mock.onPut().reply(HTTP_STATUS_OK);
+
+        const row = wrapper.findByTestId(`approval_rules-${rule.id}`);
+        const button = findApproverEditButton(extendedWrapper(row));
+
+        expect(findInheritanceToggle(row).props('value')).toBe(true);
+        expect(findInheritanceToggle(row).props('disabled')).toBe(true);
+
+        await button.trigger('click');
+
+        expect(findInheritanceToggle(row).props('value')).toBe(true);
+        expect(findInheritanceToggle(row).props('disabled')).toBe(false);
+
+        await findInheritanceToggle(row).vm.$emit('change', false);
+
+        findApproverSaveButton().trigger('click');
+
+        await waitForPromises();
+
+        expect(mock.history.put.length).toBe(1);
+        const [{ data }] = mock.history.put;
+        expect(JSON.parse(data)).toMatchObject({
+          name: environment.name,
+          approval_rules: [
+            {
+              id: rule.id,
+              group_id: rule.group_id,
+              access_level_description: rule.access_level_description,
+              group_inheritance_type: 0,
+            },
+          ],
+        });
+      });
+
+      it('hides the toggle for non-group rules', () => {
+        const { id } = environment.approval_rules.find(({ user_id: userId }) => userId);
+        const row = wrapper.findByTestId(`approval_rules-${id}`);
+
+        expect(findInheritanceToggle(row).exists()).toBe(false);
+      });
+
+      it('hides the edit button for user rules', () => {
+        const { id } = environment.approval_rules.find(({ user_id: userId }) => userId);
+        const row = wrapper.findByTestId(`approval_rules-${id}`);
+        const button = findApproverEditButton(extendedWrapper(row));
+
+        expect(button.exists()).toBe(false);
+      });
+    });
+
+    describe('unprotect environment', () => {
+      it('unprotects an environment when emitted', async () => {
+        const [environment] = DEFAULT_ENVIRONMENTS;
+
+        mock.onDelete().reply(HTTP_STATUS_OK);
+
+        await createComponent();
+
+        findProtectedEnvironments().vm.$emit('unprotect', environment);
+        await waitForPromises();
+
+        expect(mock.history.delete).toHaveLength(1);
+
+        const [{ url }] = mock.history.delete;
+        expect(url).toBe(`/api/v4/projects/8/protected_environments/${environment.name}`);
+      });
+    });
+  });
+
+  describe('on the group level', () => {
+    const [environment] = DEFAULT_ENVIRONMENTS;
+
+    beforeEach(async () => {
+      mock = new MockAdapter(axios);
+      window.gon = { api_version: 'v4' };
+      mock
+        .onGet('/api/v4/groups/8/protected_environments/')
+        .reply(HTTP_STATUS_OK, DEFAULT_ENVIRONMENTS);
+      mock
+        .onGet('/api/v4/groups/1/members/all')
+        .reply(HTTP_STATUS_OK, [{ name: 'root', avatar_url: '/avatar.png' }]);
+      mock
+        .onGet('/api/v4/users/1')
+        .reply(HTTP_STATUS_OK, { name: 'root', avatar_url: '/avatar.png' });
+      mock.onGet('/api/v4/groups/8/members').reply(HTTP_STATUS_OK, [
         {
-          ...environment,
-          deploy_access_levels: [rule],
+          name: 'root',
+          access_level: MAINTAINER_ACCESS_LEVEL.toString(),
+          avatar_url: '/avatar.png',
         },
       ]);
 
-      await createComponent();
-
-      findItemToggleButton().vm.$emit('click');
-
-      const button = findDeployerDeleteButton();
-
-      expect(button.exists()).toBe(false);
-    });
-  });
-
-  describe('add approval rule', () => {
-    let environment;
-    let addApprover;
-    let modal;
-
-    beforeEach(async () => {
-      [environment] = DEFAULT_ENVIRONMENTS;
-
-      await createComponent();
-
-      wrapper
-        .findComponent(EditProtectedEnvironmentRulesCard)
-        .vm.$emit('addRule', { environment, ruleKey: APPROVER_RULE_KEY });
-
-      await nextTick();
-
-      addApprover = wrapper.findComponent(AddApprovers);
-      modal = wrapper.findComponent(AddRuleModal);
+      await createComponent({ entityType: 'groups' });
     });
 
-    it('titles the modal appropriately', () => {
-      expect(modal.props('title')).toBe(s__('ProtectedEnvironments|Create approval rule'));
+    afterEach(() => {
+      mock.restore();
+      mock.resetHistory();
     });
 
-    it('puts the access level dropdown into the modal form', () => {
-      expect(addApprover.exists()).toBe(true);
+    it('requests the protected environments for the group', () => {
+      expect(mock.history.get[0].url).toBe('/api/v4/groups/8/protected_environments/');
     });
 
-    it('sends new rules to be added', async () => {
-      mock.onPut().reply(HTTP_STATUS_OK);
+    describe('add deployer rule', () => {
+      let dropdown;
 
-      const rule = [{ user_id: 5, required_approvals: 3 }];
-      addApprover.vm.$emit('change', rule);
+      beforeEach(async () => {
+        wrapper
+          .findComponent(EditProtectedEnvironmentRulesCard)
+          .vm.$emit('addRule', { environment, ruleKey: DEPLOYER_RULE_KEY });
 
-      modal.vm.$emit('saveRule');
+        await nextTick();
 
-      await waitForPromises();
-
-      expect(mock.history.put).toHaveLength(1);
-
-      const [{ data }] = mock.history.put;
-      expect(JSON.parse(data)).toMatchObject({ ...environment, approval_rules: rule });
-    });
-  });
-
-  describe('approver delete rule', () => {
-    it('sends the deleted rule with _destroy set', async () => {
-      const [environment] = DEFAULT_ENVIRONMENTS;
-
-      await createComponent();
-
-      wrapper.findComponent(GlButton).vm.$emit('click');
-
-      const button = findApproverDeleteButton();
-
-      mock.onPut().reply(HTTP_STATUS_OK);
-
-      const destroyedRule = {
-        access_level: DEVELOPER_ACCESS_LEVEL,
-        access_level_description: 'Deployers + Maintainers',
-        _destroy: true,
-      };
-
-      button.trigger('click');
-
-      await waitForPromises();
-
-      expect(mock.history.put).toHaveLength(1);
-
-      const [{ data }] = mock.history.put;
-      expect(JSON.parse(data)).toMatchObject({
-        name: environment.name,
-        approval_rules: [destroyedRule],
+        dropdown = wrapper.findComponent(GroupsAccessDropdown);
       });
-    });
-  });
 
-  describe('approver edit rule', () => {
-    let environment;
+      it('renders the group access level dropdown in the modal form', () => {
+        expect(dropdown.props()).toMatchObject({
+          label: 'Select users',
+          accessLevelsData: DEFAULT_ACCESS_LEVELS_DATA,
+        });
+      });
 
-    beforeEach(async () => {
-      [environment] = DEFAULT_ENVIRONMENTS;
-      await createComponent();
+      it('sends new rules to the groups endpoint', async () => {
+        mock.onPut().reply(HTTP_STATUS_OK);
 
-      findItemToggleButton().vm.$emit('click');
+        const rule = [{ user_id: 5 }];
+        dropdown.vm.$emit('hidden', rule);
 
-      await nextTick();
-    });
+        findAddRuleModal().vm.$emit('saveRule');
 
-    it('allows editing of an approval rule', async () => {
-      const [rule] = environment.approval_rules;
-      const value = '2';
+        await waitForPromises();
 
-      mock.onPut().reply(HTTP_STATUS_OK);
-
-      const button = findApproverEditButton();
-
-      await button.trigger('click');
-
-      const input = findApprovalsInput();
-
-      expect(input.exists()).toBe(true);
-
-      await input.setValue(value);
-
-      findApproverSaveButton().trigger('click');
-
-      await waitForPromises();
-
-      expect(mock.history.put.length).toBe(1);
-      const [{ data }] = mock.history.put;
-      expect(JSON.parse(data)).toMatchObject({
-        name: environment.name,
-        approval_rules: [
-          {
-            id: rule.id,
-            access_level: rule.access_level,
-            access_level_description: rule.access_level_description,
-            required_approvals: value,
-          },
-        ],
+        expect(mock.history.put).toHaveLength(1);
+        expect(mock.history.put[0].url).toBe(
+          `/api/v4/groups/8/protected_environments/${environment.name}`,
+        );
       });
     });
 
-    it('shows a toggle for group ID rules', async () => {
-      const [, rule] = environment.approval_rules;
-      mock.onPut().reply(HTTP_STATUS_OK);
+    describe('deployer delete rule', () => {
+      it('sends the deleted rule to the groups endpoint', async () => {
+        findItemToggleButton().vm.$emit('click');
 
-      const row = wrapper.findByTestId(`approval_rules-${rule.id}`);
-      const button = findApproverEditButton(extendedWrapper(row));
+        const button = findDeployerDeleteButton();
 
-      expect(findInheritanceToggle(row).props('value')).toBe(true);
-      expect(findInheritanceToggle(row).props('disabled')).toBe(true);
+        mock.onPut().reply(HTTP_STATUS_OK);
+        button.trigger('click');
 
-      await button.trigger('click');
+        await waitForPromises();
 
-      expect(findInheritanceToggle(row).props('value')).toBe(true);
-      expect(findInheritanceToggle(row).props('disabled')).toBe(false);
-
-      await findInheritanceToggle(row).vm.$emit('change', false);
-
-      findApproverSaveButton().trigger('click');
-
-      await waitForPromises();
-
-      expect(mock.history.put.length).toBe(1);
-      const [{ data }] = mock.history.put;
-      expect(JSON.parse(data)).toMatchObject({
-        name: environment.name,
-        approval_rules: [
-          {
-            id: rule.id,
-            group_id: rule.group_id,
-            access_level_description: rule.access_level_description,
-            group_inheritance_type: 0,
-          },
-        ],
+        expect(mock.history.put).toHaveLength(1);
+        expect(mock.history.put[0].url).toBe(
+          `/api/v4/groups/8/protected_environments/${environment.name}`,
+        );
       });
     });
 
-    it('hides the toggle for non-group rules', () => {
-      const { id } = environment.approval_rules.find(({ user_id: userId }) => userId);
-      const row = wrapper.findByTestId(`approval_rules-${id}`);
+    describe('add approval rule', () => {
+      it('sends new rules to the groups endpoint', async () => {
+        mock.onPut().reply(HTTP_STATUS_OK);
+        wrapper
+          .findComponent(EditProtectedEnvironmentRulesCard)
+          .vm.$emit('addRule', { environment, ruleKey: APPROVER_RULE_KEY });
 
-      expect(findInheritanceToggle(row).exists()).toBe(false);
+        await nextTick();
+
+        const rule = [{ user_id: 5, required_approvals: 3 }];
+        findAddApprovers().vm.$emit('change', rule);
+
+        findAddRuleModal().vm.$emit('saveRule');
+
+        await waitForPromises();
+
+        expect(mock.history.put).toHaveLength(1);
+        expect(mock.history.put[0].url).toBe(
+          `/api/v4/groups/8/protected_environments/${environment.name}`,
+        );
+      });
     });
 
-    it('hides the edit button for user rules', () => {
-      const { id } = environment.approval_rules.find(({ user_id: userId }) => userId);
-      const row = wrapper.findByTestId(`approval_rules-${id}`);
-      const button = findApproverEditButton(extendedWrapper(row));
+    describe('approver delete rule', () => {
+      it('sends the deleted rule to the groups endpoint', async () => {
+        wrapper.findComponent(GlButton).vm.$emit('click');
+        mock.onPut().reply(HTTP_STATUS_OK);
 
-      expect(button.exists()).toBe(false);
+        findApproverDeleteButton().trigger('click');
+
+        await waitForPromises();
+
+        expect(mock.history.put).toHaveLength(1);
+        expect(mock.history.put[0].url).toBe(
+          `/api/v4/groups/8/protected_environments/${environment.name}`,
+        );
+      });
     });
-  });
 
-  describe('unprotect environment', () => {
-    it('unprotects an environment when emitted', async () => {
-      const [environment] = DEFAULT_ENVIRONMENTS;
+    describe('approver edit rule', () => {
+      it('sends the editing request to the groups endpoint', async () => {
+        mock.onPut().reply(HTTP_STATUS_OK);
 
-      mock.onDelete().reply(HTTP_STATUS_OK);
+        findItemToggleButton().vm.$emit('click');
+        await nextTick();
+        await findApproverEditButton().trigger('click');
+        await findApprovalsInput().setValue('2');
 
-      await createComponent();
+        findApproverSaveButton().trigger('click');
 
-      findProtectedEnvironments().vm.$emit('unprotect', environment);
-      await waitForPromises();
+        await waitForPromises();
 
-      expect(mock.history.delete).toHaveLength(1);
+        expect(mock.history.put.length).toBe(1);
+        expect(mock.history.put[0].url).toBe(
+          `/api/v4/groups/8/protected_environments/${environment.name}`,
+        );
+      });
+    });
 
-      const [{ url }] = mock.history.delete;
-      expect(url).toBe(`/api/v4/projects/8/protected_environments/${environment.name}`);
+    describe('unprotect environment', () => {
+      it('sends unprotect request to the groups endpoint', async () => {
+        mock.onDelete().reply(HTTP_STATUS_OK);
+
+        findProtectedEnvironments().vm.$emit('unprotect', environment);
+        await waitForPromises();
+
+        expect(mock.history.delete).toHaveLength(1);
+        expect(mock.history.delete[0].url).toBe(
+          `/api/v4/groups/8/protected_environments/${environment.name}`,
+        );
+      });
     });
   });
 });

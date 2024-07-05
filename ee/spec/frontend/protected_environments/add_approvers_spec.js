@@ -6,46 +6,54 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { TEST_HOST } from 'helpers/test_constants';
 import axios from '~/lib/utils/axios_utils';
 import AccessDropdown from '~/projects/settings/components/access_dropdown.vue';
+import GroupsAccessDropdown from '~/groups/settings/components/access_dropdown.vue';
 import { ACCESS_LEVELS } from 'ee/protected_environments/constants';
 import AddApprovers from 'ee/protected_environments/add_approvers.vue';
 import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_OK } from '~/lib/utils/http_status';
-import { __, s__ } from '~/locale';
 
 const PROJECT_ID = '0';
 
 const API_LINK = `${TEST_HOST}/docs/api.md`;
 const DOCS_LINK = `${TEST_HOST}/docs/protected_environments.md`;
+const accessLevelsData = [
+  {
+    id: 40,
+    text: 'Maintainers',
+    before_divider: true,
+  },
+  {
+    id: 30,
+    text: 'Developers + Maintainers',
+    before_divider: true,
+  },
+];
 
 describe('ee/protected_environments/add_approvers.vue', () => {
   let wrapper;
   let mockAxios;
 
-  const createComponent = ({ projectId = PROJECT_ID, disabled = false } = {}) => {
+  const createComponent = ({
+    entityId = PROJECT_ID,
+    disabled = false,
+    entityType = 'projects',
+  } = {}) => {
     wrapper = mountExtended(AddApprovers, {
       propsData: {
-        projectId,
+        entityId,
         disabled,
       },
       provide: {
-        accessLevelsData: [
-          {
-            id: 40,
-            text: 'Maintainers',
-            before_divider: true,
-          },
-          {
-            id: 30,
-            text: 'Developers + Maintainers',
-            before_divider: true,
-          },
-        ],
+        accessLevelsData,
         apiLink: API_LINK,
         docsLink: DOCS_LINK,
+        entityType,
       },
     });
   };
 
   const findApproverDropdown = () => wrapper.findComponent(AccessDropdown);
+  const findGroupsApproverDropdown = () => wrapper.findComponent(GroupsAccessDropdown);
+  const findApproverFormGroup = () => wrapper.findByTestId('create-approver-dropdown');
 
   const findRequiredCountForApprover = (name) =>
     wrapper
@@ -70,15 +78,42 @@ describe('ee/protected_environments/add_approvers.vue', () => {
     mockAxios = new MockAdapter(axios);
   });
 
-  it('renders a dropdown for selecting approvers', () => {
+  it('renders a dropdown for selecting approvers on the project level', () => {
     createComponent();
 
     const approvers = findApproverDropdown();
 
     expect(approvers.props()).toMatchObject({
       accessLevel: ACCESS_LEVELS.DEPLOY,
-      label: __('Select users'),
+      label: 'Select users',
     });
+  });
+
+  it('renders a dropdown for selecting approvers on the group level', () => {
+    createComponent({ entityType: 'groups' });
+
+    const approvers = findGroupsApproverDropdown();
+
+    expect(approvers.props()).toMatchObject({
+      accessLevelsData,
+      label: 'Select users',
+    });
+  });
+
+  it('renders correct help text for the approval dropdown on the project level', () => {
+    createComponent();
+
+    expect(findApproverFormGroup().text()).toContain(
+      'Set which groups, access levels, or users are required to approve. Groups and users must be members of the project.',
+    );
+  });
+
+  it('renders correct help text for the approval dropdown on the group level', () => {
+    createComponent({ entityType: 'groups' });
+
+    expect(findApproverFormGroup().text()).toContain(
+      'Set which groups, access levels, or users are required to approve in this environment tier.',
+    );
   });
 
   it('alerts users to the removal of unified approval rules', () => {
@@ -110,11 +145,7 @@ describe('ee/protected_environments/add_approvers.vue', () => {
     await waitForPromises();
 
     const [[event]] = wrapper.emitted('error').reverse();
-    expect(event).toBe(
-      s__(
-        'ProtectedEnvironments|An error occurred while fetching information on the selected approvers.',
-      ),
-    );
+    expect(event).toBe('An error occurred while fetching information on the selected approvers.');
   });
 
   it('emits an empty error value when fetching new details', async () => {
@@ -155,8 +186,8 @@ describe('ee/protected_environments/add_approvers.vue', () => {
 
     expect(button.props('icon')).toBe('remove');
     expect(button.attributes()).toMatchObject({
-      title: s__('ProtectedEnvironments|Remove approval rule'),
-      'aria-label': s__('ProtectedEnvironments|Remove approval rule'),
+      title: 'Remove approval rule',
+      'aria-label': 'Remove approval rule',
     });
   });
 
