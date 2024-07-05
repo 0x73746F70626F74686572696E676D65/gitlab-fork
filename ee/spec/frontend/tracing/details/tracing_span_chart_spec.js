@@ -226,8 +226,13 @@ describe('TracingSpansChart', () => {
           ],
         },
       });
-      const barStyle = getSpanDurationBar(0).find('[data-testid="span-duration-bar"]').element
-        .style;
+
+      const parentElement = getSpanDurationBar(0);
+      const wrapperEl =
+        parentElement.wrapperElement ||
+        parentElement?.find('[data-testid="span-duration-bar"]').element;
+
+      const barStyle = wrapperEl.style;
       expect(barStyle.width).toBe(expectedWidth);
       expect(barStyle.marginLeft).toBe(expectedMargin);
     });
