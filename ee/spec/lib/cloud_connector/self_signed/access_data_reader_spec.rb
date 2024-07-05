@@ -48,6 +48,14 @@ RSpec.describe CloudConnector::SelfSigned::AccessDataReader, feature_category: :
       }
     end
 
+    let_it_be(:explain_vulnerability_bundled_with) do
+      {
+        "duo_enterprise" => %i[
+          explain_vulnerability
+        ]
+      }
+    end
+
     let_it_be(:resolve_vulnerability_bundled_with) do
       {
         "duo_enterprise" => %i[
@@ -74,7 +82,9 @@ RSpec.describe CloudConnector::SelfSigned::AccessDataReader, feature_category: :
           vertex_ai_proxy: [nil, vertex_ai_proxy_bundled_with, backend],
           resolve_vulnerability: [nil, resolve_vulnerability_bundled_with, backend],
           self_hosted_models: [self_hosted_models_cut_off_date, self_hosted_models_bundled_with, backend],
-          generate_commit_message: [nil, generate_commit_message_bundled_with, backend]
+          generate_commit_message: [nil, generate_commit_message_bundled_with, backend],
+          explain_vulnerability: [nil, explain_vulnerability_bundled_with,
+            backend]
         }
       end
     end
