@@ -13,8 +13,10 @@ RSpec.describe Security::PersistSecurityPoliciesWorker, '#perform', feature_cate
         scan_result_policy: scan_result_policies)
     end
 
-    let(:scan_result_policies) { build_list(:scan_result_policy, 2) }
-    let(:scan_execution_policies) { build_list(:scan_execution_policy, 2) }
+    let(:scan_result_policies) { build_list(:scan_result_policy, 2) + [build(:scan_result_policy, active: false)] }
+    let(:scan_execution_policies) do
+      build_list(:scan_execution_policy, 2) + [build(:scan_execution_policy, active: false)]
+    end
 
     it_behaves_like 'an idempotent worker' do
       subject(:perform) { perform_multiple(policy_configuration.id) }
@@ -39,13 +41,13 @@ RSpec.describe Security::PersistSecurityPoliciesWorker, '#perform', feature_cate
       it 'persists approval policies' do
         perform
 
-        expect(policy_configuration.security_policies.type_approval_policy.count).to be(2)
+        expect(policy_configuration.security_policies.type_approval_policy.count).to be(3)
       end
 
       it 'persists scan execution policies' do
         perform
 
-        expect(policy_configuration.security_policies.type_scan_execution_policy.count).to be(2)
+        expect(policy_configuration.security_policies.type_scan_execution_policy.count).to be(3)
       end
 
       context 'with feature disabled' do
