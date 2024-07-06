@@ -1,6 +1,8 @@
 <script>
 import { GlCollapsibleListbox } from '@gitlab/ui';
 import { __ } from '~/locale';
+import { getTypeFromGraphQLId } from '~/graphql_shared/utils';
+
 import { AUDIT_STREAMS_FILTERING } from '../../constants';
 import getNamespaceFiltersQuery from '../../graphql/queries/get_namespace_filters.query.graphql';
 
@@ -87,22 +89,22 @@ export default {
       this.searchTerm = searchTerm.toLowerCase();
     },
     selectOption($event) {
-      const group = this.filterTargets?.groups.find((g) => g.id === $event);
-      if (group) {
+      const type = getTypeFromGraphQLId($event);
+
+      if (type === 'Group') {
+        const group = this.filterTargets?.groups.find((g) => g.id === $event);
         this.$emit('input', { namespace: group.fullPath, type: 'group' });
         return;
       }
-      const project = this.filterTargets?.projects.find((p) => p.id === $event);
 
+      const project = this.filterTargets?.projects.find((p) => p.id === $event);
       this.$emit('input', { namespace: project.fullPath, type: 'project' });
     },
     resetOptions() {
       this.$emit('input', { namespace: '', type: 'project' });
     },
   },
-  i18n: {
-    ...AUDIT_STREAMS_FILTERING,
-  },
+  i18n: AUDIT_STREAMS_FILTERING,
 };
 </script>
 
@@ -117,6 +119,7 @@ export default {
     :no-results-text="$options.i18n.NO_RESULT_TEXT"
     :search-placeholder="$options.i18n.SEARCH_PLACEHOLDER"
     searchable
+    :searching="$apollo.queries.filterTargets.loading"
     toggle-class="gl-max-w-full"
     :toggle-text="toggleText"
     class="gl-max-w-full"
