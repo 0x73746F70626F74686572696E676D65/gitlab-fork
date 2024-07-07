@@ -16,10 +16,18 @@ export const POLICY_TYPE_COMPONENT_OPTIONS = {
     urlParameter: 'scan_execution_policy',
     value: 'scanExecution',
   },
-  approval: {
+  legacyApproval: {
     component: 'scan-result-policy-editor',
     text: s__('SecurityOrchestration|Merge request approval'),
     typeName: 'ScanResultPolicy',
+    urlParameter: 'approval_policy',
+    value: 'approval',
+  },
+  approval: {
+    // used by Group.approvalPolicies
+    component: 'scan-result-policy-editor',
+    text: s__('SecurityOrchestration|Merge request approval'),
+    typeName: 'ApprovalPolicy',
     urlParameter: 'approval_policy',
     value: 'approval',
   },

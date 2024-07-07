@@ -42,7 +42,7 @@ export default {
   provide() {
     return {
       // required for drawer component
-      rootNamespacePath: this.fullPath,
+      namespacePath: this.fullPath,
     };
   },
   inject: ['disableScanPolicyUpdate'],

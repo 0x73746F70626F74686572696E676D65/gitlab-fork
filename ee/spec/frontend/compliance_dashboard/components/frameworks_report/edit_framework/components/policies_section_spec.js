@@ -216,6 +216,7 @@ describe('Basic information section', () => {
         const drawer = wrapper.findComponent(DrawerWrapper);
         await wrapper.find('table tbody tr').trigger('click');
         await nextTick();
+        expect(drawer.props('policyType')).toBe('approval');
         expect(drawer.props('policy').name).toBe('test');
       });
 
