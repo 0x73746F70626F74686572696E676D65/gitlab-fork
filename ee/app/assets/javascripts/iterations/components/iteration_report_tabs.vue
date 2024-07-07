@@ -1,7 +1,6 @@
 <script>
 import { GlAlert, GlBadge, GlEmptyState, GlFormSelect, GlLabel, GlTab, GlTabs } from '@gitlab/ui';
 import { differenceBy, unionBy } from 'lodash';
-import Vue from 'vue';
 import { WORKSPACE_GROUP, WORKSPACE_PROJECT } from '~/issues/constants';
 import { isScopedLabel } from '~/lib/utils/common_utils';
 import { __ } from '~/locale';
@@ -101,7 +100,9 @@ export default {
       if (index > -1) {
         const label = this.selectedLabels[index];
         label.hasIssues = Boolean(count);
-        Vue.set(this.selectedLabels, index, label);
+        const copy = [...this.selectedLabels];
+        copy[index] = label;
+        this.selectedLabels = copy;
       }
     },
     handleRemoveLabel(labelId) {
