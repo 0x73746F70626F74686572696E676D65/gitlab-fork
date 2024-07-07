@@ -12,7 +12,7 @@ RSpec.describe ElasticsearchIndexedNamespace, :saas, feature_category: :global_s
       let(:records) { create_list(:elasticsearch_indexed_namespace, 3) }
 
       it 'returns records of the ids' do
-        expect(described_class.namespace_in(records.last(2).map(&:id))).to eq(records.last(2))
+        expect(described_class.namespace_in(records.last(2).map(&:id)).to_a).to match_array(records.last(2))
       end
     end
   end
