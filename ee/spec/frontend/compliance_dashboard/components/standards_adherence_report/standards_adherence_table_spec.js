@@ -73,7 +73,7 @@ describe('ComplianceStandardsAdherenceTable component', () => {
   }
 
   beforeEach(() => {
-    createComponent({}, mockGraphQlSuccess);
+    createComponent({}, mockGraphQlSuccess, { after: 'cursor' });
 
     return waitForPromises();
   });
@@ -86,7 +86,7 @@ describe('ComplianceStandardsAdherenceTable component', () => {
 
         expect(mockGraphQlSuccess).toHaveBeenCalledTimes(2);
         expect(mockGraphQlSuccess).toHaveBeenNthCalledWith(2, {
-          after: undefined,
+          after: 'cursor',
           fullPath: groupPath,
           filters: mapStandardsAdherenceQueryToFilters([
             { type: 'standard', value: { data: 'GITLAB' } },
@@ -105,7 +105,7 @@ describe('ComplianceStandardsAdherenceTable component', () => {
 
         expect(mockGraphQlSuccess).toHaveBeenCalledTimes(2);
         expect(mockGraphQlSuccess).toHaveBeenNthCalledWith(2, {
-          after: undefined,
+          after: 'cursor',
           fullPath: groupPath,
           filters: mapStandardsAdherenceQueryToFilters([
             { type: 'project', value: { data: 'gid://gitlab/Project/1' } },
@@ -124,7 +124,7 @@ describe('ComplianceStandardsAdherenceTable component', () => {
 
         expect(mockGraphQlSuccess).toHaveBeenCalledTimes(2);
         expect(mockGraphQlSuccess).toHaveBeenNthCalledWith(2, {
-          after: undefined,
+          after: 'cursor',
           fullPath: groupPath,
           filters: mapStandardsAdherenceQueryToFilters([
             { type: 'check', value: { data: 'AT_LEAST_TWO_APPROVALS' } },
