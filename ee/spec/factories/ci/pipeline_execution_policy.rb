@@ -6,5 +6,6 @@ FactoryBot.define do
     class: '::Gitlab::Ci::Pipeline::Chain::PipelineExecutionPolicies::FindConfigs::PipelineExecutionPolicy'
   ) do
     pipeline factory: :ci_empty_pipeline
+    strategy { :inject_ci }
   end
 end

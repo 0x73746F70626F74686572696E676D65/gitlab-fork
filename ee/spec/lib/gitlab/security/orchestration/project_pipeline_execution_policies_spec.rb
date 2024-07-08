@@ -53,7 +53,7 @@ RSpec.describe Gitlab::Security::Orchestration::ProjectPipelineExecutionPolicies
 
     it 'includes configs of policies ordered by hierarchy' do
       # We use `eq` because we want to verify the order
-      expect(configs).to eq(map_expected_config([policy, namespace_policy]))
+      expect(configs).to eq(build_execution_policy_configs([policy, namespace_policy]))
     end
 
     describe 'limits' do
@@ -64,7 +64,7 @@ RSpec.describe Gitlab::Security::Orchestration::ProjectPipelineExecutionPolicies
 
       it 'includes configs for up to 5 policies, giving precedence to groups higher in the hierarchy' do
         expect(configs.size).to eq(5)
-        expect(configs).to eq(map_expected_config([*namespace_policies, *project_policies.first(2)].reverse))
+        expect(configs).to eq(build_execution_policy_configs([*namespace_policies, *project_policies.first(2)].reverse))
       end
     end
 
@@ -74,7 +74,7 @@ RSpec.describe Gitlab::Security::Orchestration::ProjectPipelineExecutionPolicies
       end
 
       it 'excludes the namespace policy from the configs' do
-        expect(configs).to eq(map_expected_config([policy]))
+        expect(configs).to eq(build_execution_policy_configs([policy]))
       end
     end
 
@@ -87,7 +87,7 @@ RSpec.describe Gitlab::Security::Orchestration::ProjectPipelineExecutionPolicies
       end
 
       it 'only includes project policy config' do
-        expect(configs).to eq(map_expected_config([policy]))
+        expect(configs).to eq(build_execution_policy_configs([policy]))
       end
     end
 
@@ -98,13 +98,16 @@ RSpec.describe Gitlab::Security::Orchestration::ProjectPipelineExecutionPolicies
         expect(configs).to be_empty
       end
     end
+  end
 
-    private
+  private
 
-    def map_expected_config(policies)
-      policies.map do |policy|
-        policy[:content].to_yaml
-      end
+  def build_execution_policy_configs(policies)
+    policies.map do |policy|
+      ::Gitlab::Security::Orchestration::ProjectPipelineExecutionPolicies::ExecutionPolicyConfig.new(
+        policy[:content].to_yaml,
+        :inject_ci
+      )
     end
   end
 end

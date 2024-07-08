@@ -176,6 +176,28 @@ RSpec.describe Ci::CreatePipelineService, feature_category: :security_policy_man
     end
   end
 
+  context 'when any policy contains `override_project_ci` strategy' do
+    let(:project_policy) do
+      build(:pipeline_execution_policy, :override_project_ci,
+        content: { include: [{
+          project: compliance_project.full_path,
+          file: project_policy_file,
+          ref: compliance_project.default_branch_or_main
+        }] })
+    end
+
+    it 'ignores jobs from project CI', :aggregate_failures do
+      expect { execute }.to change { Ci::Build.count }.from(0).to(2)
+
+      stages = execute.payload.stages
+
+      build_stage = stages.find_by(name: 'build')
+      expect(build_stage.builds.map(&:name)).to contain_exactly('namespace_policy_job')
+      test_stage = stages.find_by(name: 'test')
+      expect(test_stage.builds.map(&:name)).to contain_exactly('project_policy_job')
+    end
+  end
+
   describe 'reserved stages' do
     context 'when policy pipelines use reserved stages' do
       let(:namespace_policy_content) do
