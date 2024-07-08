@@ -9,6 +9,7 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::PipelineExecutionPolicies::MergeJobs
   let_it_be(:project) { create(:project, :repository, group: group) }
   let_it_be(:user) { create(:user, developer_of: project) }
   let(:pipeline) { build(:ci_pipeline, project: project, ref: 'master', user: user) }
+
   let(:pipeline_execution_policies) do
     [
       build(:ci_pipeline_execution_policy, pipeline: build_mock_policy_pipeline({ 'build' => ['docker'] })),
@@ -97,6 +98,30 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::PipelineExecutionPolicies::MergeJobs
 
         test_stage = pipeline.stages.find { |stage| stage.name == 'test' }
         expect(test_stage.statuses.map(&:name)).to contain_exactly('rspec')
+      end
+    end
+
+    context 'when a policy has strategy "override_project_ci"' do
+      let(:config) do
+        { rake: { script: 'rake' } }
+      end
+
+      let(:pipeline_execution_policies) do
+        [
+          build(
+            :ci_pipeline_execution_policy,
+            pipeline: build_mock_policy_pipeline({ '.pipeline-policy-pre' => ['rspec'] }),
+            strategy: :override_project_ci
+          )
+        ]
+      end
+
+      it 'clears the project CI and injects the policy jobs' do
+        run_chain
+
+        expect(pipeline.stages).to be_one
+        pre_stage = pipeline.stages.find { |stage| stage.name == '.pipeline-policy-pre' }
+        expect(pre_stage.statuses.map(&:name)).to contain_exactly('rspec')
       end
     end
 

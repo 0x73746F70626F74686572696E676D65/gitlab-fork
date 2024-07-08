@@ -22,21 +22,28 @@ module EE
               include ::Gitlab::Utils::StrongMemoize
               extend ::Gitlab::Utils::Override
 
-              PipelineExecutionPolicy = Struct.new(:pipeline)
+              PipelineExecutionPolicy = Struct.new(:pipeline, :strategy) do
+                def strategy_override_project_ci?
+                  strategy == :override_project_ci
+                end
+              end
 
               override :perform!
               def perform!
                 return if ::Feature.disabled?(:pipeline_execution_policy_type, project.group)
                 return if command.execution_policy_mode?
                 return if pipeline.dangling?
-                return if pipeline_execution_policy_contents.empty?
+                return if pipeline_execution_policy_configs.empty?
 
                 command.pipeline_execution_policies = []
-                pipeline_execution_policy_contents.each do |content|
-                  response = create_pipeline(content)
+                pipeline_execution_policy_configs.each do |config|
+                  response = create_pipeline(config.content)
 
                   if response.success?
-                    command.pipeline_execution_policies << PipelineExecutionPolicy.new(response.payload)
+                    command.pipeline_execution_policies << PipelineExecutionPolicy.new(
+                      response.payload,
+                      config.strategy
+                    )
                   elsif pipeline_filtered_by_rules?(response.payload)
                     # no-op: we ignore empty pipelines
                   else
@@ -52,10 +59,10 @@ module EE
 
               private
 
-              def pipeline_execution_policy_contents
+              def pipeline_execution_policy_configs
                 ::Gitlab::Security::Orchestration::ProjectPipelineExecutionPolicies.new(project).configs
               end
-              strong_memoize_attr :pipeline_execution_policy_contents
+              strong_memoize_attr :pipeline_execution_policy_configs
 
               def create_pipeline(content)
                 ::Ci::CreatePipelineService

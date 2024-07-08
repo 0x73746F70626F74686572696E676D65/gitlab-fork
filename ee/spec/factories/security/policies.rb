@@ -103,6 +103,10 @@ FactoryBot.define do
     pipeline_config_strategy { 'inject_ci' }
     policy_scope { {} }
 
+    trait :override_project_ci do
+      pipeline_config_strategy { 'override_project_ci' }
+    end
+
     trait :with_policy_scope do
       policy_scope do
         {

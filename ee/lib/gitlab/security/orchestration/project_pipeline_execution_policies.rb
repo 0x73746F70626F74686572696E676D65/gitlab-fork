@@ -6,6 +6,8 @@ module Gitlab
       class ProjectPipelineExecutionPolicies
         POLICY_LIMIT_PER_PIPELINE = 5
 
+        ExecutionPolicyConfig = Struct.new(:content, :strategy)
+
         def initialize(project)
           @project = project
         end
@@ -24,7 +26,7 @@ module Gitlab
             .first(POLICY_LIMIT_PER_PIPELINE)
             .reverse # reverse the order to apply the policy highest in the hierarchy as last
             .map do |policy|
-              policy[:content].to_yaml
+              ExecutionPolicyConfig.new(policy[:content].to_yaml, policy[:pipeline_config_strategy].to_sym)
             end
         end
 
