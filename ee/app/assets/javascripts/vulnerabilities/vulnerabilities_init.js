@@ -2,6 +2,7 @@ import Vue from 'vue';
 import apolloProvider from 'ee/security_dashboard/graphql/provider';
 import App from 'ee/vulnerabilities/components/vulnerability.vue';
 import { convertObjectPropsToCamelCase, parseBoolean } from '~/lib/utils/common_utils';
+import createRouter from 'ee/security_dashboard/router';
 
 export default (el) => {
   if (!el) {
@@ -17,9 +18,12 @@ export default (el) => {
     deep: true,
   });
 
+  const router = createRouter();
+
   return new Vue({
     el,
     name: 'VulnerabilityRoot',
+    router,
     apolloProvider,
     provide: {
       reportType: vulnerability.reportType,

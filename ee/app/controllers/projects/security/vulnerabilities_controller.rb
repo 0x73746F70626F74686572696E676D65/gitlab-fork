@@ -10,6 +10,10 @@ module Projects
       before_action :authorize_admin_vulnerability!, except: [:show, :discussions]
       before_action :authorize_read_vulnerability!, except: [:new]
 
+      before_action do
+        push_frontend_feature_flag(:vulnerability_code_flow, project)
+      end
+
       alias_method :vulnerable, :project
 
       feature_category :vulnerability_management

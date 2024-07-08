@@ -113,3 +113,14 @@ export const DOWNLOAD_PATCH_ACTION = {
   tagline: s__('ciReport|Download the patch to apply it manually'),
   action: 'download-patch',
 };
+
+export const CODE_FLOW_TAB_URL = s__('Vulnerability|code_flow');
+
+export const VULNERABILITY_TAB_NAMES = Object.freeze({
+  DETAILS: s__('Vulnerability|Details'),
+  CODE_FLOW: s__('Vulnerability|Code flow'),
+});
+
+export const VULNERABILITY_TAB_INDEX_TO_NAME = {
+  1: CODE_FLOW_TAB_URL,
+};
