@@ -1685,6 +1685,8 @@
     - !reference [".qa:rules:package-and-test-never-run", rules]
     - <<: *if-fork-merge-request
       when: never
+    - <<: *if-merge-request-targeting-stable-branch
+      when: never
     - <<: *if-merge-request-labels-run-cs-evaluation
     # Otherwise, only run in pipeline::tier-2 and above
     - !reference [".prevent-tier-1", rules]
