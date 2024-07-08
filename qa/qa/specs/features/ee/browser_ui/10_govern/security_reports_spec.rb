@@ -268,12 +268,7 @@ module QA
         page.filter_report_type(filter_report)
         yield
 
-        if page.has_element?("filtered-search-term", wait: 1)
-          # This code to be removed after vulnerability_report_advanced_filtering is enabled by default
-          page.clear_filter_token('tool')
-        else
-          page.filter_report_type(filter_report)
-        end
+        page.clear_filter_token('tool')
       end
 
       def push_security_reports
