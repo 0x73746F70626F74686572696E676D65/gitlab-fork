@@ -96,7 +96,7 @@ export default {
     </div>
     <workspace-empty-state v-if="isEmpty" :new-workspace-path="newWorkspacePath" />
     <template v-else>
-      <div v-if="isLoading" class="gl-p-5 gl-display-flex gl-justify-content-left">
+      <div v-if="isLoading" class="gl-p-5 gl-display-flex">
         <gl-skeleton-loader :lines="4" :equal-width-lines="true" :width="600" />
       </div>
       <div v-else>
