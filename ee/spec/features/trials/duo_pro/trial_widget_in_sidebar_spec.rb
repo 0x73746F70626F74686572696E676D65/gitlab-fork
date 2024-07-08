@@ -39,10 +39,10 @@ RSpec.describe 'Duo Pro Trial Widget in Sidebar', :saas, :js, feature_category: 
 
     context 'on the last day of trial' do
       it 'shows days used and remaining as the same' do
-        travel_to(30.days.from_now) do
+        travel_to(60.days.from_now) do
           visit group_path(group)
 
-          expect_widget_title_to_be('GitLab Duo Pro Trial Day 30/60')
+          expect_widget_title_to_be('GitLab Duo Pro Trial Day 60/60')
         end
       end
     end
@@ -65,7 +65,7 @@ RSpec.describe 'Duo Pro Trial Widget in Sidebar', :saas, :js, feature_category: 
 
         find_by_testid(widget_menu_selector).hover
 
-        expect_popover_content_to_be("We hope you’re enjoying the features of GitLab Duo Pro")
+        expect_popover_content_to_be('To continue using features in GitLab Duo Pro')
 
         expect_launch_and_submit_hand_raise_lead_success
       end
@@ -83,7 +83,7 @@ RSpec.describe 'Duo Pro Trial Widget in Sidebar', :saas, :js, feature_category: 
 
         find_by_testid(widget_menu_selector).hover
 
-        expect_popover_content_to_be("We hope you’re enjoying the features of GitLab Duo Pro")
+        expect_popover_content_to_be('To continue using features in GitLab Duo Pro')
 
         expect_launch_and_submit_hand_raise_lead_success
       end

@@ -56,17 +56,13 @@ describe('DuoProTrialStatusPopover component', () => {
     it('correctly displays when days remaining is 1', () => {
       createComponent({ providers: { daysRemaining: 1 }, mountFn: mountExtended });
 
-      expect(
-        wrapper.findByText("You've got 1 day remaining on your GitLab Duo Pro trial!").exists(),
-      ).toBe(true);
+      expect(wrapper.text()).toContain("You've got 1 day left in your GitLab Duo Pro trial");
     });
 
     it('correct displays when days remaining is 60', () => {
       createComponent({ providers: { daysRemaining: 60 }, mountFn: mountExtended });
 
-      expect(
-        wrapper.findByText("You've got 60 days remaining on your GitLab Duo Pro trial!").exists(),
-      ).toBe(true);
+      expect(wrapper.text()).toContain("You've got 60 days left in your GitLab Duo Pro trial");
     });
   });
 
@@ -80,7 +76,7 @@ describe('DuoProTrialStatusPopover component', () => {
     it('displays correct message when namespace is in active trial', () => {
       createComponent({ providers: { daysRemaining: 5 }, mountFn: mountExtended });
 
-      expect(wrapper.text()).toContain('To continue using your AI-powered assistant');
+      expect(wrapper.text()).toContain('To continue using features in GitLab Duo Pro');
     });
   });
 
