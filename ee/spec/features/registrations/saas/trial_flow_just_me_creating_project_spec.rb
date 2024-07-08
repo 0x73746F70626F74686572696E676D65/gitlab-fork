@@ -11,7 +11,8 @@ RSpec.describe 'Trial flow for user picking just me and creating a project', :js
   end
 
   with_them do
-    it 'registers the user and creates a group and project reaching onboarding', :sidekiq_inline do
+    it 'registers the user and creates a group and project reaching onboarding', :with_default_organization,
+      :sidekiq_inline do
       sign_up_method.call(glm_params)
 
       expect_to_see_welcome_form
