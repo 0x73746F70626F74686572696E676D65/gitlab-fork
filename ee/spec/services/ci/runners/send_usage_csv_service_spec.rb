@@ -49,11 +49,12 @@ RSpec.describe Ci::Runners::SendUsageCsvService, :enable_admin_mode, :click_hous
   end
 
   it 'creates tracking event' do
-    expect(Gitlab::InternalEvents).to receive(:track_event)
-      .with('export_runner_usage_by_project_as_csv', user: current_user,
-        additional_properties: { property: 'instance_type', label: 'instance' })
-
-    response
+    expect { response }.to trigger_internal_events('export_runner_usage_by_project_as_csv')
+      .with(
+        category: 'InternalEventTracking',
+        user: current_user,
+        additional_properties: { property: 'instance_type', label: 'instance' }
+      )
   end
 
   it 'creates audit event' do
@@ -130,11 +131,13 @@ RSpec.describe Ci::Runners::SendUsageCsvService, :enable_admin_mode, :click_hous
       end
 
       it 'creates tracking event' do
-        expect(Gitlab::InternalEvents).to receive(:track_event)
-          .with('export_runner_usage_by_project_as_csv', user: current_user, namespace: specified_scope,
-            additional_properties: { property: 'instance_type', label: 'group' })
-
-        response
+        expect { response }.to trigger_internal_events('export_runner_usage_by_project_as_csv')
+          .with(
+            category: 'InternalEventTracking',
+            user: current_user,
+            namespace: specified_scope,
+            additional_properties: { property: 'instance_type', label: 'group' }
+          )
       end
     end
 
@@ -159,11 +162,13 @@ RSpec.describe Ci::Runners::SendUsageCsvService, :enable_admin_mode, :click_hous
       end
 
       it 'creates tracking event' do
-        expect(Gitlab::InternalEvents).to receive(:track_event)
-          .with('export_runner_usage_by_project_as_csv', user: current_user, project: specified_scope,
-            additional_properties: { property: 'instance_type', label: 'project' })
-
-        response
+        expect { response }.to trigger_internal_events('export_runner_usage_by_project_as_csv')
+          .with(
+            category: 'InternalEventTracking',
+            user: current_user,
+            project: specified_scope,
+            additional_properties: { property: 'instance_type', label: 'project' }
+          )
       end
     end
   end
