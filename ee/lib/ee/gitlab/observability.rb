@@ -8,7 +8,7 @@ module EE
 
       class_methods do
         def analytics_url(project)
-          "#{::Gitlab::Observability.observability_url}/v3/query/#{project.id}/analytics"
+          "#{::Gitlab::Observability.observability_url}/v3/query/#{project.id}/analytics/storage"
         end
 
         def tracing_url(project)
