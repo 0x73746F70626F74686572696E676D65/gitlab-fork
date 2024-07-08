@@ -216,7 +216,9 @@ export default {
       @complete="emitFiltersChanged"
     >
       <template #view>
-        {{ toggleText }}
+        <span data-testid="tool-token-value">
+          {{ toggleText }}
+        </span>
       </template>
       <template #suggestions>
         <template v-if="isSimpleTool">

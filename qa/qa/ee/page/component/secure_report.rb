@@ -74,30 +74,10 @@ module QA
               end
             end
 
-            if has_element?('filtered-search-token', wait: 10)
-              filter_by_status_new(statuses)
-            else
-              filter_by_status_old(statuses)
-            end
+            filter_by_status_new(statuses)
 
             state = statuses_list(statuses).map { |item| "state=#{item}" }.join("&")
             raise 'Status unchanged in the URL' unless page.current_url.downcase.include?(state)
-          end
-
-          def filter_by_status_old(statuses)
-            wait_until(max_duration: 30, message: "Waiting for status dropdown element to appear") do
-              has_element?('filter-status-dropdown')
-            end
-            # Retry on exception to avoid ElementNotFound errors when clicks are sent too fast for the UI to update
-            retry_on_exception(sleep_interval: 2, message: "Retrying status click until current url matches state") do
-              find(status_dropdown_button_selector, wait: 5).click
-              find(status_item_selector('ALL')).click
-              statuses_list(statuses).each do |status|
-                find(status_item_selector(status)).click
-                wait_for_requests # It takes a moment to update the page after changing selections
-              end
-              find(status_dropdown_button_selector, wait: 5).click
-            end
           end
 
           def filter_by_status_new(statuses)

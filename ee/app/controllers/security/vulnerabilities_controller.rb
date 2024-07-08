@@ -9,7 +9,6 @@ module Security
 
     before_action do
       push_frontend_feature_flag(:group_level_vulnerability_report_grouping, @user, type: :development)
-      push_frontend_feature_flag(:vulnerability_report_advanced_filtering, @user, type: :beta)
     end
 
     private
