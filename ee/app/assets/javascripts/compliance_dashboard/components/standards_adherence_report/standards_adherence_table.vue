@@ -117,13 +117,15 @@ export default {
     onGroupSelected(selected) {
       this.selected = selected.text;
 
-      this.$router.push({
-        query: {
-          ...this.$route.query,
-          before: undefined,
-          after: undefined,
-        },
-      });
+      if (this.$route.query.before || this.$route.query.after) {
+        this.$router.push({
+          query: {
+            ...this.$route.query,
+            before: undefined,
+            after: undefined,
+          },
+        });
+      }
     },
   },
   i18n: {
