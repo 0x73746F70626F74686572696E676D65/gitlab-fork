@@ -1,7 +1,7 @@
 = gitlab_ui_form_for @application_setting, url: general_admin_application_settings_path(anchor: 'js-license-compliance-settings'), html: { class: 'fieldset-form', id: 'license-compliance-settings' } do |f|
   = form_errors(@application_setting)
 
-  %fieldset
+  %fieldset{ data: { event_tracking_load: 'true', event_tracking: 'view_admin_application_settings_security_and_compliance_pageload' } }
     .form-group.gl-mb-0
       = f.label :package_metadata_purl_types, s_('AdminSettings|Package registry metadata to sync'), class: 'label-bold gl-mb-0'
       %span.form-text.gl-mt-0.gl-mb-3#package_metadata_purl_types-help
