@@ -56565,6 +56565,9 @@ msgstr ""
 msgid "Unsupported forecast type."
 msgstr ""
 
+msgid "Unsupported signature"
+msgstr ""
+
 msgid "Unsupported sort value."
 msgstr ""
 
