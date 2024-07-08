@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, :sidekiq_inline, feature_category: :onboarding do
   it 'registers the user and sends them to the group page' do
-    group = create(:group, name: 'Test Group')
+    group = create(:group, name: 'Test Group', organization: create(:organization))
 
     registers_from_invite(group: group)
 
@@ -19,7 +19,7 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, :sid
   end
 
   it 'registers the user with identity verification and sends them to the group page' do
-    group = create(:group, name: 'Test Group')
+    group = create(:group, name: 'Test Group', organization: create(:organization))
 
     registers_from_invite_with_arkose(group: group)
 
@@ -40,7 +40,7 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, :sid
   end
 
   it 'registers the user with multiple invites and sends them to the last group page' do
-    group = create(:group, name: 'Test Group')
+    group = create(:group, name: 'Test Group', organization: create(:organization))
 
     create(
       :group_member,
@@ -64,7 +64,7 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, :sid
 
   context 'when the invite email is not lowercased' do
     it 'registers the user and sends them to the group page' do
-      group = create(:group, name: 'Test Group')
+      group = create(:group, name: 'Test Group', organization: create(:organization))
 
       registers_from_invite(group: group, invite_email: user_email.upcase)
 

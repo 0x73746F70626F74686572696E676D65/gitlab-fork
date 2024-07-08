@@ -11,7 +11,7 @@ RSpec.describe 'Standard flow for user picking company and creating a project', 
   end
 
   with_them do
-    context 'when opting into a trial' do
+    context 'when opting into a trial', :with_default_organization do
       it 'registers the user and creates a group and project reaching onboarding', :sidekiq_inline do
         sign_up_method.call(glm_params)
 
@@ -37,7 +37,7 @@ RSpec.describe 'Standard flow for user picking company and creating a project', 
     end
   end
 
-  context 'when last name is missing for SSO and has to be filled in' do
+  context 'when last name is missing for SSO and has to be filled in', :with_default_organization do
     it 'registers the user, has some lead submission failures and creates a group and project reaching onboarding' do
       sso_sign_up(name: 'Registering')
 
