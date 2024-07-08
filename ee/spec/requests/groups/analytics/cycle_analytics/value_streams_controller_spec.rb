@@ -55,7 +55,7 @@ RSpec.describe Groups::Analytics::CycleAnalytics::ValueStreamsController, featur
           { name: 'renamed', setting: { project_ids_filter: [] } }
         end
 
-        it 'clears the filter' do
+        it 'clears the filter', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/446042' do
           value_stream.update!(setting_attributes: { project_ids_filter: [project_1.id, project_2.id] })
 
           expect { request }
