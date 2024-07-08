@@ -53934,6 +53934,9 @@ msgstr ""
 msgid "This also resolves this thread"
 msgstr ""
 
+msgid "This application is provided by GitLab."
+msgstr ""
+
 msgid "This application will be able to:"
 msgstr ""
 
