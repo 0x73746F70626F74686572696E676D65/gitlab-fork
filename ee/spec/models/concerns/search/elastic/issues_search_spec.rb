@@ -124,18 +124,6 @@ RSpec.describe ::Search::Elastic::IssuesSearch, :elastic_helpers, feature_catego
           end
         end
 
-        context 'when elaticsearch_issue_upsert feature flag is disabled' do
-          before do
-            stub_feature_flags(elaticsearch_issue_upsert: false)
-          end
-
-          it 'does not track the embedding' do
-            expect(::Search::Elastic::ProcessEmbeddingBookkeepingService).not_to receive(:track_embedding!)
-
-            record.maintain_elasticsearch_update
-          end
-        end
-
         context 'when elasticsearch_issue_embedding feature flag is disabled' do
           before do
             stub_feature_flags(elasticsearch_issue_embedding: false)
@@ -294,18 +282,6 @@ RSpec.describe ::Search::Elastic::IssuesSearch, :elastic_helpers, feature_catego
         context 'when ai_vertex_embeddings feature is not available' do
           before do
             allow(Gitlab::Saas).to receive(:feature_available?).with(:ai_vertex_embeddings).and_return(false)
-          end
-
-          it 'does not track the embedding' do
-            expect(::Search::Elastic::ProcessEmbeddingBookkeepingService).not_to receive(:track_embedding!)
-
-            record.maintain_elasticsearch_create
-          end
-        end
-
-        context 'when elaticsearch_issue_upsert feature flag is disabled' do
-          before do
-            stub_feature_flags(elaticsearch_issue_upsert: false)
           end
 
           it 'does not track the embedding' do
