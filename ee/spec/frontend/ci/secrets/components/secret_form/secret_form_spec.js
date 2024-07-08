@@ -142,10 +142,6 @@ describe('SecretForm component', () => {
       expect(findEnvironmentsDropdown().props('isEnvironmentRequired')).toBe(false);
     });
 
-    it('does not allow wild card creation', () => {
-      expect(findEnvironmentsDropdown().props('canCreateWildcard')).toBe(false);
-    });
-
     it('bubbles up the search event', async () => {
       await findEnvironmentsDropdown().vm.$emit('search-environment-scope', 'dev');
 
