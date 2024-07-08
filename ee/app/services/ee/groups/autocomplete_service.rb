@@ -29,9 +29,9 @@ module EE
         return [] unless can?(current_user, :read_wiki, wiki.container)
 
         wiki
-          .list_pages(limit: 5000)
+          .list_pages(limit: 5000, load_content: true, size_limit: 512)
           .reject { |page| page.slug.start_with?('templates/') }
-          .map { |page| { path: wiki_page_path(page.wiki, page), slug: page.slug, title: page.title } }
+          .map { |page| { path: wiki_page_path(page.wiki, page), slug: page.slug, title: page.human_title } }
       end
 
       def vulnerabilities
