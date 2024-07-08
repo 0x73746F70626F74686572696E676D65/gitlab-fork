@@ -1,3 +1,4 @@
+import { isEmpty } from 'lodash';
 import { parseBoolean } from '~/lib/utils/common_utils';
 
 /**
@@ -103,3 +104,12 @@ export const logLinesParser = (
 
   return { lines, sections };
 };
+
+/**
+ * Checks if the job has a log.
+ *
+ * @returns {Boolean}
+ */
+export const checkJobHasLog = (state) =>
+  // update has_trace once BE completes trace re-naming in #340626
+  state.job.has_trace || (!isEmpty(state.job.status) && state.job.status.group === 'running');

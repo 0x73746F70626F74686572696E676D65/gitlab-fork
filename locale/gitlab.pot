@@ -5471,13 +5471,13 @@ msgstr ""
 msgid "An error occurred while fetching the health status."
 msgstr ""
 
-msgid "An error occurred while fetching the job log."
+msgid "An error occurred while fetching the job log. The information presented below may not be accurate. Refresh the page to retrieve the latest job log."
 msgstr ""
 
 msgid "An error occurred while fetching the job logs."
 msgstr ""
 
-msgid "An error occurred while fetching the job."
+msgid "An error occurred while fetching the job. The information presented below may not be accurate. Refresh the page to retrieve the latest job log."
 msgstr ""
 
 msgid "An error occurred while fetching the jobs."
