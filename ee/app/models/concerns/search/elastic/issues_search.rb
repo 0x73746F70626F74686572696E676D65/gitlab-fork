@@ -39,7 +39,6 @@ module Search
           instance_of?(Issue) &&
             project&.public? &&
             Feature.enabled?(:ai_global_switch, type: :ops) &&
-            Feature.enabled?(:elaticsearch_issue_upsert, type: :gitlab_com_derisk) &&
             Feature.enabled?(:elasticsearch_issue_embedding, project, type: :ops) &&
             Gitlab::Saas.feature_available?(:ai_vertex_embeddings) &&
             Gitlab::Elastic::Helper.default.vectors_supported?(:elasticsearch) &&

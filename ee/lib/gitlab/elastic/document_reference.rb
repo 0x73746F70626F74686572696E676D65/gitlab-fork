@@ -150,8 +150,7 @@ module Gitlab
       end
 
       def issue_upsert?
-        Feature.enabled?(:elaticsearch_issue_upsert, type: :gitlab_com_derisk) &&
-          ::Elastic::DataMigrationService.migration_has_finished?(:add_routing_to_issues)
+        ::Elastic::DataMigrationService.migration_has_finished?(:add_routing_to_issues)
       end
     end
   end

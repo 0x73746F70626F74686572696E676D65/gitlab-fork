@@ -236,12 +236,6 @@ RSpec.describe Gitlab::Elastic::DocumentReference, feature_category: :global_sea
         expect(issue_as_ref.operation).to eq(:upsert)
       end
 
-      it 'is index if the elaticsearch_issue_upsert feature flag is disabled' do
-        stub_feature_flags(elaticsearch_issue_upsert: false)
-
-        expect(issue_as_ref.operation).to eq(:index)
-      end
-
       it 'is index if routing is not added to the issues index' do
         allow(::Elastic::DataMigrationService)
           .to receive(:migration_has_finished?).with(:add_routing_to_issues).and_return(false)
