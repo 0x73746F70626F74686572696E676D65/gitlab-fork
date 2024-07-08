@@ -8,7 +8,7 @@ export default {
     conditionText: s__(
       'SecurityOrchestration|Configure your conditions in the pipeline execution file. %{linkStart}What can pipeline execution do?%{linkEnd}',
     ),
-    helpPageLink: helpPagePath('user/application_security/policies/pipeline-execution-policies'),
+    helpPageLink: helpPagePath('user/application_security/policies/pipeline_execution_policies'),
   },
   components: {
     GlLink,

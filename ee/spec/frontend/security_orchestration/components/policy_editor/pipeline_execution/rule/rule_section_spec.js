@@ -34,7 +34,7 @@ describe('RuleSection', () => {
     expect(findGlLink().exists()).toBe(true);
     expect(findGlLink().text()).toBe('What can pipeline execution do?');
     expect(findGlLink().attributes('href')).toBe(
-      '/help/user/application_security/policies/pipeline-execution-policies',
+      '/help/user/application_security/policies/pipeline_execution_policies',
     );
   });
 });
