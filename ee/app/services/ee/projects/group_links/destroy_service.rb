@@ -43,7 +43,7 @@ module EE
         def enqueue_refresh_add_on_assignments_woker(link)
           namespace = link.project.root_ancestor
 
-          return unless gitlab_com_subscription? && gitlab_duo_available?(namespace)
+          return unless gitlab_com_subscription?
 
           GitlabSubscriptions::AddOnPurchases::RefreshUserAssignmentsWorker.perform_async(namespace.id)
         end

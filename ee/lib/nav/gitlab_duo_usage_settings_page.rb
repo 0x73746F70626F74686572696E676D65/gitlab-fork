@@ -13,7 +13,7 @@ module Nav
 
     def show_gitlab_duo_usage_app?(group)
       gitlab_com_subscription? &&
-        gitlab_duo_available?(group) &&
+        gitlab_duo_available? &&
         (!group.has_free_or_no_subscription? || group.subscription_add_on_purchases.active.for_gitlab_duo_pro.any?) &&
         License.feature_available?(:code_suggestions)
     end

@@ -51,7 +51,7 @@ module Mutations
         attr_reader :add_on_purchase, :user_to_be_assigned
 
         def feature_enabled?
-          gitlab_duo_available?(add_on_purchase&.namespace)
+          gitlab_duo_available?
         end
 
         def create_user_add_on_service

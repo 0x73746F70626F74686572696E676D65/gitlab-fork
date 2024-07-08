@@ -55,7 +55,7 @@ module Mutations
         attr_reader :add_on_purchase, :user_to_be_removed
 
         def feature_enabled?
-          gitlab_duo_available?(add_on_purchase&.namespace)
+          gitlab_duo_available?
         end
 
         def log_event
