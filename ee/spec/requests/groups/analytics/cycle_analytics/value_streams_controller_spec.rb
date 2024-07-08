@@ -41,7 +41,7 @@ RSpec.describe Groups::Analytics::CycleAnalytics::ValueStreamsController, featur
 
       subject(:request) { put path_for(value_stream), params: { value_stream: value_stream_params } }
 
-      it 'updates project ids filter array' do
+      it 'updates project ids filter array', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/446041' do
         value_stream.update!(setting_attributes: { project_ids_filter: [project_1.id] })
 
         expect { request }
