@@ -98,13 +98,6 @@ export default {
     content() {
       return this.policy?.content;
     },
-    disableSubmitButton() {
-      return this.disableSubmit || this.hasEmptyContent;
-    },
-    hasEmptyContent() {
-      const { project, file } = this.policy?.content?.include?.[0] || {};
-      return !project && !file;
-    },
   },
   watch: {
     content(newVal) {
@@ -221,7 +214,6 @@ export default {
   <editor-layout
     v-if="!disableScanPolicyUpdate"
     :custom-save-button-text="$options.i18n.createMergeRequest"
-    :disable-update="disableSubmitButton"
     :has-parsing-error="hasParsingError"
     :is-editing="isEditing"
     :is-removing-policy="isRemovingPolicy"

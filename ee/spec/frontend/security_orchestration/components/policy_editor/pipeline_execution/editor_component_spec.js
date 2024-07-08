@@ -247,7 +247,6 @@ describe('EditorComponent', () => {
       it('does not validate on new linked file section', () => {
         factory();
         expect(doesFileExist).toHaveBeenCalledTimes(0);
-        expect(findPolicyEditorLayout().props('disableUpdate')).toBe(true);
       });
     });
 
@@ -268,7 +267,6 @@ describe('EditorComponent', () => {
         await findActionSection().vm.$emit('changed', 'content', payload);
 
         expect(doesFileExist).toHaveBeenCalledWith(expectedResult);
-        expect(findPolicyEditorLayout().props('disableUpdate')).toBe(false);
       });
 
       it('calls validation when switched to yaml mode', async () => {
@@ -283,7 +281,6 @@ describe('EditorComponent', () => {
           fullPath: 'gitlab-policies/js6',
           ref: 'main',
         });
-        expect(findPolicyEditorLayout().props('disableUpdate')).toBe(false);
       });
     });
 
@@ -315,7 +312,6 @@ describe('EditorComponent', () => {
         await findActionSection().vm.$emit('changed', 'content', payload);
 
         expect(doesFileExist).toHaveBeenCalledWith(expectedResult);
-        expect(findPolicyEditorLayout().props('disableUpdate')).toBe(false);
       });
     });
   });

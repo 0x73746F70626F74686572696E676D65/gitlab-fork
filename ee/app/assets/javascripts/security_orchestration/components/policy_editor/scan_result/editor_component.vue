@@ -178,9 +178,6 @@ export default {
       const usedActionTypes = this.actionsForRuleMode.map((action) => action.type);
       return ACTION_LISTBOX_ITEMS.filter((item) => !usedActionTypes.includes(item.value));
     },
-    disableUpdate() {
-      return !this.hasParsingError && this.hasEmptyActions && this.hasEmptySettings;
-    },
     fallbackBehaviorSetting() {
       return this.policy.fallback_behavior?.fail || CLOSED;
     },
@@ -497,7 +494,6 @@ export default {
   <editor-layout
     v-if="!disableScanPolicyUpdate"
     :custom-save-button-text="$options.i18n.createMergeRequest"
-    :disable-update="disableUpdate"
     :has-parsing-error="hasParsingError"
     :is-editing="isEditing"
     :is-removing-policy="isRemovingPolicy"
