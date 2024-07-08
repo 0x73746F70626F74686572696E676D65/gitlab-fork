@@ -55,7 +55,6 @@ export default {
       disabled: false,
     };
   },
-  popoverContent: DUO_PRO_TRIAL_POPOVER_CONTENT,
   purchaseNowTitle: DUO_PRO_TRIAL_POPOVER_PURCHASE_TITLE,
   learnAboutButtonTitle: DUO_PRO_TRIAL_POPOVER_LEARN_TITLE,
   hideDelay: { hide: POPOVER_HIDE_DELAY },
@@ -80,8 +79,8 @@ export default {
     },
     popoverTitle() {
       const i18nPopoverTitle = n__(
-        "DuoProTrial|You've got %{daysRemaining} day remaining on your GitLab Duo Pro trial!",
-        "DuoProTrial|You've got %{daysRemaining} days remaining on your GitLab Duo Pro trial!",
+        "DuoProTrial|You've got %{daysRemaining} day left in your GitLab Duo Pro trial",
+        "DuoProTrial|You've got %{daysRemaining} days left in your GitLab Duo Pro trial",
         this.daysRemaining,
       );
 
@@ -90,7 +89,7 @@ export default {
       });
     },
     popoverContent() {
-      return sprintf(this.$options.popoverContent, {
+      return sprintf(DUO_PRO_TRIAL_POPOVER_CONTENT, {
         trialEndDate: this.formattedTrialEndDate,
       });
     },

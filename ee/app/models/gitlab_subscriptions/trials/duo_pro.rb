@@ -17,12 +17,17 @@ module GitlabSubscriptions
         return false unless user.present?
 
         ::Gitlab::Saas.feature_available?(:subscriptions_trials) &&
-          GitlabSubscriptions::DuoPro::NamespaceAddOnPurchasesFinder.new(namespace, trial: true).execute.any? &&
-          user.can?(:admin_namespace, namespace)
+          user.can?(:admin_namespace, namespace) &&
+          GitlabSubscriptions::Trials::DuoProStatus.new(
+            add_on_purchase: add_on_purchase_for_namespace(namespace.root_ancestor)
+          ).show?
       end
 
       def self.add_on_purchase_for_namespace(namespace)
-        GitlabSubscriptions::DuoPro::NamespaceAddOnPurchasesFinder.new(namespace, trial: true).execute.first
+        GitlabSubscriptions::DuoPro::NamespaceAddOnPurchasesFinder
+          .new(namespace, trial: true, only_active: false)
+          .execute
+          .first
       end
     end
   end

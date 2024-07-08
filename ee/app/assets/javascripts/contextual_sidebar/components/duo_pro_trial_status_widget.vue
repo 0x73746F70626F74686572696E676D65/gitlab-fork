@@ -21,11 +21,10 @@ export default {
     widgetUrl: {},
   },
   widgetTitle: DUO_PRO_TRIAL_WIDGET_TITLE,
-  widgetRemainingDays: DUO_PRO_TRIAL_WIDGET_DAYS_TEXT,
   gitlabLogo: GITLAB_LOGO_URL,
   computed: {
     widgetRemainingDays() {
-      return sprintf(this.$options.widgetRemainingDays, {
+      return sprintf(DUO_PRO_TRIAL_WIDGET_DAYS_TEXT, {
         daysUsed: this.trialDaysUsed,
         duration: this.trialDuration,
       });

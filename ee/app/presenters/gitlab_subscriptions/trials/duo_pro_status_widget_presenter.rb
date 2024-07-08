@@ -8,7 +8,7 @@ module GitlabSubscriptions
       presents ::Namespace, as: :namespace
 
       def eligible_for_widget?
-        duo_pro_trial_add_on_purchase.present?
+        GitlabSubscriptions::Trials::DuoProStatus.new(add_on_purchase: duo_pro_trial_add_on_purchase).show?
       end
 
       def attributes
