@@ -6,17 +6,17 @@ exports[`Metric table for the change_failure_rate table row when the data is loa
     
       Go to docs
       
-        10.0%
+        20.0%
+       
+        40.0%
+       
+        60.0%
        
         20.0%
        
         40.0%
        
-        10.0%
-       
-        20.0%
-       
-        40.0%
+        60.0%
        
   100.0%"
 `;
@@ -48,19 +48,19 @@ exports[`Metric table for the cycle_time table row when the data is loaded rende
     
       Go to docs
       
-        4.0 d
+        1.0 d
        
         2.0 d
        
-        1.0 d
-       
         4.0 d
+       
+        1.0 d
        
         2.0 d
        
-        1.0 d
+        4.0 d
        
-  50.0%"
+  100.0%"
 `;
 
 exports[`Metric table for the deployment_frequency table row when the data is loaded renders the metric values 1`] = `
@@ -90,7 +90,7 @@ exports[`Metric table for the lead_time table row when the data is loaded render
     
       Go to docs
       
-        -
+        1.0 d
        
         2.0 d
        
@@ -100,7 +100,9 @@ exports[`Metric table for the lead_time table row when the data is loaded render
        
         2.0 d
        
-        4.0 d"
+        4.0 d
+       
+  100.0%"
 `;
 
 exports[`Metric table for the vulnerability_critical table row when the data is loaded renders the metric values 1`] = `

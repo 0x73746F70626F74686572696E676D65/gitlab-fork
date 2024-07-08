@@ -34762,6 +34762,9 @@ msgstr ""
 msgid "No branches found"
 msgstr ""
 
+msgid "No change"
+msgstr ""
+
 msgid "No change to this %{noun}'s draft status."
 msgstr ""
 
@@ -63614,6 +63617,9 @@ msgid "my-channel"
 msgstr ""
 
 msgid "my-topic"
+msgstr ""
+
+msgid "n/a"
 msgstr ""
 
 msgid "needs to be between 10 minutes and 1 month"

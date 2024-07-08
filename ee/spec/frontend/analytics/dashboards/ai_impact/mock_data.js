@@ -148,104 +148,55 @@ export const mockAiMetricsValues = [
   },
 ];
 
+const mockTableRow = (
+  deploymentFrequency,
+  changeFailureRate,
+  cycleTime,
+  leadTime,
+  criticalVulnerabilities,
+  [codeSuggestionsContributorsCount, codeContributorsCount],
+) => ({
+  deploymentFrequency,
+  changeFailureRate,
+  cycleTime,
+  leadTime,
+  criticalVulnerabilities,
+  codeSuggestionsContributorsCount,
+  codeContributorsCount,
+});
+
 export const mockTableValues = [
-  {
-    deploymentFrequency: 10,
-    changeFailureRate: 0.1,
-    cycleTime: 4,
-    leadTime: 0,
-    criticalVulnerabilities: 40,
-    codeSuggestionsUsageRate: 5,
-  },
-  {
-    deploymentFrequency: 20,
-    changeFailureRate: 0.2,
-    cycleTime: 2,
-    leadTime: 2,
-    criticalVulnerabilities: 20,
-    codeSuggestionsUsageRate: 10,
-  },
-  {
-    deploymentFrequency: 40,
-    changeFailureRate: 0.4,
-    cycleTime: 1,
-    leadTime: 4,
-    criticalVulnerabilities: 10,
-    codeSuggestionsUsageRate: 25,
-  },
-  {
-    deploymentFrequency: 10,
-    changeFailureRate: 0.1,
-    cycleTime: 4,
-    leadTime: 1,
-    criticalVulnerabilities: 40,
-    codeSuggestionsUsageRate: 5,
-  },
-  {
-    deploymentFrequency: 20,
-    changeFailureRate: 0.2,
-    cycleTime: 2,
-    leadTime: 2,
-    criticalVulnerabilities: 20,
-    codeSuggestionsUsageRate: 10,
-  },
-  {
-    deploymentFrequency: 40,
-    changeFailureRate: 0.4,
-    cycleTime: 1,
-    leadTime: 4,
-    criticalVulnerabilities: 10,
-    codeSuggestionsUsageRate: 25,
-  },
+  mockTableRow(10, 0.2, 1, 1, 40, [1, 20]),
+  mockTableRow(20, 0.4, 2, 2, 20, [1, 10]),
+  mockTableRow(40, 0.6, 4, 4, 10, [1, 4]),
+  mockTableRow(10, 0.2, 1, 1, 40, [1, 20]),
+  mockTableRow(20, 0.4, 2, 2, 20, [1, 10]),
+  mockTableRow(40, 0.6, 4, 4, 10, [1, 4]),
 ];
 
 export const mockTableLargeValues = [
-  {
-    deploymentFrequency: 10000,
-    changeFailureRate: 0.1,
-    cycleTime: 4,
-    leadTime: 0,
-    criticalVulnerabilities: 4000,
-    codeSuggestionsUsageRate: 500,
-  },
-  {
-    deploymentFrequency: 20000,
-    changeFailureRate: 0.2,
-    cycleTime: 2,
-    leadTime: 2,
-    criticalVulnerabilities: 2000,
-    codeSuggestionsUsageRate: 1000,
-  },
-  {
-    deploymentFrequency: 40000,
-    changeFailureRate: 0.4,
-    cycleTime: 1,
-    leadTime: 4,
-    criticalVulnerabilities: 1000,
-    codeSuggestionsUsageRate: 2500,
-  },
-  {
-    deploymentFrequency: 10000,
-    changeFailureRate: 0.1,
-    cycleTime: 4,
-    leadTime: 1,
-    criticalVulnerabilities: 4000,
-    codeSuggestionsUsageRate: 5000,
-  },
-  {
-    deploymentFrequency: 20000,
-    changeFailureRate: 0.2,
-    cycleTime: 2,
-    leadTime: 2,
-    criticalVulnerabilities: 2000,
-    codeSuggestionsUsageRate: 1000,
-  },
-  {
-    deploymentFrequency: 40,
-    changeFailureRate: 0.4,
-    cycleTime: 1,
-    leadTime: 4,
-    criticalVulnerabilities: 5000,
-    codeSuggestionsUsageRate: 2500,
-  },
+  mockTableRow(10000, 0.1, 4, 0, 4000, [500, 1000]),
+  mockTableRow(20000, 0.2, 2, 2, 2000, [1000, 2000]),
+  mockTableRow(40000, 0.4, 1, 4, 1000, [2500, 5000]),
+  mockTableRow(10000, 0.1, 4, 1, 4000, [5000, 10000]),
+  mockTableRow(20000, 0.2, 2, 2, 2000, [1000, 2000]),
+  mockTableRow(40, 0.4, 1, 4, 5000, [2500, 5000]),
+];
+
+export const mockTableBlankValues = [
+  mockTableRow('-', '-', '-', '-', '-', ['-', '-']),
+  mockTableRow('-', '-', '-', '-', '-', ['-', '-']),
+  mockTableRow('-', '-', '-', '-', '-', ['-', '-']),
+  mockTableRow('-', '-', '-', '-', '-', ['-', '-']),
+  mockTableRow('-', '-', '-', '-', '-', ['-', '-']),
+  mockTableRow('-', '-', '-', '-', '-', ['-', '-']),
+];
+
+export const mockTableZeroValues = [
+  mockTableRow(0, 0, 0, 0, 0, [0, 0]),
+  mockTableRow(0, 0, 0, 0, 0, [0, 0]),
+  mockTableRow(0, 0, 0, 0, 0, [0, 0]),
+  mockTableRow(0, 0, 0, 0, 0, [0, 0]),
+  mockTableRow(0, 0, 0, 0, 0, [0, 0]),
+  mockTableRow(0, 0, 0, 0, 0, [0, 0]),
 ];

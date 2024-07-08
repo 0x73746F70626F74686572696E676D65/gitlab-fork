@@ -386,6 +386,7 @@ Object {
       "value": "8.9%",
     },
     "change": Object {
+      "tooltip": undefined,
       "value": -0.15730337078651688,
     },
     "this-month": Object {
@@ -415,6 +416,7 @@ Object {
       "value": "0.0%",
     },
     "change": Object {
+      "tooltip": "No change",
       "value": 0,
     },
     "this-month": Object {
@@ -444,7 +446,8 @@ Object {
       "value": "10.0/d",
     },
     "change": Object {
-      "value": 0,
+      "tooltip": "No data available",
+      "value": "n/a",
     },
     "this-month": Object {
       "tooltip": undefined,
