@@ -34,164 +34,78 @@ RSpec.describe Elastic::Latest::MergeRequestClassProxy, :elastic, :sidekiq_inlin
       ensure_elasticsearch_index!
     end
 
-    context 'when search_merge_request_query_builder is disabled' do
-      before do
-        stub_feature_flags(search_merge_request_query_builder: false)
-      end
+    context 'when search query is an iid' do
+      let_it_be(:query) { "!#{active_user_mr.iid}" }
 
-      context 'when search query is an iid' do
-        let_it_be(:query) { "!#{active_user_mr.iid}" }
+      it 'has the correct named queries' do
+        result.response
 
-        it 'has the correct named queries' do
-          result.response
-
-          assert_named_queries(
-            'merge_request:related:iid',
-            'doc:is_a:merge_request'
-          )
-        end
-      end
-
-      context 'when include_archived is set' do
-        let(:options) { { include_archived: true } }
-
-        it 'does not have a filter for archived' do
-          result.response
-
-          assert_named_queries('merge_request:match:search_terms',
-            without: ['merge_request:archived:non_archived'])
-        end
-      end
-
-      describe 'search on basis of hidden attribute' do
-        context 'when feature_flag hide_merge_requests_from_banned_users is disabled' do
-          before do
-            stub_feature_flags(hide_merge_requests_from_banned_users: false)
-          end
-
-          it 'includes merge_requests from the banned authors' do
-            expect(elasticsearch_hit_ids(result)).to match_array([active_user_mr.id, banned_user_mr.id])
-          end
-        end
-
-        context 'when feature_flag hide_merge_requests_from_banned_users is enabled' do
-          context 'when current_user is non admin' do
-            it 'does not include merge_requests from the banned authors' do
-              expect(elasticsearch_hit_ids(result)).to match_array([active_user_mr.id])
-            end
-
-            it 'has the correct named queries' do
-              result.response
-
-              assert_named_queries(
-                'merge_request:match:search_terms',
-                'merge_request:archived:non_archived'
-              )
-            end
-          end
-
-          context 'when current_user is anonymous' do
-            let(:current_user) { nil }
-
-            it 'does not include merge_requests from the banned authors' do
-              expect(elasticsearch_hit_ids(result)).to match_array([active_user_mr.id])
-            end
-          end
-
-          context 'when current_user is admin' do
-            let_it_be(:admin) { create(:user, :admin) }
-            let(:current_user) { admin }
-
-            before do
-              allow(admin).to receive(:can_admin_all_resources?).and_return(true)
-            end
-
-            it 'includes merge_requests from the banned authors' do
-              expect(elasticsearch_hit_ids(result)).to match_array([active_user_mr.id, banned_user_mr.id])
-            end
-          end
-        end
+        assert_named_queries(
+          'merge_request:related:iid',
+          'doc:is_a:merge_request'
+        )
       end
     end
 
-    context 'when search_merge_request_query_builder is enabled' do
-      before do
-        stub_feature_flags(search_merge_request_query_builder: true)
+    context 'when include_archived is set' do
+      let(:options) { { include_archived: true } }
+
+      it 'does not have a filter for archived' do
+        result.response
+
+        assert_named_queries('merge_request:match:search_terms', without: ['filters:non_archived'])
       end
+    end
 
-      context 'when search query is an iid' do
-        let_it_be(:query) { "!#{active_user_mr.iid}" }
+    describe 'search on basis of hidden attribute' do
+      context 'when feature_flag hide_merge_requests_from_banned_users is disabled' do
+        let(:current_user) { user }
 
-        it 'has the correct named queries' do
-          result.response
+        before do
+          stub_feature_flags(hide_merge_requests_from_banned_users: false)
+        end
 
-          assert_named_queries(
-            'merge_request:related:iid',
-            'doc:is_a:merge_request'
-          )
+        it 'includes merge_requests from the banned authors' do
+          expect(elasticsearch_hit_ids(result)).to match_array([active_user_mr.id, banned_user_mr.id])
         end
       end
 
-      context 'when include_archived is set' do
-        let(:options) { { include_archived: true } }
-
-        it 'does not have a filter for archived' do
-          result.response
-
-          assert_named_queries('merge_request:match:search_terms', without: ['filters:non_archived'])
-        end
-      end
-
-      describe 'search on basis of hidden attribute' do
-        context 'when feature_flag hide_merge_requests_from_banned_users is disabled' do
+      context 'when feature_flag hide_merge_requests_from_banned_users is enabled' do
+        context 'when current_user is non admin' do
           let(:current_user) { user }
 
+          it 'does not include merge_requests from the banned authors' do
+            expect(elasticsearch_hit_ids(result)).to match_array([active_user_mr.id])
+          end
+
+          it 'has the correct named queries' do
+            result.response
+
+            assert_named_queries(
+              'merge_request:match:search_terms',
+              'filters:non_archived'
+            )
+          end
+        end
+
+        context 'when current_user is anonymous' do
+          let(:current_user) { nil }
+
+          it 'does not include merge_requests from the banned authors' do
+            expect(elasticsearch_hit_ids(result)).to match_array([active_user_mr.id])
+          end
+        end
+
+        context 'when current_user is admin' do
+          let_it_be(:admin) { create(:user, :admin) }
+          let(:current_user) { admin }
+
           before do
-            stub_feature_flags(hide_merge_requests_from_banned_users: false)
+            allow(admin).to receive(:can_admin_all_resources?).and_return(true)
           end
 
           it 'includes merge_requests from the banned authors' do
             expect(elasticsearch_hit_ids(result)).to match_array([active_user_mr.id, banned_user_mr.id])
-          end
-        end
-
-        context 'when feature_flag hide_merge_requests_from_banned_users is enabled' do
-          context 'when current_user is non admin' do
-            let(:current_user) { user }
-
-            it 'does not include merge_requests from the banned authors' do
-              expect(elasticsearch_hit_ids(result)).to match_array([active_user_mr.id])
-            end
-
-            it 'has the correct named queries' do
-              result.response
-
-              assert_named_queries(
-                'merge_request:match:search_terms',
-                'filters:non_archived'
-              )
-            end
-          end
-
-          context 'when current_user is anonymous' do
-            let(:current_user) { nil }
-
-            it 'does not include merge_requests from the banned authors' do
-              expect(elasticsearch_hit_ids(result)).to match_array([active_user_mr.id])
-            end
-          end
-
-          context 'when current_user is admin' do
-            let_it_be(:admin) { create(:user, :admin) }
-            let(:current_user) { admin }
-
-            before do
-              allow(admin).to receive(:can_admin_all_resources?).and_return(true)
-            end
-
-            it 'includes merge_requests from the banned authors' do
-              expect(elasticsearch_hit_ids(result)).to match_array([active_user_mr.id, banned_user_mr.id])
-            end
           end
         end
       end
