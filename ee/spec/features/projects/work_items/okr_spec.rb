@@ -257,7 +257,7 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
       end
     end
 
-    it 'creates objective' do
+    it 'creates objective', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/450035' do
       # https://gitlab.com/gitlab-org/gitlab/-/issues/467207
       allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(300)
 
