@@ -55,7 +55,7 @@ export default {
     placement: {
       type: String,
       required: false,
-      default: 'left',
+      default: 'bottom-start',
     },
     selected: {
       type: [Array, String],
