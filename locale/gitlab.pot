@@ -2168,6 +2168,9 @@ msgstr ""
 msgid "AI|An error occurred while explaining the code."
 msgstr ""
 
+msgid "AI|An error occurred while troubleshooting the failed job."
+msgstr ""
+
 msgid "AI|Apply AI-generated description"
 msgstr ""
 

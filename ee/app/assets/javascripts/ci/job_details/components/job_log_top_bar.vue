@@ -2,10 +2,14 @@
 import { GlButton } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapState } from 'vuex';
+import { createAlert } from '~/alert';
+import { s__ } from '~/locale';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import chatMutation from 'ee/ai/graphql/chat.mutation.graphql';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPENAME_CI_BUILD } from '~/graphql_shared/constants';
 import CeJobLogTopBar from '~/ci/job_details/components/job_log_top_bar.vue';
+import { helpCenterState } from '~/super_sidebar/constants';
 import RootCauseAnalysis from './sidebar/root_cause_analysis/root_cause_analysis_app.vue';
 
 export default {
@@ -15,7 +19,7 @@ export default {
     RootCauseAnalysis,
   },
   mixins: [glFeatureFlagMixin()],
-  inject: ['aiRootCauseAnalysisAvailable', 'duoFeaturesEnabled'],
+  inject: ['aiRootCauseAnalysisAvailable', 'duoFeaturesEnabled', 'jobGid'],
   props: {
     size: {
       type: Number,
@@ -71,7 +75,16 @@ export default {
       return (
         this.glFeatures.aiBuildFailureCause &&
         this.aiRootCauseAnalysisAvailable &&
-        this.duoFeaturesEnabled
+        this.duoFeaturesEnabled &&
+        !this.glFeatures.rootCauseAnalysisDuo
+      );
+    },
+    rootCauseAnalysisDuoIsAvailable() {
+      return (
+        this.glFeatures.aiBuildFailureCause &&
+        this.aiRootCauseAnalysisAvailable &&
+        this.duoFeaturesEnabled &&
+        this.glFeatures.rootCauseAnalysisDuo
       );
     },
     jobFailed() {
@@ -83,6 +96,9 @@ export default {
     },
     jobId() {
       return convertToGraphQLId(TYPENAME_CI_BUILD, this.job.id);
+    },
+    duoDrawerOpen() {
+      return helpCenterState.showTanukiBotChatDrawer;
     },
     ...mapState(['job', 'isLoading']),
   },
@@ -104,6 +120,25 @@ export default {
     },
     handleExitFullscreen() {
       this.$emit('exitFullscreen');
+    },
+    callDuo() {
+      helpCenterState.showTanukiBotChatDrawer = true;
+
+      this.$apollo
+        .mutate({
+          mutation: chatMutation,
+          variables: {
+            question: '/rca',
+            resourceId: this.jobGid,
+          },
+        })
+        .catch((error) => {
+          createAlert({
+            message: s__('AI|An error occurred while troubleshooting the failed job.'),
+            captureError: true,
+            error,
+          });
+        });
     },
   },
 };
@@ -139,9 +174,19 @@ export default {
         <gl-button
           v-if="rootCauseAnalysisIsAvailable && jobFailed"
           icon="tanuki-ai"
-          class="gl-mr-2"
+          class="gl-mr-3"
           data-testid="rca-button"
           @click="toggleDrawer"
+        >
+          {{ s__('Jobs|Troubleshoot') }}
+        </gl-button>
+        <gl-button
+          v-if="rootCauseAnalysisDuoIsAvailable && jobFailed"
+          :disabled="duoDrawerOpen"
+          icon="tanuki-ai"
+          class="gl-mr-3"
+          data-testid="rca-duo-button"
+          @click="callDuo"
         >
           {{ s__('Jobs|Troubleshoot') }}
         </gl-button>
