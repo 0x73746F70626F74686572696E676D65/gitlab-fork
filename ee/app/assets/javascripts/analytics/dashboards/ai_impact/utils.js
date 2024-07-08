@@ -110,14 +110,24 @@ const buildTableRow = ({ identifier, units, timePeriods }) => {
 
   const firstMonth = timePeriods.find((timePeriod) => timePeriod.key === getColumnKeyForMonth(1));
   const lastMonth = timePeriods.find((timePeriod) => timePeriod.key === getColumnKeyForMonth(5));
-  row.change = {
-    value: percentChange({
-      current: firstMonth[identifier]?.value !== '-' ? firstMonth[identifier].value : 0,
-      previous: lastMonth[identifier]?.value !== '-' ? lastMonth[identifier].value : 0,
-    }),
-  };
 
-  return row;
+  let changeValue = __('n/a');
+  let tooltip = __('No data available');
+  if (firstMonth[identifier]?.value !== '-' && lastMonth[identifier]?.value !== '-') {
+    const current = firstMonth[identifier].value;
+    const previous = lastMonth[identifier].value;
+
+    changeValue = percentChange({ current, previous });
+    tooltip = changeValue === 0 ? __('No change') : undefined;
+  }
+
+  return {
+    ...row,
+    change: {
+      value: changeValue,
+      tooltip,
+    },
+  };
 };
 
 /**

@@ -1,5 +1,12 @@
 <script>
-import { GlTableLite, GlSkeletonLoader, GlTooltip, GlSprintf, GlLink } from '@gitlab/ui';
+import {
+  GlTableLite,
+  GlSkeletonLoader,
+  GlTooltip,
+  GlTooltipDirective,
+  GlSprintf,
+  GlLink,
+} from '@gitlab/ui';
 import { toYmd } from '~/analytics/shared/utils';
 import { AI_METRICS } from '~/analytics/shared/constants';
 import { dasherize } from '~/lib/utils/text_utility';
@@ -17,8 +24,8 @@ import DoraMetricsQuery from '../graphql/dora_metrics.query.graphql';
 import AiMetricsQuery from '../graphql/ai_metrics.query.graphql';
 import MetricTableCell from '../../components/metric_table_cell.vue';
 import TrendIndicator from '../../components/trend_indicator.vue';
-import { DASHBOARD_LOADING_FAILURE, RESTRICTED_METRIC_ERROR } from '../../constants';
-import { mergeTableData, generateValueStreamDashboardStartDate } from '../../utils';
+import { DASHBOARD_LOADING_FAILURE, RESTRICTED_METRIC_ERROR, UNITS } from '../../constants';
+import { mergeTableData, generateValueStreamDashboardStartDate, formatMetric } from '../../utils';
 import {
   generateDateRanges,
   generateTableColumns,
@@ -56,6 +63,9 @@ export default {
     GlSkeletonLoader,
     MetricTableCell,
     TrendIndicator,
+  },
+  directives: {
+    GlTooltip: GlTooltipDirective,
   },
   mixins: [glAbilitiesMixin(), InternalEvents.mixin()],
   props: {
@@ -126,6 +136,14 @@ export default {
         label: identifier,
         property: AI_IMPACT_TABLE_TRACKING_PROPERTY,
       });
+    },
+
+    isValidTrend(value) {
+      return typeof value === 'number' && value !== 0;
+    },
+
+    formatInvalidTrend(value) {
+      return value === 0 ? formatMetric(0, UNITS.PERCENT) : value;
     },
 
     async resolveQueries() {
@@ -302,11 +320,25 @@ export default {
       </span>
     </template>
 
-    <template #cell(change)="{ value: { value }, item: { invertTrendColor } }">
+    <template #cell(change)="{ value: { value, tooltip }, item: { invertTrendColor } }">
       <span v-if="value === undefined" data-testid="metric-skeleton-loader">
         <gl-skeleton-loader :lines="1" :width="50" />
       </span>
-      <trend-indicator v-else-if="value !== 0" :change="value" :invert-color="invertTrendColor" />
+      <trend-indicator
+        v-else-if="isValidTrend(value)"
+        :change="value"
+        :invert-color="invertTrendColor"
+      />
+      <span
+        v-else
+        v-gl-tooltip="tooltip"
+        :aria-label="tooltip"
+        class="gl-text-sm gl-text-gray-500 hover:gl-underline gl-cursor-pointer"
+        data-testid="metric-cell-no-change"
+        tabindex="0"
+      >
+        {{ formatInvalidTrend(value) }}
+      </span>
     </template>
   </gl-table-lite>
 </template>
