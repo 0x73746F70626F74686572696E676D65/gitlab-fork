@@ -20,6 +20,14 @@ module EE
       scope :with_approvals, -> { preload(approvals: [:user]) }
 
       Dora::Watchers.mount(self)
+
+      state_machine :status do
+        after_transition any => :running do |deployment|
+          deployment.run_after_commit do
+            ::Environments::Deployments::AuditService.new(self).execute
+          end
+        end
+      end
     end
 
     def waiting_for_approval?
