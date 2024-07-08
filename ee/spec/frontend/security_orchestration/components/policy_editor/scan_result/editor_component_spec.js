@@ -952,14 +952,14 @@ describe('EditorComponent', () => {
       });
 
       describe.each`
-        title                                                       | policy                           | hasActions | hasAlert | alertVariant | disableUpdate
-        ${'has require approval action and settings'}               | ${settingsPolicy}                | ${true}    | ${false} | ${''}        | ${false}
-        ${'has require approval action but does not have settings'} | ${{}}                            | ${true}    | ${false} | ${''}        | ${false}
-        ${'has settings but does not have actions'}                 | ${settingsPolicy}                | ${false}   | ${true}  | ${'warning'} | ${false}
-        ${'does not have actions or settings'}                      | ${{}}                            | ${false}   | ${true}  | ${'warning'} | ${false}
-        ${'has disabled bot action and has settings'}               | ${disabledBotPolicyWithSettings} | ${true}    | ${true}  | ${'warning'} | ${false}
-        ${'has disabled bot action but does not have settings'}     | ${disabledBotPolicy}             | ${true}    | ${true}  | ${'danger'}  | ${true}
-      `('$title', ({ policy, hasActions, hasAlert, alertVariant, disableUpdate }) => {
+        title                                                       | policy                           | hasActions | hasAlert | alertVariant
+        ${'has require approval action and settings'}               | ${settingsPolicy}                | ${true}    | ${false} | ${''}
+        ${'has require approval action but does not have settings'} | ${{}}                            | ${true}    | ${false} | ${''}
+        ${'has settings but does not have actions'}                 | ${settingsPolicy}                | ${false}   | ${true}  | ${'warning'}
+        ${'does not have actions or settings'}                      | ${{}}                            | ${false}   | ${true}  | ${'warning'}
+        ${'has disabled bot action and has settings'}               | ${disabledBotPolicyWithSettings} | ${true}    | ${true}  | ${'warning'}
+        ${'has disabled bot action but does not have settings'}     | ${disabledBotPolicy}             | ${true}    | ${true}  | ${'danger'}
+      `('$title', ({ policy, hasActions, hasAlert, alertVariant }) => {
         beforeEach(() => {
           factoryWithExistingPolicy({
             glFeatures: { approvalPolicyDisableBotComment: true },
@@ -974,10 +974,6 @@ describe('EditorComponent', () => {
             expect(findEmptyActionsAlert().props('variant')).toBe(alertVariant);
           }
         });
-
-        it('renders the save button appropriately', () => {
-          expect(findPolicyEditorLayout().props('disableUpdate')).toBe(disableUpdate);
-        });
       });
     });
 
@@ -991,10 +987,6 @@ describe('EditorComponent', () => {
         it('does not display the alert', () => {
           expect(findEmptyActionsAlert().exists()).toBe(false);
         });
-
-        it('does not disable the save button', () => {
-          expect(findPolicyEditorLayout().props('disableUpdate')).toBe(false);
-        });
       });
 
       describe('when there are actions and no settings', () => {
@@ -1004,10 +996,6 @@ describe('EditorComponent', () => {
 
         it('does not display the alert', () => {
           expect(findEmptyActionsAlert().exists()).toBe(false);
-        });
-
-        it('does not disable the save button', () => {
-          expect(findPolicyEditorLayout().props('disableUpdate')).toBe(false);
         });
       });
 
@@ -1019,10 +1007,6 @@ describe('EditorComponent', () => {
         it('displays the alert', () => {
           expect(findEmptyActionsAlert().exists()).toBe(true);
           expect(findEmptyActionsAlert().props('variant')).toBe('warning');
-        });
-
-        it('does not disable the save button', () => {
-          expect(findPolicyEditorLayout().props('disableUpdate')).toBe(false);
         });
       });
 
@@ -1037,10 +1021,6 @@ describe('EditorComponent', () => {
           expect(findEmptyActionsAlert().exists()).toBe(true);
           expect(findEmptyActionsAlert().props('variant')).toBe('danger');
         });
-
-        it('disabled the update button', () => {
-          expect(findPolicyEditorLayout().props('disableUpdate')).toBe(true);
-        });
       });
 
       describe('does not display the danger alert when the policy is invalid', () => {
@@ -1052,10 +1032,6 @@ describe('EditorComponent', () => {
 
         it('displays the danger alert', () => {
           expect(findEmptyActionsAlert().exists()).toBe(false);
-        });
-
-        it('disabled the update button', () => {
-          expect(findPolicyEditorLayout().props('disableUpdate')).toBe(false);
         });
       });
     });

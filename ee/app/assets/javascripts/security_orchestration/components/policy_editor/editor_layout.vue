@@ -90,11 +90,6 @@ export default {
       required: false,
       default: true,
     },
-    disableUpdate: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
     editorModes: {
       type: Array,
       required: false,
@@ -143,11 +138,6 @@ export default {
     };
   },
   computed: {
-    disableSaveButton() {
-      return (
-        this.disableUpdate || !this.hasValidName || this.policyLimitDetails.saveButton.disabled
-      );
-    },
     hasEnabledPropertyChanged() {
       return this.isInitiallyEnabled !== this.policy.enabled;
     },
@@ -190,10 +180,6 @@ export default {
       return this.policy.type;
     },
     saveTooltipText() {
-      if (this.policyLimitDetails.saveButton.disabled) {
-        return this.policyLimitDetails.saveButton.text;
-      }
-
       return this.customSaveTooltipText || this.saveButtonText;
     },
     saveButtonText() {
@@ -358,24 +344,17 @@ export default {
         'lg:gl-block': shouldShowRuntimeMessage,
       }"
     >
-      <span
-        v-gl-tooltip="{
-          disabled: disableTooltip && !policyLimitDetails.saveButton.disabled,
-          title: saveTooltipText,
-        }"
-        class="gl-pt-2 gl-mr-3"
+      <gl-button
+        v-gl-tooltip
+        type="submit"
+        variant="confirm"
+        data-testid="save-policy"
+        :title="saveTooltipText"
+        :loading="isUpdatingPolicy"
+        @click="savePolicy"
       >
-        <gl-button
-          type="submit"
-          variant="confirm"
-          data-testid="save-policy"
-          :loading="isUpdatingPolicy"
-          :disabled="disableSaveButton"
-          @click="savePolicy"
-        >
-          {{ saveButtonText }}
-        </gl-button>
-      </span>
+        {{ saveButtonText }}
+      </gl-button>
       <gl-button
         v-if="isEditing"
         v-gl-modal="'delete-modal'"
