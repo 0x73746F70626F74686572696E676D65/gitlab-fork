@@ -43,7 +43,8 @@ RSpec.describe Gitlab::EventStore, feature_category: :shared do
         Projects::ProjectCreatedEvent,
         Projects::ProjectDeletedEvent,
         ::Milestones::MilestoneUpdatedEvent,
-        ::WorkItems::BulkUpdatedEvent
+        ::WorkItems::BulkUpdatedEvent,
+        ::Users::ActivityEvent
       ])
     end
   end
