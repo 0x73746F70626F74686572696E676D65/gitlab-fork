@@ -34,28 +34,10 @@ RSpec.describe MergeRequest, :elastic, feature_category: :global_search do
     expect(described_class.elastic_search('term3', options: { project_ids: :any, public_and_internal_projects: true }).total_count).to eq(1)
   end
 
-  context 'when search_merge_request_query_builder is false' do
-    before do
-      stub_feature_flags(search_merge_request_query_builder: false)
-    end
+  it 'names elasticsearch queries' do
+    described_class.elastic_search('*').total_count
 
-    it 'names elasticsearch queries' do
-      described_class.elastic_search('*').total_count
-
-      assert_named_queries('merge_request:match:search_terms', 'merge_request:authorized:project')
-    end
-  end
-
-  context 'when search_merge_request_query_builder is true' do
-    before do
-      stub_feature_flags(search_merge_request_query_builder: true)
-    end
-
-    it 'names elasticsearch queries' do
-      described_class.elastic_search('*').total_count
-
-      assert_named_queries('merge_request:match:search_terms', 'filters:project')
-    end
+    assert_named_queries('merge_request:match:search_terms', 'filters:project')
   end
 
   describe 'json' do
