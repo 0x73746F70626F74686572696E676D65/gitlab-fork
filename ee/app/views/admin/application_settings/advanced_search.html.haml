@@ -10,6 +10,8 @@
 - help_troubleshooting_link_start = "<a class='gl-link' href='#{help_page_path('integration/advanced_search/elasticsearch_troubleshooting')}#%{anchor}' target='_blank' rel='noopener noreferrer'>"
 - help_recreate_index_link_start = help_troubleshooting_link_start.html_safe % { anchor: "last-resort-to-recreate-an-index" }
 
+%div{ data: { event_tracking_load: 'true', event_tracking: 'view_admin_application_settings_advanced_search_pageload' } }
+
 - if @search_error_if_version_incompatible
   - content_for :page_level_alert do
     %div{ class: [container_class, @content_class, 'gl-pt-5!'] }
