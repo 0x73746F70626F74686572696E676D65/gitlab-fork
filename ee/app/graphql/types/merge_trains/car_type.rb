@@ -9,7 +9,9 @@ module Types
         'using merge trains.'
 
       connection_type_class Types::CountableConnectionType
-      authorize :read_merge_train
+      authorize :read_merge_train_car
+
+      expose_permissions Types::PermissionTypes::MergeTrains::Car
 
       field :created_at,
         Types::TimeType,
@@ -41,7 +43,7 @@ module Types
         description: 'Status of the car.'
       # rubocop:disable GraphQL/ExtractType -- The project and branch don't belong in the same type
       field :target_branch,
-        Types::BranchType,
+        GraphQL::Types::String,
         null: false,
         description: "Target branch of the car's merge request."
       field :target_project,

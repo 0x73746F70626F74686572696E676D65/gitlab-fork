@@ -6,6 +6,7 @@ RSpec.describe "GraphQL Merge Trains", '(JavaScript fixtures)', type: :request, 
   include ApiHelpers
   include GraphqlHelpers
   include JavaScriptFixturesHelpers
+  include MergeTrainsHelpers
 
   let_it_be(:project) { create(:project, :repository) }
   let(:user) { project.first_owner }
@@ -18,7 +19,7 @@ RSpec.describe "GraphQL Merge Trains", '(JavaScript fixtures)', type: :request, 
   end
 
   context 'with active car' do
-    let!(:merge_request) { create_merge_request_on_train }
+    let!(:merge_request) { create_merge_request_on_train(project: project) }
     let(:train_car) { merge_request.merge_train_car }
 
     before do
@@ -37,7 +38,10 @@ RSpec.describe "GraphQL Merge Trains", '(JavaScript fixtures)', type: :request, 
   end
 
   context 'with merged car' do
-    let!(:merge_request) { create_merge_request_on_train(source_branch: 'feature-2', status: :merged) }
+    let!(:merge_request) do
+      create_merge_request_on_train(project: project, source_branch: 'feature-2', status: :merged)
+    end
+
     let(:train_car) { merge_request.merge_train_car }
 
     before do
@@ -53,17 +57,5 @@ RSpec.describe "GraphQL Merge Trains", '(JavaScript fixtures)', type: :request, 
 
       expect_graphql_errors_to_be_empty
     end
-  end
-
-  def create_merge_request_on_train(
-    target_project: project, target_branch: 'master', source_project: project,
-    source_branch: 'feature-1', status: :idle)
-    create(:merge_request,
-      :on_train,
-      target_branch: target_branch,
-      target_project: target_project,
-      source_branch: source_branch,
-      source_project: source_project,
-      status: MergeTrains::Car.state_machines[:status].states[status].value)
   end
 end
