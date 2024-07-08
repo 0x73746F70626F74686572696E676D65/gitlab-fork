@@ -1,10 +1,17 @@
-import { __, s__, n__ } from '~/locale';
+import { __, s__, n__, sprintf } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 
 export const maxNameLength = 255;
 export const i18n = {
   basicInformation: s__('ComplianceFrameworks|Basic information'),
   basicInformationDetails: s__('ComplianceFrameworks|Name, description'),
+  nameInputReserved: (name) =>
+    sprintf(
+      s__(
+        'ComplianceFrameworks|"%{name}" is a reserved word and cannot be used as a compliance framework name.',
+      ),
+      { name },
+    ),
 
   policies: s__('ComplianceFrameworks|Policy'),
   policiesLinkedCount: (count) =>

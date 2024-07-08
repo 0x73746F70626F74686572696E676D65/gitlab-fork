@@ -1,3 +1,4 @@
+import { __ } from '~/locale';
 import * as Utils from 'ee/groups/settings/compliance_frameworks/utils';
 import BasicInformationSection from 'ee/compliance_dashboard/components/frameworks_report/edit_framework/components/basic_information_section.vue';
 import EditSection from 'ee/compliance_dashboard/components/frameworks_report/edit_framework/components/edit_section.vue';
@@ -23,7 +24,7 @@ describe('Basic information section', () => {
   };
 
   const invalidFeedback = (input) =>
-    input.closest('[role=group].is-invalid').querySelector('.invalid-feedback').textContent;
+    input.closest('[role=group].is-invalid')?.querySelector('.invalid-feedback').textContent ?? '';
 
   function createComponent(props, provides) {
     return mountExtended(BasicInformationSection, {
@@ -54,6 +55,18 @@ describe('Basic information section', () => {
 
       expect(invalidFeedback(input.element)).toContain('is required');
 
+      expect(wrapper.emitted('valid').at(-1)).toStrictEqual([false]);
+    },
+  );
+
+  it.each([['default'], ['dEfAuLt'], [__('default')]])(
+    'rejects %s as framework name',
+    async (name) => {
+      const input = wrapper.findByLabelText('Name');
+
+      await input.setValue(name);
+
+      expect(invalidFeedback(input.element)).toContain('is a reserved word');
       expect(wrapper.emitted('valid').at(-1)).toStrictEqual([false]);
     },
   );

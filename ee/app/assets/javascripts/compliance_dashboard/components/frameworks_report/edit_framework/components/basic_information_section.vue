@@ -10,6 +10,7 @@ import {
   GlPopover,
 } from '@gitlab/ui';
 import { debounce } from 'lodash';
+import { __ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import ColorPicker from '~/vue_shared/components/color_picker/color_picker.vue';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS as DEBOUNCE_DELAY } from '~/lib/utils/constants';
@@ -20,6 +21,8 @@ import {
 } from 'ee/groups/settings/compliance_frameworks/utils';
 import { maxNameLength, i18n } from '../constants';
 import EditSection from './edit_section.vue';
+
+const RESERVED_NAMES = ['default', __('default')];
 
 export default {
   components: {
@@ -72,6 +75,18 @@ export default {
       return this.$options.i18n.pipelineConfigurationInputUnknownFile;
     },
 
+    nameFeedbackMessage() {
+      if (!this.formData.name || this.formData.name.length > maxNameLength) {
+        return this.$options.i18n.titleInputInvalid;
+      }
+
+      if (RESERVED_NAMES.includes(this.formData.name.toLowerCase())) {
+        return this.$options.i18n.nameInputReserved(this.formData.name);
+      }
+
+      return '';
+    },
+
     compliancePipelineConfigurationHelpPath() {
       return helpPagePath('user/group/compliance_frameworks.md', {
         anchor: 'example-configuration',
@@ -87,11 +102,7 @@ export default {
         return null;
       }
 
-      if (this.formData.name.length > maxNameLength) {
-        return false;
-      }
-
-      return Boolean(this.formData.name);
+      return this.nameFeedbackMessage === '';
     },
 
     isValidDescription() {
@@ -178,8 +189,8 @@ export default {
     <gl-form-group
       :label="$options.i18n.titleInputLabel"
       label-for="name-input"
-      :invalid-feedback="$options.i18n.titleInputInvalid"
       :state="isValidName"
+      :invalid-feedback="nameFeedbackMessage"
       data-testid="name-input-group"
     >
       <gl-form-input
