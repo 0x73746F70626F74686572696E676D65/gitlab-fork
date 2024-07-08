@@ -103,3 +103,5 @@ module GitlabSubscriptions
     end
   end
 end
+
+GitlabSubscriptions::PreviewBillableUserChangeService.prepend_mod
