@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Types::MergeTrains::CarType, feature_category: :merge_trains do
   include GraphqlHelpers
 
-  specify { expect(described_class).to require_graphql_authorizations(:read_merge_train) }
+  specify { expect(described_class).to require_graphql_authorizations(:read_merge_train_car) }
 
   it 'has the expected fields' do
     expected_fields = %w[

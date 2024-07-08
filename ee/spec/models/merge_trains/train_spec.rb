@@ -3,10 +3,11 @@
 require 'spec_helper'
 
 RSpec.describe MergeTrains::Train, feature_category: :merge_trains do
+  include MergeTrainsHelpers
   using RSpec::Parameterized::TableSyntax
 
   let_it_be(:target_project) { create(:project, :repository) }
-  let_it_be(:merge_request) { create_merge_request_on_train }
+  let_it_be(:merge_request) { create_merge_request_on_train(project: target_project) }
 
   let(:train) { described_class.new(target_project, merge_request.target_branch) }
 
@@ -185,7 +186,9 @@ RSpec.describe MergeTrains::Train, feature_category: :merge_trains do
     end
 
     context 'with another open merge request on the merge train' do
-      let!(:merge_request_2) { create_merge_request_on_train(source_branch: 'improve/awesome') }
+      let!(:merge_request_2) do
+        create_merge_request_on_train(project: target_project, source_branch: 'improve/awesome')
+      end
 
       it 'returns both cars in order of creation' do
         is_expected.to eq([merge_request.merge_train_car, merge_request_2.merge_train_car])
@@ -193,7 +196,9 @@ RSpec.describe MergeTrains::Train, feature_category: :merge_trains do
     end
 
     context 'with another open merge request that has already been merged' do
-      let!(:merged_merge_request) { create_merge_request_on_train(status: :merged, source_branch: 'improve/awesome') }
+      let!(:merged_merge_request) do
+        create_merge_request_on_train(project: target_project, status: :merged, source_branch: 'improve/awesome')
+      end
 
       it 'does not return the merged car' do
         is_expected.to eq([merge_request.merge_train_car])
@@ -212,7 +217,9 @@ RSpec.describe MergeTrains::Train, feature_category: :merge_trains do
       let(:target_sha) { merge_commit_sha_1 }
 
       context 'when the merge request has already been merging' do
-        let!(:merge_request) { create_merge_request_on_train(status: :merging, source_branch: 'improve/awesome') }
+        let!(:merge_request) do
+          create_merge_request_on_train(project: target_project, status: :merging, source_branch: 'improve/awesome')
+        end
 
         before do
           merge_request.update_column(:in_progress_merge_commit_sha, merge_commit_sha_1)
@@ -222,7 +229,9 @@ RSpec.describe MergeTrains::Train, feature_category: :merge_trains do
       end
 
       context 'when the merge request has already been merged' do
-        let!(:merge_request) { create_merge_request_on_train(status: :merged, source_branch: 'improve/awesome') }
+        let!(:merge_request) do
+          create_merge_request_on_train(project: target_project, status: :merged, source_branch: 'improve/awesome')
+        end
 
         before do
           merge_request.update_column(:merge_commit_sha, merge_commit_sha_1)
@@ -232,7 +241,9 @@ RSpec.describe MergeTrains::Train, feature_category: :merge_trains do
       end
 
       context 'when the merge request has been fast-forward merged from an internal ref' do
-        let!(:merge_request) { create_merge_request_on_train(status: :merged, source_branch: 'improve/awesome') }
+        let!(:merge_request) do
+          create_merge_request_on_train(project: target_project, status: :merged, source_branch: 'improve/awesome')
+        end
 
         before do
           merge_request.update_column(:merged_commit_sha, merge_commit_sha_1)
@@ -242,7 +253,10 @@ RSpec.describe MergeTrains::Train, feature_category: :merge_trains do
       end
 
       context 'when there is another merge request on train and it has been merged' do
-        let!(:merge_request_2) { create_merge_request_on_train(status: :merged, source_branch: 'improve/awesome') }
+        let!(:merge_request_2) do
+          create_merge_request_on_train(project: target_project, status: :merged, source_branch: 'improve/awesome')
+        end
+
         let(:merge_commit_sha_2) { OpenSSL::Digest.hexdigest('SHA256', 'test-2') }
         let(:target_sha) { merge_commit_sha_2 }
 
@@ -299,14 +313,5 @@ RSpec.describe MergeTrains::Train, feature_category: :merge_trains do
 
       expect(subject).to eq(cars.length)
     end
-  end
-
-  def create_merge_request_on_train(source_branch: 'feature', status: :idle)
-    create(:merge_request, :on_train,
-      source_project: target_project,
-      target_project: target_project,
-      target_branch: 'master',
-      source_branch: source_branch,
-      status: MergeTrains::Car.state_machines[:status].states[status].value)
   end
 end
