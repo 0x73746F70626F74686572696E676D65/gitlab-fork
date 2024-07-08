@@ -18,45 +18,71 @@ RSpec.describe 'Root cause analysis job page', :js, feature_category: :continuou
     sign_in(user)
   end
 
-  context 'with failed jobs' do
+  context 'when root_cause_analysis_duo feature flag is turned off' do
     before do
-      allow(failed_job).to receive(:debug_mode?).and_return(false)
-
-      visit(project_job_path(project, failed_job))
-
-      wait_for_requests
+      stub_feature_flags(root_cause_analysis_duo: false)
     end
 
-    it 'does display rca button' do
-      expect(page).to have_selector("[data-testid='rca-button']")
+    context 'with failed jobs' do
+      before do
+        allow(failed_job).to receive(:debug_mode?).and_return(false)
+
+        visit(project_job_path(project, failed_job))
+
+        wait_for_requests
+      end
+
+      it 'does display rca button' do
+        expect(page).to have_selector("[data-testid='rca-button']")
+      end
+    end
+
+    context 'with successful jobs' do
+      before do
+        allow(passed_job).to receive(:debug_mode?).and_return(false)
+
+        visit(project_job_path(project, passed_job))
+
+        wait_for_requests
+      end
+
+      it 'does not display rca button' do
+        expect(page).not_to have_selector("[data-testid='rca-button']")
+      end
+    end
+
+    context 'without duo_features_enabled permissions' do
+      before do
+        project.update!(duo_features_enabled: false)
+
+        visit(project_job_path(project, passed_job))
+
+        wait_for_requests
+      end
+
+      it 'does not display rca button' do
+        expect(page).not_to have_selector("[data-testid='rca-button']")
+      end
     end
   end
 
-  context 'with successful jobs' do
+  context 'when root_cause_analysis_duo feature flag is turned on' do
     before do
-      allow(passed_job).to receive(:debug_mode?).and_return(false)
-
-      visit(project_job_path(project, passed_job))
-
-      wait_for_requests
+      stub_feature_flags(root_cause_analysis_duo: true)
     end
 
-    it 'does not display rca button' do
-      expect(page).not_to have_selector("[data-testid='rca-button']")
-    end
-  end
+    context 'with failed jobs' do
+      before do
+        allow(failed_job).to receive(:debug_mode?).and_return(false)
 
-  context 'without duo_features_enabled permissions' do
-    before do
-      project.update!(duo_features_enabled: false)
+        visit(project_job_path(project, failed_job))
 
-      visit(project_job_path(project, passed_job))
+        wait_for_requests
+      end
 
-      wait_for_requests
-    end
-
-    it 'does not display rca button' do
-      expect(page).not_to have_selector("[data-testid='rca-button']")
+      it 'does display rca with duo button' do
+        expect(page).to have_selector("[data-testid='rca-duo-button']")
+      end
     end
   end
 end
