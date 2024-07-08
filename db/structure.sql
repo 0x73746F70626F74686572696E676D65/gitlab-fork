@@ -13212,7 +13212,8 @@ CREATE TABLE namespace_details (
     cached_markdown_version integer,
     description text,
     description_html text,
-    creator_id bigint
+    creator_id bigint,
+    pending_delete boolean DEFAULT false NOT NULL
 );
 
 CREATE TABLE namespace_ldap_settings (
