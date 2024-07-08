@@ -160,7 +160,7 @@ module Groups
       when 'packager'
         :package_manager
       when 'license'
-        :licenses
+        :primary_license_spdx_identifier
       when 'severity'
         :highest_severity
       else

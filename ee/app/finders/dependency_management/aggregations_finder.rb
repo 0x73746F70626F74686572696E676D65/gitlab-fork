@@ -8,7 +8,12 @@ module DependencyManagement
     DEFAULT_PAGE_SIZE = 20
     MAX_PAGE_SIZE = 20
     DEFAULT_SORT_COLUMNS = %i[component_id component_version_id].freeze
-    SUPPORTED_SORT_COLUMNS = %i[component_name highest_severity package_manager licenses].freeze
+    SUPPORTED_SORT_COLUMNS = %i[
+      component_name
+      highest_severity
+      package_manager
+      primary_license_spdx_identifier
+    ].freeze
 
     def initialize(namespace, params: {})
       @namespace = namespace
@@ -33,6 +38,7 @@ module DependencyManagement
           'MIN(outer_occurrences.id)::bigint AS id',
           'MIN(outer_occurrences.package_manager) AS package_manager',
           'MIN(outer_occurrences.input_file_path) AS input_file_path',
+          'MIN(outer_occurrences.licenses -> 0 ->> \'spdx_identifier\') as primary_license_spdx_identifier',
           licenses_select,
           'SUM(counts.occurrence_count)::integer AS occurrence_count',
           'SUM(counts.vulnerability_count)::integer AS vulnerability_count',
@@ -137,7 +143,7 @@ module DependencyManagement
     end
 
     def column_expression(column, table_name = 'sbom_occurrences')
-      if column == :licenses
+      if column == :primary_license_spdx_identifier
         Sbom::Occurrence.connection.quote_table_name(table_name)
           .then { |table_name| Arel.sql("(#{table_name}.\"licenses\" -> 0 ->> 'spdx_identifier')::text") }
       else
@@ -161,6 +167,8 @@ module DependencyManagement
     end
 
     def nullable(column_name, direction)
+      return :not_nullable if column_name == :primary_license_spdx_identifier
+
       column = Sbom::Occurrence.columns_hash[column_name.to_s]
 
       return :not_nullable unless column.null

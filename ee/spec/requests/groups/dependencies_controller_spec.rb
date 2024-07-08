@@ -202,6 +202,26 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
               expect(response.headers['X-Page-Type']).to eq('cursor')
             end
 
+            context 'when paginating over licenses' do
+              let(:params) do
+                {
+                  group_id: group.to_param,
+                  sort_by: 'license',
+                  sort: 'asc',
+                  per_page: 1
+                }
+              end
+
+              it 'uses primary_license_spdx_identifier in the cursor' do
+                subject
+
+                cursor = response.headers['X-Next-Page']
+                data = Gitlab::Json.parse(Base64.urlsafe_decode64(cursor))
+
+                expect(data['primary_license_spdx_identifier']).to eq('Apache-2.0')
+              end
+            end
+
             context 'when using a cursor' do
               let(:cursor_data) do
                 { highest_severity: sbom_occurrence_npm.highest_severity,
