@@ -12,7 +12,7 @@ class Groups::Security::CredentialsController < Groups::ApplicationController
   before_action :validate_group_level_credentials_inventory_available!, only: [:index, :revoke, :destroy]
   before_action :check_gpg_keys_list_enabled!, only: [:index]
 
-  feature_category :compliance_management
+  feature_category :user_management
 
   private
 

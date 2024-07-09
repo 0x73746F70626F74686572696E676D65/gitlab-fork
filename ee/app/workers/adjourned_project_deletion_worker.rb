@@ -8,7 +8,7 @@ class AdjournedProjectDeletionWorker # rubocop:disable Scalability/IdempotentWor
   sidekiq_options retry: 3
   include ExceptionBacktrace
 
-  feature_category :compliance_management
+  feature_category :groups_and_projects
 
   def perform(project_id)
     project = Project.find(project_id)
