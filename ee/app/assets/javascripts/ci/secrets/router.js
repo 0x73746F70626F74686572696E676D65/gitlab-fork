@@ -2,7 +2,6 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import { __, s__ } from '~/locale';
 import {
-  AUDIT_LOG_ROUTE_NAME,
   DETAILS_ROUTE_NAME,
   EDIT_ROUTE_NAME,
   ENTITY_GROUP,
@@ -10,11 +9,9 @@ import {
   INDEX_ROUTE_NAME,
   NEW_ROUTE_NAME,
 } from './constants';
-import SecretsTable from './components/secrets_table/secrets_table.vue';
+import SecretDetailsWrapper from './components/secret_details/secret_details_wrapper.vue';
 import SecretFormWrapper from './components/secret_form/secret_form_wrapper.vue';
-import SecretTabs from './components/secret_details/secret_tabs.vue';
-import SecretDetails from './components/secret_details/secret_details.vue';
-import SecretAuditLog from './components/secret_details/secret_audit_log.vue';
+import SecretsTable from './components/secrets_table/secrets_table.vue';
 
 Vue.use(VueRouter);
 
@@ -53,34 +50,16 @@ export default (base, props) => {
         },
       },
       {
-        path: '/:id',
-        component: SecretTabs,
+        name: DETAILS_ROUTE_NAME,
+        path: '/:id/details',
+        component: SecretDetailsWrapper,
         props: ({ params: { id }, name }) => {
           return { fullPath, secretId: Number(id), routeName: name };
         },
-        children: [
-          {
-            name: DETAILS_ROUTE_NAME,
-            path: 'details',
-            component: SecretDetails,
-            meta: {
-              getBreadcrumbText: ({ id }) => id,
-              isDetails: true,
-            },
-          },
-          {
-            name: AUDIT_LOG_ROUTE_NAME,
-            path: 'auditlog',
-            component: SecretAuditLog,
-            meta: {
-              getBreadcrumbText: () => s__('Secrets|Audit log'),
-            },
-          },
-          {
-            path: '',
-            redirect: 'details',
-          },
-        ],
+        meta: {
+          getBreadcrumbText: ({ id }) => id,
+          isDetails: true,
+        },
       },
       {
         name: EDIT_ROUTE_NAME,
@@ -97,6 +76,10 @@ export default (base, props) => {
         meta: {
           getBreadcrumbText: () => __('Edit'),
         },
+      },
+      {
+        path: '/:id',
+        redirect: '/:id/details',
       },
       {
         path: '*',

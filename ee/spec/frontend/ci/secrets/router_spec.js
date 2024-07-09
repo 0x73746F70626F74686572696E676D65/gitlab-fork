@@ -1,11 +1,9 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
-import SecretsTable from 'ee/ci/secrets/components/secrets_table/secrets_table.vue';
+import SecretDetailsWrapper from 'ee/ci/secrets/components/secret_details/secret_details_wrapper.vue';
 import SecretFormWrapper from 'ee/ci/secrets/components/secret_form/secret_form_wrapper.vue';
-import SecretTabs from 'ee/ci/secrets/components/secret_details/secret_tabs.vue';
-import SecretDetails from 'ee/ci/secrets/components/secret_details/secret_details.vue';
-import SecretAuditLog from 'ee/ci/secrets/components/secret_details/secret_audit_log.vue';
+import SecretsTable from 'ee/ci/secrets/components/secrets_table/secrets_table.vue';
 import createRouter from 'ee/ci/secrets/router';
 import { ENTITY_GROUP } from 'ee/ci/secrets/constants';
 import SecretsApp from 'ee//ci/secrets/components/secrets_app.vue';
@@ -51,13 +49,12 @@ describe('Secrets router', () => {
   };
 
   it.each`
-    path               | componentNames                     | components
-    ${'/'}             | ${'SecretsTable'}                  | ${[SecretsTable]}
-    ${'/?page=2'}      | ${'SecretsTable'}                  | ${[SecretsTable]}
-    ${'/new'}          | ${'SecretFormWrapper'}             | ${[SecretFormWrapper]}
-    ${'/key/details'}  | ${'SecretTabs and SecretDetails'}  | ${[SecretTabs, SecretDetails]}
-    ${'/key/auditlog'} | ${'SecretTabs and SecretAuditLog'} | ${[SecretTabs, SecretAuditLog]}
-    ${'/key/edit'}     | ${'SecretFormWrapper'}             | ${[SecretFormWrapper]}
+    path              | componentNames            | components
+    ${'/'}            | ${'SecretsTable'}         | ${[SecretsTable]}
+    ${'/?page=2'}     | ${'SecretsTable'}         | ${[SecretsTable]}
+    ${'/new'}         | ${'SecretFormWrapper'}    | ${[SecretFormWrapper]}
+    ${'/key/details'} | ${'SecretDetailsWrapper'} | ${[SecretDetailsWrapper]}
+    ${'/key/edit'}    | ${'SecretFormWrapper'}    | ${[SecretFormWrapper]}
   `('uses $componentNames for path "$path"', ({ path, components }) => {
     const router = createRouter(base, groupProps);
 

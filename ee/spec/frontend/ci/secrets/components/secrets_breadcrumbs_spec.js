@@ -62,9 +62,8 @@ describe('SecretsBreadcrumbs', () => {
   );
 
   it.each`
-    routeName      | route
-    ${'Audit log'} | ${'/project_secret_1/auditlog'}
-    ${'Edit'}      | ${'/project_secret_1/edit'}
+    routeName | route
+    ${'Edit'} | ${'/project_secret_1/edit'}
   `(
     'should render the root, secret details, and $routeName breadcrumbs when on $route',
     async ({ routeName, route }) => {

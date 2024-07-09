@@ -1,25 +1,20 @@
 <script>
-import { GlAlert, GlButton, GlLabel, GlLoadingIcon, GlTabs, GlTab } from '@gitlab/ui';
+import { GlAlert, GlButton, GlLabel, GlLoadingIcon } from '@gitlab/ui';
 import { __, sprintf } from '~/locale';
 import { localeDateFormat } from '~/lib/utils/datetime_utility';
 import { convertEnvironmentScope } from '~/ci/common/private/ci_environments_dropdown';
-import {
-  AUDIT_LOG_ROUTE_NAME,
-  DETAILS_ROUTE_NAME,
-  EDIT_ROUTE_NAME,
-  SCOPED_LABEL_COLOR,
-} from '../../constants';
+import { DETAILS_ROUTE_NAME, EDIT_ROUTE_NAME, SCOPED_LABEL_COLOR } from '../../constants';
 import getSecretDetailsQuery from '../../graphql/queries/client/get_secret_details.query.graphql';
+import SecretDetails from './secret_details.vue';
 
 export default {
-  name: 'SecretTabs',
+  name: 'SecretDetailsWrapper',
   components: {
     GlAlert,
     GlButton,
     GlLabel,
     GlLoadingIcon,
-    GlTabs,
-    GlTab,
+    SecretDetails,
   },
   props: {
     fullPath: {
@@ -72,9 +67,6 @@ export default {
     isSecretLoading() {
       return this.$apollo.queries.secret.loading;
     },
-    tabIndex() {
-      return this.routeName === AUDIT_LOG_ROUTE_NAME ? 1 : 0;
-    },
   },
   methods: {
     goToEdit() {
@@ -86,7 +78,6 @@ export default {
       }
     },
   },
-  AUDIT_LOG_ROUTE_NAME,
   DETAILS_ROUTE_NAME,
   EDIT_ROUTE_NAME,
   SCOPED_LABEL_COLOR,
@@ -133,15 +124,7 @@ export default {
           {{ createdAtText }}
         </span>
       </div>
-      <gl-tabs :value="tabIndex">
-        <gl-tab @click="goTo($options.DETAILS_ROUTE_NAME)">
-          <template #title>{{ s__('Secrets|Details') }}</template>
-        </gl-tab>
-        <gl-tab @click="goTo($options.AUDIT_LOG_ROUTE_NAME)">
-          <template #title>{{ s__('Secrets|Audit log') }}</template>
-        </gl-tab>
-        <router-view :secret="secret" />
-      </gl-tabs>
+      <secret-details :secret="secret" />
     </div>
   </div>
 </template>
