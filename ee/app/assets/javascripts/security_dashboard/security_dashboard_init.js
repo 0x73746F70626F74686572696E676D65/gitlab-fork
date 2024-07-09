@@ -40,6 +40,7 @@ export default (el, dashboardType) => {
 
   const hasProjects = parseBoolean(el.dataset.hasProjects);
   const hasVulnerabilities = parseBoolean(el.dataset.hasVulnerabilities);
+  const hideThirdPartyOffers = parseBoolean(el.dataset.hideThirdPartyOffers);
   const provide = {
     emptyStateSvgPath,
     groupFullPath,
@@ -66,7 +67,10 @@ export default (el, dashboardType) => {
     };
   } else if (dashboardType === DASHBOARD_TYPES.PROJECT) {
     component = hasVulnerabilities ? ProjectSecurityCharts : ReportNotConfiguredProject;
-    props = { projectFullPath };
+    props = {
+      projectFullPath,
+      shouldShowPromoBanner: !hideThirdPartyOffers,
+    };
   }
 
   return new Vue({

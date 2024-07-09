@@ -34,6 +34,11 @@ export default {
       required: false,
       default: '',
     },
+    shouldShowPromoBanner: {
+      type: Boolean,
+      required: true,
+      default: true,
+    },
   },
   apollo: {
     // up-do-date count of vulnerabilities by severity, used to show the most recent data point
@@ -162,7 +167,7 @@ export default {
   <gl-loading-icon v-if="isLoading" size="lg" class="gl-mt-6" />
 
   <div v-else>
-    <security-training-promo-banner />
+    <security-training-promo-banner v-if="shouldShowPromoBanner" />
     <gl-line-chart
       class="gl-mt-6"
       :data="dataSeries"

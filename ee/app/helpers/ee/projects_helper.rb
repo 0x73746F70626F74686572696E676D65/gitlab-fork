@@ -224,7 +224,8 @@ module EE
           security_configuration_path: project_security_configuration_path(@project),
           can_admin_vulnerability: can?(current_user, :admin_vulnerability, project).to_s,
           new_vulnerability_path: new_project_security_vulnerability_path(@project),
-          dismissal_descriptions: dismissal_descriptions.to_json
+          dismissal_descriptions: dismissal_descriptions.to_json,
+          hide_third_party_offers: ::Gitlab::CurrentSettings.current_application_settings.hide_third_party_offers?.to_s
         }.merge!(security_dashboard_pipeline_data(project))
       else
         {
@@ -243,7 +244,8 @@ module EE
           can_view_false_positive: can_view_false_positive?,
           security_configuration_path: project_security_configuration_path(@project),
           new_vulnerability_path: new_project_security_vulnerability_path(@project),
-          dismissal_descriptions: dismissal_descriptions.to_json
+          dismissal_descriptions: dismissal_descriptions.to_json,
+          hide_third_party_offers: ::Gitlab::CurrentSettings.current_application_settings.hide_third_party_offers?.to_s
         }.merge!(security_dashboard_pipeline_data(project))
       end
     end

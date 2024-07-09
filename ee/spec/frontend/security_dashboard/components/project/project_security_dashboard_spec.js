@@ -32,7 +32,11 @@ describe('Project Security Dashboard component', () => {
     return createMockApollo([...queries]);
   };
 
-  const createWrapper = ({ historyQueryData, severitiesCountQueryData } = {}) => {
+  const createWrapper = ({
+    historyQueryData,
+    severitiesCountQueryData,
+    shouldShowPromoBanner = false,
+  } = {}) => {
     severitiesCountQueryHandler = jest.fn().mockResolvedValue(severitiesCountQueryData);
 
     wrapper = shallowMount(ProjectSecurityDashboard, {
@@ -40,7 +44,10 @@ describe('Project Security Dashboard component', () => {
         [projectsHistoryQuery, jest.fn().mockResolvedValue(historyQueryData)],
         [severitiesCountQuery, severitiesCountQueryHandler],
       ),
-      propsData: { projectFullPath },
+      propsData: {
+        projectFullPath,
+        shouldShowPromoBanner,
+      },
     });
   };
 
@@ -128,9 +135,13 @@ describe('Project Security Dashboard component', () => {
         startValue: '2021-03-12',
       });
     });
+  });
 
-    it('contains a promotion for the security training feature', () => {
-      expect(findSecurityTrainingPromoBanner().exists()).toBe(true);
+  describe('promo banner', () => {
+    it.each([[true], [false]])('when prop is %s', async (shouldShowPromoBanner) => {
+      createWrapper({ shouldShowPromoBanner });
+      await waitForPromises();
+      expect(findSecurityTrainingPromoBanner().exists()).toBe(shouldShowPromoBanner);
     });
   });
 });
