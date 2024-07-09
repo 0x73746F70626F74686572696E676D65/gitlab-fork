@@ -92,16 +92,14 @@ The following data is shared with third-party AI APIs:
 ## Vulnerability resolution
 
 DETAILS:
-**Tier:** For a limited time, Ultimate. In the future, [GitLab Duo Enterprise](../../../subscriptions/subscription-add-ons.md).
-**Offering:** GitLab.com
-**Status:** Experiment
+**Tier:** Ultimate with [GitLab Duo Enterprise](../../../subscriptions/subscription-add-ons.md)
+**Offering:** GitLab.com, Self-managed, GitLab Dedicated
 
 > - [Introduced](https://gitlab.com/groups/gitlab-org/-/epics/10779) in GitLab 16.7 as an [experiment](../../../policy/experiment-beta-support.md#experiment) on GitLab.com.
+> - [Generally available](https://gitlab.com/groups/gitlab-org/-/epics/10783) in GitLab 17.2.
 
 Use GitLab Duo Vulnerability resolution to automatically create a merge request that
-resolves the vulnerability.
-
-On GitLab.com this feature is available. By default, it is powered by Google's `code-bison-001`
+resolves the vulnerability. By default, it is powered by Anthropic's [`claude-3-haiku`](https://docs.anthropic.com/en/docs/about-claude/models#claude-3-a-new-generation-of-ai)
 model.
 
 We cannot guarantee that the large language model produces results that are correct. Use the
@@ -109,7 +107,7 @@ explanation with caution.
 
 Prerequisites:
 
-- You must have the GitLab Ultimate subscription tier.
+- You must have the GitLab Ultimate subscription tier and GitLab Duo Enterprise.
 - You must be a member of the project.
 - The vulnerability must be a SAST finding.
 
@@ -118,10 +116,14 @@ Learn more about [how to enable all GitLab Duo features](../../ai_features_enabl
 To resolve the vulnerability:
 
 1. On the left sidebar, select **Search or go to** and find your project.
-1. Select **Security and Compliance > Vulnerability report**.
-1. In the **Tool** dropdown list, select **SAST**.
+1. Select **Secure > Vulnerability report**.
+1. Optional. To remove the default filters, select **Clear** (**{clear}**).
+1. Above the list of vulnerabilities, select the filter bar.
+1. In the dropdown list that appears, select **Tool**, then select all the values in the **SAST** category.
+1. Select outside the filter field. The vulnerability severity totals and list of matching vulnerabilities are updated.
 1. Select the SAST vulnerability you want resolved.
-1. At the top of the vulnerability's page, from the **Resolve with merge request** dropdown list, select **Resolve with AI**.
+1. In the upper-right corner,
+   select **Resolve with merge request**.
 
 A merge request containing the AI remediation suggestions is opened. Review the suggested changes,
 then process the merge request according to your standard workflow.
