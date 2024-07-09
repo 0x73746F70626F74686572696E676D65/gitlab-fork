@@ -281,9 +281,7 @@ module EE
     end
 
     def read_only?
-      over_storage_limit? ||
-        ::Namespaces::FreeUserCap::Enforcement.new(root_ancestor).over_limit? ||
-        (block_seat_overages? && seat_overage?)
+      over_storage_limit? || ::Namespaces::FreeUserCap::Enforcement.new(root_ancestor).over_limit?
     end
 
     def total_repository_size_excess

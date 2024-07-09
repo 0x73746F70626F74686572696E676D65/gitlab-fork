@@ -1298,23 +1298,11 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
   describe '#read_only?' do
     let(:namespace) { build(:namespace) }
 
-    where(:over_storage_limit, :over_free_user_limit, :block_seat_overages, :seat_overage, :result) do
-      false           | false              | false | false | false
-      true            | false              | false | false | true
-      false           | true               | false | false | true
-      false           | false              | true  | false | false
-      false           | false              | false | true  | false
-      true            | true               | false | false | true
-      true            | false              | true  | false | true
-      true            | false              | false | true  | true
-      false           | true               | true  | false | true
-      false           | true               | false | true  | true
-      false           | false              | true  | true  | true
-      true            | true               | true  | false | true
-      true            | true               | false | true  | true
-      true            | false              | true  | true  | true
-      false           | true               | true  | true  | true
-      true            | true               | true  | true  | true
+    where(:over_storage_limit, :over_free_user_limit, :result) do
+      true  | true  | true
+      true  | false | true
+      false | true  | true
+      false | false | false
     end
 
     subject { namespace.read_only? }
@@ -1325,8 +1313,6 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
         allow_next_instance_of(::Namespaces::FreeUserCap::Enforcement, namespace) do |instance|
           allow(instance).to receive(:over_limit?).and_return(over_free_user_limit)
         end
-        allow(namespace).to receive(:block_seat_overages?).and_return(block_seat_overages)
-        allow(namespace).to receive(:seat_overage?).and_return(seat_overage)
       end
 
       it { is_expected.to eq(result) }
