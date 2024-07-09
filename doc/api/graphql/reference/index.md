@@ -17852,7 +17852,7 @@ Check user's permission for the car.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="carpermissionsdeletecar"></a>`deleteCar` | [`Boolean!`](#boolean) | If `true`, the user can perform `delete_car` on this resource. |
+| <a id="carpermissionsdeletemergetraincar"></a>`deleteMergeTrainCar` | [`Boolean!`](#boolean) | If `true`, the user can perform `delete_merge_train_car` on this resource. |
 
 ### `CiApplicationSettings`
 

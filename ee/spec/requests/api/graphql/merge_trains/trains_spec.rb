@@ -17,7 +17,7 @@ RSpec.describe 'Query.project.mergeTrains.cars', feature_category: :merge_trains
           status
         }
         userPermissions {
-          deleteCar
+          deleteMergeTrainCar
         }
         #{all_graphql_fields_for('MergeTrainCar', max_depth: 1)}
       }
@@ -194,7 +194,31 @@ RSpec.describe 'Query.project.mergeTrains.cars', feature_category: :merge_trains
 
       it 'fetches the active cars for each train' do
         post_query
-        result.each { |car| expect(car['status']).to eq('IDLE') }
+        result.each do |car|
+          expect(car['status']).to eq('IDLE')
+        end
+      end
+
+      context 'when the user has delete permissions' do
+        let(:user) { maintainer }
+
+        it 'deleteMergeTrainCar is true' do
+          post_query
+          result.each do |car|
+            expect(car.dig('userPermissions', 'deleteMergeTrainCar')).to eq(true)
+          end
+        end
+      end
+
+      context 'when the user does not have delete permissions' do
+        let(:user) { reporter }
+
+        it 'deleteMergeTrainCar is false' do
+          post_query
+          result.each do |car|
+            expect(car.dig('userPermissions', 'deleteMergeTrainCar')).to eq(false)
+          end
+        end
       end
 
       context 'when the status is COMPLETED' do

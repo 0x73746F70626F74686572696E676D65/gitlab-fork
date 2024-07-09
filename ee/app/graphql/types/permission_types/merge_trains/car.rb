@@ -7,7 +7,7 @@ module Types
         graphql_name 'CarPermissions'
         description "Check user's permission for the car."
 
-        abilities :delete_car
+        abilities :delete_merge_train_car
       end
     end
   end
