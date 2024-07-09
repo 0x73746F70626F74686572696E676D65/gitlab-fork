@@ -29627,8 +29627,6 @@ CREATE INDEX index_vulnerability_occurrence_pipelines_on_pipeline_id ON vulnerab
 
 CREATE INDEX index_vulnerability_occurrences_deduplication ON vulnerability_occurrences USING btree (project_id, report_type, project_fingerprint);
 
-CREATE INDEX index_vulnerability_occurrences_for_issue_links_migration ON vulnerability_occurrences USING btree (project_id, report_type, encode(project_fingerprint, 'hex'::text));
-
 CREATE INDEX index_vulnerability_occurrences_for_override_uuids_logic ON vulnerability_occurrences USING btree (project_id, report_type, location_fingerprint);
 
 CREATE INDEX index_vulnerability_occurrences_on_initial_pipeline_id ON vulnerability_occurrences USING btree (initial_pipeline_id);
