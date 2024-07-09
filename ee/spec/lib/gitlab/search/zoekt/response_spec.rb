@@ -47,14 +47,8 @@ RSpec.describe ::Gitlab::Search::Zoekt::Response, feature_category: :global_sear
   end
 
   describe '#match_count' do
-    it 'returns the number of line matches' do
+    it 'returns the number of matches' do
       expect(zoekt_response.match_count).to eq(20)
-    end
-  end
-
-  describe '#ngram_match_count' do
-    it 'returns the total number of matches' do
-      expect(zoekt_response.ngram_match_count).to eq(30)
     end
   end
 end

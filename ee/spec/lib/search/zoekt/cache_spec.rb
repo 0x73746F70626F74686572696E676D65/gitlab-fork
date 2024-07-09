@@ -13,8 +13,7 @@ RSpec.describe Search::Zoekt::Cache, :clean_gitlab_redis_cache, feature_category
   let(:project_ids) { [3, 2, 1] }
   let(:search_results) { { 0 => { project_id: 1 }, 1 => { project_id: 2 }, 2 => { project_id: 3 } } }
   let(:total_count) { 3 }
-  let(:file_count) { 3 }
-  let(:response) { [search_results, total_count, file_count] }
+  let(:response) { [search_results, total_count] }
 
   subject(:cache) do
     described_class.new(query, **default_options.merge(current_user: user1, project_ids: project_ids, page: page))

@@ -37,10 +37,6 @@ module Gitlab
           responses.sum(&:match_count)
         end
 
-        def ngram_match_count
-          responses.sum(&:ngram_match_count)
-        end
-
         def each_file
           files = responses_hash.transform_values { |m| m.result[:Files] }.select { |_, files| files.present? }
           idx = Hash.new(0)

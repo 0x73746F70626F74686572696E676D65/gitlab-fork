@@ -34,10 +34,6 @@ module Gitlab
           result[:MatchCount]
         end
 
-        def ngram_match_count
-          result[:NgramMatches]
-        end
-
         def each_file
           files = result[:Files] || []
 
