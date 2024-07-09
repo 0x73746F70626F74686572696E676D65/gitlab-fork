@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Resolvers::UserDiscussionsCountResolver do
+RSpec.describe Resolvers::UserDiscussionsCountResolver, feature_category: :team_planning do
   include GraphqlHelpers
 
   describe '#resolve' do
@@ -33,7 +33,17 @@ RSpec.describe Resolvers::UserDiscussionsCountResolver do
         end
       end
 
-      context 'when a user has permission to view discussions' do
+      context 'when a user does not have permission to view discussions' do
+        subject { batch_sync { resolve_user_discussions_count(private_epic) } }
+
+        it 'generates an error' do
+          expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ResourceNotAvailable) do
+            subject
+          end
+        end
+      end
+
+      context 'when a user has permission to view notes' do
         before do
           private_epic.group.add_developer(user)
         end
@@ -43,14 +53,30 @@ RSpec.describe Resolvers::UserDiscussionsCountResolver do
         it 'returns the number of discussions for the issue' do
           expect(subject).to eq(3)
         end
-      end
 
-      context 'when a user does not have permission to view discussions' do
-        subject { batch_sync { resolve_user_discussions_count(private_epic) } }
+        context 'when notes are also added to epic work item side' do
+          let_it_be(:work_item) { private_epic.sync_object }
 
-        it 'generates an error' do
-          expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ResourceNotAvailable) do
-            subject
+          it 'returns the number of discussions for the issue' do
+            # 3 user notes from epic, 5 user notes from epic work item
+            first_discussion_note = create(:discussion_note_on_issue, noteable: work_item)
+            create_list(:note, 2, noteable: work_item, discussion_id: first_discussion_note.discussion_id)
+            second_discussion_note = create(:discussion_note_on_issue, noteable: work_item)
+            create_list(:note, 3, noteable: work_item, discussion_id: second_discussion_note.discussion_id)
+
+            # 3 discussions from legacy epic and 2 discussions from epic work item
+            expect(subject).to eq(3 + 2)
+          end
+
+          context 'when epic_and_work_item_notes_unification FF is disabled' do
+            before do
+              stub_feature_flags(epic_and_work_item_notes_unification: false)
+            end
+
+            it 'returns the number of notes for the issue' do
+              # 3 user notes from epic, 5 user notes from epic work item
+              expect(subject).to eq(3)
+            end
           end
         end
       end
