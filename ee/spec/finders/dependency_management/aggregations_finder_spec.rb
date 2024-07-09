@@ -82,17 +82,23 @@ RSpec.describe DependencyManagement::AggregationsFinder, feature_category: :depe
             component_id: occurrence_mit_apache_2.component_id,
             component_version_id: occurrence_mit_apache_2.component_version_id,
             licenses: [{ "url" => "https://spdx.org/licenses/MIT.html", "name" => "MIT License",
-                         "spdx_identifier" => "MIT" }]),
+                         "spdx_identifier" => "MIT" }],
+            primary_license_spdx_identifier: "MIT"
+          ),
           an_object_having_attributes(
             component_id: occurrence_mpl.component_id,
             component_version_id: occurrence_mpl.component_version_id,
             licenses: [{ "url" => "https://spdx.org/licenses/MPL-2.0.html",
-                         "name" => "Mozilla Public License 2.0", "spdx_identifier" => "MPL-2.0" }]),
+                         "name" => "Mozilla Public License 2.0", "spdx_identifier" => "MPL-2.0" }],
+            primary_license_spdx_identifier: "MPL-2.0"
+          ),
           an_object_having_attributes(
             component_id: occurrence_apache_2.component_id,
             component_version_id: occurrence_apache_2.component_version_id,
             licenses: [{ "url" => "https://spdx.org/licenses/Apache-2.0.html",
-                         "name" => "Apache 2.0 License", "spdx_identifier" => "Apache-2.0" }]),
+                         "name" => "Apache 2.0 License", "spdx_identifier" => "Apache-2.0" }],
+            primary_license_spdx_identifier: "Apache-2.0"
+          ),
           an_object_having_attributes(licenses: []),
           an_object_having_attributes(licenses: [])
         ])
@@ -161,7 +167,7 @@ RSpec.describe DependencyManagement::AggregationsFinder, feature_category: :depe
       end
 
       context 'when sorting by license id' do
-        it_behaves_like 'can sort in both asc and desc order', :licenses do
+        it_behaves_like 'can sort in both asc and desc order', :primary_license_spdx_identifier do
           let_it_be(:blank_license_array) { occurrence_1 }
           let_it_be(:mit_apache) { occurrence_2 }
           let_it_be(:mpl) { occurrence_3 }
