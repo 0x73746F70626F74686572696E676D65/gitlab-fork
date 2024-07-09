@@ -25,6 +25,12 @@ RSpec.describe ::Search::Zoekt::SearchResults, :zoekt, feature_category: :global
       expect(results.blobs_count).to eq 5
     end
 
+    it 'sets an instance variable file_count equals to the count of files with matches' do
+      instance = described_class.new(user, 'use.*egex', limit_projects, node_id: node_id)
+      instance.objects('blobs')
+      expect(instance).to have_attributes(file_count: 2)
+    end
+
     it 'instantiates zoekt cache with correct arguments' do
       query = 'use.*egex'
       results = described_class.new(user, query, limit_projects, node_id: node_id, filters: { include_archived: true })
@@ -36,7 +42,8 @@ RSpec.describe ::Search::Zoekt::SearchResults, :zoekt, feature_category: :global
         per_page: described_class::DEFAULT_PER_PAGE,
         project_ids: [project_1.id],
         max_per_page: described_class::DEFAULT_PER_PAGE * 2,
-        search_mode: :exact
+        search_mode: :exact,
+        multi_match: false
       ).and_call_original
 
       results.objects('blobs')
@@ -70,7 +77,7 @@ RSpec.describe ::Search::Zoekt::SearchResults, :zoekt, feature_category: :global
       expect(results.blobs_count).to eq 2
     end
 
-    it 'finds blobs from searched projects only' do
+    it 'finds blobs from searched projects only and removes the blobs of the projects to be deleted' do
       project_3 = create :project, :repository, :private
       zoekt_ensure_project_indexed!(project_3)
       project_3.add_reporter(user)
@@ -82,9 +89,10 @@ RSpec.describe ::Search::Zoekt::SearchResults, :zoekt, feature_category: :global
       expect(result_project_ids.uniq).to match_array([project_1.id])
 
       results = described_class.new(user, 'project_name_regex', projects, node_id: node_id)
+      project_3.update!(pending_delete: true)
       result_project_ids = results.objects('blobs').map(&:project_id)
-      expect(result_project_ids.uniq).to match_array([project_1.id, project_3.id])
-      expect(results.blobs_count).to eq 2
+      expect(result_project_ids.uniq).to contain_exactly(project_1.id)
+      expect(results.blobs_count).to eq 1
     end
 
     it 'returns zero when blobs are not found' do
@@ -249,6 +257,22 @@ RSpec.describe ::Search::Zoekt::SearchResults, :zoekt, feature_category: :global
           results = search_results_instance.objects('blobs').map(&:path)
           expect(results).to include(file_name)
         end
+      end
+    end
+
+    context 'when multi_match_enabled is passed as true' do
+      it 'returns just one blob of kind Search::FoundMultiLineBlob' do
+        instance = described_class.new(nil, 'test', limit_projects, multi_match_enabled: true)
+        results = instance.objects('blobs', per_page: 1)
+        expect(results).to contain_exactly(a_kind_of(Search::FoundMultiLineBlob))
+      end
+
+      it 'removes the results from the deleted projects' do
+        projects = limit_projects.or(Project.where(id: project_2.id))
+        instance = described_class.new(nil, 'test', projects, multi_match_enabled: true)
+        project_2.destroy!
+        results = instance.objects
+        expect(results.map(&:project_path).uniq).to contain_exactly(project_1.full_path)
       end
     end
 

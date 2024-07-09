@@ -7,6 +7,7 @@ module Gitlab
         include ::Gitlab::Loggable
         INDEXING_TIMEOUT_S = 30.minutes.to_i
         MAXIMUM_THREADS = 16
+        CONTEXT_LINES_COUNT = 1
 
         TooManyRequestsError = Class.new(StandardError)
 
@@ -27,7 +28,7 @@ module Gitlab
             Q: q,
             Opts: {
               TotalMaxMatchCount: num,
-              NumContextLines: 1
+              NumContextLines: CONTEXT_LINES_COUNT
             }
           }
 

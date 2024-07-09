@@ -11,6 +11,11 @@ module EE
           description: 'Retrieve the active add-on purchase. ' \
                        'This query can be used in GitLab SaaS and self-managed environments.',
           resolver: ::Resolvers::GitlabSubscriptions::AddOnPurchaseResolver
+        field :blob_search, ::Types::Search::Blob::BlobSearchType,
+          null: true,
+          resolver: ::Resolvers::Search::Blob::BlobSearchResolver,
+          alpha: { milestone: '17.2' },
+          description: 'Find code visible to the current user'
         field :ci_minutes_usage, ::Types::Ci::Minutes::NamespaceMonthlyUsageType.connection_type,
           null: true,
           description: 'Compute usage data for a namespace.' do

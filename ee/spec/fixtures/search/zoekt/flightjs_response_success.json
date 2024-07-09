@@ -13,7 +13,7 @@
     "ShardsSkipped": 0,
     "ShardsSkippedFilter": 0,
     "MatchCount": 20,
-    "NgramMatches": 20,
+    "NgramMatches": 30,
     "NgramLookups": 48,
     "Wait": 2500,
     "MatchTreeConstruction": 26917,

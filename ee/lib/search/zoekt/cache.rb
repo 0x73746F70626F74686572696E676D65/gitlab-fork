@@ -6,9 +6,12 @@ module Search
       MAX_PAGES = 10
       EXPIRES_IN = 5.minutes
 
-      attr_reader :current_user, :query, :project_ids, :per_page, :current_page, :max_per_page, :search_mode
+      attr_reader :current_user, :query, :project_ids, :per_page, :current_page, :max_per_page, :search_mode,
+        :multi_match
 
-      def initialize(query, current_user:, project_ids:, per_page:, page:, max_per_page:, search_mode:)
+      def initialize(
+        query, current_user:, project_ids:, per_page:, page:, max_per_page:, search_mode:,
+        multi_match: false)
         @query = query
         @current_user = current_user
         @project_ids = project_ids
@@ -16,6 +19,7 @@ module Search
         @current_page = page
         @max_per_page = max_per_page
         @search_mode = search_mode
+        @multi_match = multi_match
       end
 
       def enabled?
@@ -27,15 +31,15 @@ module Search
       def fetch
         return yield page_limit unless enabled?
 
-        search_results, total_count = read_cache
+        search_results, total_count, file_count = read_cache
 
         unless search_results
-          search_results, total_count = yield page_limit
+          search_results, total_count, file_count = yield page_limit
 
-          update_cache!(search_results: search_results, total_count: total_count)
+          update_cache!(search_results: search_results, total_count: total_count, file_count: file_count)
         end
 
-        [search_results, total_count]
+        [search_results, total_count, file_count]
       end
 
       def cache_key(page: current_page)
@@ -61,7 +65,7 @@ module Search
       end
 
       def search_fingerprint
-        OpenSSL::Digest.hexdigest('SHA256', "#{query}-#{project_ids.sort.join(',')}-#{search_mode}")
+        OpenSSL::Digest.hexdigest('SHA256', "#{query}-#{project_ids.sort.join(',')}-#{search_mode}-#{multi_match}")
       end
 
       def read_cache
@@ -74,8 +78,8 @@ module Search
         Marshal.load(data) # rubocop:disable Security/MarshalLoad -- We're loading data we saved below (similar to Rails.cache)
       end
 
-      def update_cache!(search_results:, total_count:)
-        return unless search_results && total_count > 0
+      def update_cache!(search_results:, total_count:, file_count:)
+        return unless search_results && total_count > 0 && file_count > 0
 
         with_redis do |redis|
           redis.multi do |pipeline|
@@ -83,7 +87,7 @@ module Search
               result = search_results[page_idx]
               next unless result
 
-              cached_result = [{ page_idx => result }, total_count]
+              cached_result = [{ page_idx => result }, total_count, file_count]
 
               key = cache_key(page: page_idx + 1)
               pipeline.set(key, Marshal.dump(cached_result), ex: EXPIRES_IN)
