@@ -639,12 +639,6 @@ module EE
       end
     end
 
-    def duo_pro_add_on_available?
-      return duo_pro_add_on_available_namespace_ids.any? if gitlab_com_subscription?
-
-      GitlabSubscriptions::UserAddOnAssignment.by_user(self).for_active_gitlab_duo_pro_purchase.any?
-    end
-
     def duo_pro_cache_key_formatted
       format(User::DUO_PRO_ADD_ON_CACHE_KEY, user_id: id)
     end
