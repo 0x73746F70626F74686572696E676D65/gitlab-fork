@@ -3,7 +3,6 @@
 module Groups
   class DependenciesController < Groups::ApplicationController
     include GovernUsageGroupTracking
-    include Gitlab::Utils::StrongMemoize
 
     before_action only: :index do
       push_frontend_feature_flag(:group_level_dependencies_filtering_by_packager, group)
@@ -181,8 +180,7 @@ module Groups
     end
 
     def using_new_query?
-      ::Feature.enabled?(:rewrite_sbom_occurrences_query, group) && params[:project_ids].blank?
+      params[:project_ids].blank?
     end
-    strong_memoize_attr :using_new_query?
   end
 end
