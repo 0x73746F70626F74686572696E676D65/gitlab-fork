@@ -7,7 +7,6 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import ContentTransition from '~/vue_shared/components/content_transition.vue';
 import CEInviteModalBase from '~/invite_members/components/invite_modal_base.vue';
 import EEInviteModalBase from 'ee/invite_members/components/invite_modal_base.vue';
-import ManageRolesDropdownFooter from 'ee/members/components/action_dropdowns/manage_roles_dropdown_footer.vue';
 import {
   OVERAGE_MODAL_TITLE,
   OVERAGE_MODAL_CONTINUE_BUTTON,
@@ -497,11 +496,5 @@ describe('EEInviteModalBase', () => {
       expect(findModal().props('title')).toBe(propsDataCE.modalTitle);
       expect(findCEBase().props('invalidFeedbackMessage')).toBe('invalid message');
     });
-  });
-
-  it('renders the ManageRolesDropdownFooter component', () => {
-    createComponent();
-
-    expect(wrapper.findComponent(ManageRolesDropdownFooter).exists()).toBe(true);
   });
 });

@@ -5,7 +5,7 @@ import { nextTick } from 'vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import RoleDetailsDrawer from '~/members/components/table/drawer/role_details_drawer.vue';
 import MembersTableCell from '~/members/components/table/members_table_cell.vue';
-import RoleSelector from '~/members/components/table/drawer/role_selector.vue';
+import RoleSelector from '~/members/components/role_selector.vue';
 import { roleDropdownItems } from 'ee/members/utils';
 import waitForPromises from 'helpers/wait_for_promises';
 import GuestOverageConfirmation from 'ee/members/components/table/drawer/guest_overage_confirmation.vue';
@@ -42,8 +42,6 @@ describe('Role details drawer', () => {
 
   const findRoleSelector = () => wrapper.findComponent(RoleSelector);
   const findCustomRoleBadge = () => wrapper.findComponent(GlBadge);
-  const findDescriptionHeader = () => wrapper.findByTestId('description-header');
-  const findDescriptionValue = () => wrapper.findByTestId('description-value');
   const findBaseRole = () => wrapper.findByTestId('base-role');
   const findPermissions = () => wrapper.findAllByTestId('permission');
   const findPermissionAt = (index) => findPermissions().at(index);
@@ -87,11 +85,6 @@ describe('Role details drawer', () => {
       expect(findCustomRoleBadge().exists()).toBe(false);
     });
 
-    it('does not show the role description', () => {
-      expect(findDescriptionHeader().exists()).toBe(false);
-      expect(findDescriptionValue().exists()).toBe(false);
-    });
-
     it('does not show the base role in the permissions section', () => {
       expect(findBaseRole().exists()).toBe(false);
     });
@@ -108,11 +101,6 @@ describe('Role details drawer', () => {
 
     it('shows the custom role badge', () => {
       expect(findCustomRoleBadge().text()).toBe('Custom role');
-    });
-
-    it('shows the role description', () => {
-      expect(findDescriptionHeader().text()).toBe('Description');
-      expect(findDescriptionValue().text()).toBe('custom role 1 description');
     });
 
     it('shows the base role in the permissions section', () => {

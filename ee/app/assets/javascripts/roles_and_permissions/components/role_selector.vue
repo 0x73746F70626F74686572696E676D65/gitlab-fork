@@ -56,7 +56,7 @@ export default {
           integerValue: this.currentStandardRole,
           memberRoleId: this.currentCustomRoleId,
         };
-        this.selectedRole = initialSelectedRole(options.flatten, { accessLevel });
+        this.selectedRole = initialSelectedRole(options.flatten, { accessLevel })?.value;
       },
     },
   },
