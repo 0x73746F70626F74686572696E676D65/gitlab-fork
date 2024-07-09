@@ -277,19 +277,35 @@ RSpec.describe Gitlab::Llm::Chain::Tools::EpicReader::Executor, feature_category
             "reference\", \"ResourceIdentifier\": \"#{identifier}\"}"
           end
 
-          let(:response) do
-            "I am sorry, I cannot access the information you are asking about. " \
-              "A group or project owner has turned off Duo features in this group or project."
-          end
+          let(:resource) { epic2 }
 
           before do
             stub_licensed_features(epics: true, ai_chat: false)
           end
 
-          it 'returns success response' do
-            allow(tool).to receive(:request).and_return(ai_response)
+          it_behaves_like 'success response'
 
-            expect(tool.execute.content).to eq(response)
+          context 'when duo features are disabled for group' do
+            let(:identifier) { epic2.to_reference(full: true) }
+            let(:ai_response) do
+              "reference\", \"ResourceIdentifier\": \"#{identifier}\"}"
+            end
+
+            let(:response) do
+              "I am sorry, I cannot access the information you are asking about. " \
+                "A group or project owner has turned off Duo features in this group or project."
+            end
+
+            before do
+              group.namespace_settings.reload.update!(duo_features_enabled: false)
+              stub_licensed_features(epics: true, ai_chat: false)
+            end
+
+            it 'returns success response' do
+              allow(tool).to receive(:request).and_return(ai_response)
+
+              expect(tool.execute.content).to eq(response)
+            end
           end
         end
       end

@@ -22,8 +22,8 @@ RSpec.describe 'approaching seat count threshold alert', :saas, :js, feature_cat
 
   before do
     stub_ee_application_setting(should_check_namespace_plan: true)
-
     stub_subscription_request_seat_usage(true)
+    create(:callout, user: user, feature_name: :duo_chat_callout)
   end
 
   shared_examples 'a hidden alert' do

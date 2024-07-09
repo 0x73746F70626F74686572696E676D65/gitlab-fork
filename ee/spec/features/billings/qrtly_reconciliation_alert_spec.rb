@@ -27,6 +27,7 @@ RSpec.describe 'Billings > Qrtly Reconciliation Alert', :js, :saas, feature_cate
       .to_return(status: 200, body: plans_data.to_json)
     stub_subscription_management_data(namespace.id)
     stub_temporary_extension_data(namespace.id)
+    create(:callout, user: user, feature_name: :duo_chat_callout)
     sign_in(user)
   end
 

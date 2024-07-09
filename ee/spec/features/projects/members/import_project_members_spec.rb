@@ -16,6 +16,7 @@ RSpec.describe 'Projects > Members > Import project members', :js, feature_categ
     project.add_developer(create(:user))
     source_project.add_owner(user)
     source_project.add_reporter(user_mike)
+    create(:callout, user: user, feature_name: :duo_chat_callout)
   end
 
   before do

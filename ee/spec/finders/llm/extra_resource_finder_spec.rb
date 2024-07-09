@@ -78,9 +78,21 @@ RSpec.describe Llm::ExtraResourceFinder, :saas, feature_category: :duo_chat do
 
           context 'when project is in group that does not allow experiment features' do
             include_context 'with experiment features disabled for group'
+            let(:expected_blob) { project.repository.blob_at(project.default_branch, path) }
 
-            it 'returns an empty hash' do
-              expect(execute).to be_empty
+            it 'returns the blob' do
+              expect(expected_blob).not_to eq(nil)
+              expect(execute[:blob].id).to eq(expected_blob.id)
+            end
+
+            context 'with duo features disabled for project' do
+              before do
+                project.update!(duo_features_enabled: false)
+              end
+
+              it 'returns an empty hash' do
+                expect(execute).to be_empty
+              end
             end
           end
         end

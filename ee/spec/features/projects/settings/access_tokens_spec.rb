@@ -14,6 +14,7 @@ RSpec.describe 'Project > Settings > Access Tokens', :js, :saas, feature_categor
     project.add_maintainer(user)
 
     create(:plan_limits, :ultimate_trial_plan, project_access_token_limit: 1)
+    create(:callout, user: user, feature_name: :duo_chat_callout)
   end
 
   before do

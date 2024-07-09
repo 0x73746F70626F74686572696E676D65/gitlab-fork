@@ -21,6 +21,10 @@ RSpec.describe 'Epic in issue sidebar', :js, feature_category: :team_planning do
 
   let_it_be(:sidebar_epic_selector) { '[data-testid="sidebar-epic"]' }
 
+  before do
+    create(:callout, user: user, feature_name: :duo_chat_callout)
+  end
+
   shared_examples 'epic in issue sidebar' do
     before do
       group.add_owner(user)

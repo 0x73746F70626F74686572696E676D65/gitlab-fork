@@ -244,19 +244,31 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueReader::Executor, feature_categor
           context 'when group does not have ai enabled' do
             let(:identifier) { 'current' }
             let(:ai_response) { "current\", \"ResourceIdentifier\": \"#{identifier}\"}" }
-            let(:response) do
-              "I am sorry, I cannot access the information you are asking about. " \
-                "A group or project owner has turned off Duo features in this group or project."
-            end
+            let(:resource) { issue1 }
 
             before do
               stub_licensed_features(ai_chat: false)
             end
 
-            it 'returns success response' do
-              allow(tool).to receive(:request).and_return(ai_response)
+            it_behaves_like 'success response'
 
-              expect(tool.execute.content).to eq(response)
+            context 'when duo features are disabled for project' do
+              let(:identifier) { 'current' }
+              let(:ai_response) { "current\", \"ResourceIdentifier\": \"#{identifier}\"}" }
+              let(:response) do
+                "I am sorry, I cannot access the information you are asking about. " \
+                  "A group or project owner has turned off Duo features in this group or project."
+              end
+
+              before do
+                project.update!(duo_features_enabled: false)
+              end
+
+              it 'returns success response' do
+                allow(tool).to receive(:request).and_return(ai_response)
+
+                expect(tool.execute.content).to eq(response)
+              end
             end
           end
         end
