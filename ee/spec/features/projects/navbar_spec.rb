@@ -24,6 +24,8 @@ RSpec.describe 'Project navbar', :js, feature_category: :navigation do
     insert_infrastructure_registry_nav(s_('Terraform|Terraform states'))
     insert_infrastructure_google_cloud_nav
     insert_infrastructure_aws_nav
+    project.update!(service_desk_enabled: true)
+    allow(Gitlab::ServiceDesk).to receive(:supported?).and_return(true)
   end
 
   context 'when iterations is available' do

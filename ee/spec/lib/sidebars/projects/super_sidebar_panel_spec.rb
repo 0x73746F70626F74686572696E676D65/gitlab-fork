@@ -48,6 +48,8 @@ RSpec.describe Sidebars::Projects::SuperSidebarPanel, feature_category: :navigat
     stub_saas_features(google_cloud_support: true)
     # Iterations are only available in non-personal projects
     allow(project).to receive(:personal?).and_return(false)
+    allow(Gitlab::ServiceDesk).to receive(:supported?).and_return(true)
+    project.update!(service_desk_enabled: true)
   end
 
   it_behaves_like 'a panel with uniquely identifiable menu items'
