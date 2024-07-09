@@ -34,7 +34,7 @@ export default {
     CodeSuggestionsStatisticsCard,
     GlSkeletonLoader,
   },
-  inject: { isSaaS: {}, groupId: { default: null } },
+  inject: { isSaaS: {}, isStandalonePage: { default: false }, groupId: { default: null } },
   addOnErrorDictionary: ADD_ON_ERROR_DICTIONARY,
   data() {
     return {
@@ -68,7 +68,7 @@ export default {
       return this.addOnPurchase?.name === 'DUO_ENTERPRISE' ? DUO_ENTERPRISE : DUO_PRO;
     },
     showTitleAndSubtitle() {
-      if (this.isSaaS) {
+      if (this.isSaaS && !this.isStandalonePage) {
         return false;
       }
       return !this.isLoading && (this.hasCodeSuggestions || this.addOnPurchaseFetchError);

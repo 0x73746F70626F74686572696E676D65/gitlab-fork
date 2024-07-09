@@ -159,7 +159,7 @@ RSpec.describe GitlabSubscriptions::Trials::DuoProController, :saas, :unlimited_
         end
 
         it 'redirects to the group usage quotas page with code suggestions usage tab anchor' do
-          expect(post_create).to redirect_to(group_usage_quotas_path(group, anchor: 'code-suggestions-usage-tab'))
+          expect(post_create).to redirect_to(group_settings_gitlab_duo_usage_index_path(group))
         end
 
         it 'shows valid flash message', :freeze_time do

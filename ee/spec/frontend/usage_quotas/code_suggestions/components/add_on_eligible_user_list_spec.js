@@ -26,6 +26,7 @@ import {
   ADD_ON_PURCHASE_FETCH_ERROR_CODE,
 } from 'ee/usage_quotas/error_constants';
 import { scrollToElement } from '~/lib/utils/common_utils';
+import Tracking from '~/tracking';
 import AddOnBulkActionConfirmationModal from 'ee/usage_quotas/code_suggestions/components/add_on_bulk_action_confirmation_modal.vue';
 import {
   ADD_ON_CODE_SUGGESTIONS,
@@ -872,6 +873,8 @@ describe('Add On Eligible User List', () => {
     describe('bulk assignment confirmation', () => {
       describe('successful assignment', () => {
         beforeEach(async () => {
+          jest.spyOn(Tracking, 'event');
+
           await createComponent({ mountFn: mount, isBulkAddOnAssignmentEnabled: true });
 
           await confirmSeatAssignment();
@@ -918,12 +921,24 @@ describe('Add On Eligible User List', () => {
 
           expect(findSuccessAlert().text()).toBe('2 users have been successfully assigned a seat.');
         });
+
+        it('tracks the `bulk_enable_gitlab_duo_pro_for_seats` event', async () => {
+          await waitForPromises();
+
+          expect(Tracking.event).toHaveBeenCalledWith(
+            undefined,
+            'bulk_enable_gitlab_duo_pro_for_seats',
+            expect.any(Object),
+          );
+        });
       });
 
       describe('unsuccessful assignment', () => {
         const error = new Error('An error');
 
         beforeEach(async () => {
+          jest.spyOn(Tracking, 'event');
+
           await createComponent({
             mountFn: mount,
             isBulkAddOnAssignmentEnabled: true,
@@ -977,6 +992,12 @@ describe('Add On Eligible User List', () => {
 
         it('scrolls to the top of the table', () => {
           expect(scrollToElement).toHaveBeenCalled();
+        });
+
+        it('does not track any event', async () => {
+          await waitForPromises();
+
+          expect(Tracking.event).not.toHaveBeenCalledWith();
         });
       });
 
@@ -1130,6 +1151,8 @@ describe('Add On Eligible User List', () => {
     describe('bulk unassignment confirmation', () => {
       describe('successful unassignment', () => {
         beforeEach(async () => {
+          jest.spyOn(Tracking, 'event');
+
           await createComponent({ mountFn: mount, isBulkAddOnAssignmentEnabled: true });
 
           await confirmSeatUnassignment();
@@ -1174,12 +1197,24 @@ describe('Add On Eligible User List', () => {
             '2 users have been successfully unassigned a seat.',
           );
         });
+
+        it('tracks the `bulk_disable_gitlab_duo_pro_for_seats` event', async () => {
+          await waitForPromises();
+
+          expect(Tracking.event).toHaveBeenCalledWith(
+            undefined,
+            'bulk_disable_gitlab_duo_pro_for_seats',
+            expect.any(Object),
+          );
+        });
       });
 
       describe('unsuccessful unassignment', () => {
         const error = new Error('An error');
 
         beforeEach(async () => {
+          jest.spyOn(Tracking, 'event');
+
           await createComponent({
             mountFn: mount,
             isBulkAddOnAssignmentEnabled: true,
@@ -1212,6 +1247,12 @@ describe('Add On Eligible User List', () => {
 
         it('scrolls to the top of the table', () => {
           expect(scrollToElement).toHaveBeenCalled();
+        });
+
+        it('does not track any event', async () => {
+          await waitForPromises();
+
+          expect(Tracking.event).not.toHaveBeenCalledWith();
         });
       });
 

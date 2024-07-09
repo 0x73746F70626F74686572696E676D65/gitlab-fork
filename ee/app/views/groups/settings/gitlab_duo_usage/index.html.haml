@@ -1,4 +1,4 @@
 - page_title s_('UsageQuota|GitLab Duo')
 - breadcrumb_title s_('UsageQuota|GitLab Duo')
 
-#js-gitlab-duo-usage-settings{ data: code_suggestions_usage_app_data(@group) }
+#js-gitlab-duo-usage-settings{ data: code_suggestions_usage_app_data(@group).merge({ is_standalone_page: 'true' }) }

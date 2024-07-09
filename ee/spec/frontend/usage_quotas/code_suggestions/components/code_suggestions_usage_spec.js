@@ -138,23 +138,47 @@ describe('GitLab Duo Usage', () => {
 
   describe('with code suggestions data', () => {
     describe('when instance is SaaS', () => {
-      beforeEach(() => {
-        return createComponent({
-          handler: noAssignedAddonDataHandler,
-          provideProps: { groupId: '289561' },
+      describe('when on the `Usage Quotas` page', () => {
+        beforeEach(() => {
+          return createComponent({
+            handler: noAssignedAddonDataHandler,
+            provideProps: { groupId: '289561' },
+          });
+        });
+
+        it('does not render code suggestions title', () => {
+          expect(findCodeSuggestionsTitle().exists()).toBe(false);
+        });
+
+        it('does not render code suggestions subtitle', () => {
+          expect(findCodeSuggestionsSubtitle().exists()).toBe(false);
+        });
+
+        it('does not render code suggestions intro', () => {
+          expect(findCodeSuggestionsIntro().exists()).toBe(false);
         });
       });
 
-      it('does not render code suggestions title', () => {
-        expect(findCodeSuggestionsTitle().exists()).toBe(false);
-      });
+      describe('when on the standalone page', () => {
+        beforeEach(() => {
+          return createComponent({
+            handler: noAssignedAddonDataHandler,
+            provideProps: { isStandalonePage: true, groupId: '289561' },
+          });
+        });
 
-      it('does not render code suggestions subtitle', () => {
-        expect(findCodeSuggestionsSubtitle().exists()).toBe(false);
-      });
+        it('renders code suggestions title', () => {
+          expect(findCodeSuggestionsTitle().text()).toBe(CODE_SUGGESTIONS_TITLE);
+        });
 
-      it('does not render code suggestions intro', () => {
-        expect(findCodeSuggestionsIntro().exists()).toBe(false);
+        it('renders code suggestions subtitle', () => {
+          expect(findCodeSuggestionsSubtitle().text()).toBe(
+            sprintf(
+              s__('CodeSuggestions|Manage seat assignments for %{addOnName} across your instance.'),
+              { addOnName: CODE_SUGGESTIONS_TITLE },
+            ),
+          );
+        });
       });
 
       describe('with Duo Pro add-on enabled', () => {

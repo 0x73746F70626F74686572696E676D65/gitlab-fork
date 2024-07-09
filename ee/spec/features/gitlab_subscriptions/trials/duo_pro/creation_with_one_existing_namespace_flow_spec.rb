@@ -34,7 +34,7 @@ RSpec.describe 'Duo Pro trial lead submission and creation with one eligible nam
 
       submit_duo_pro_trial_company_form(with_trial: true)
 
-      expect_to_be_on_group_usage_quotas_page
+      expect_to_be_on_gitlab_duo_usage_quotas_page
     end
   end
 
@@ -55,7 +55,7 @@ RSpec.describe 'Duo Pro trial lead submission and creation with one eligible nam
       # success
       submit_duo_pro_trial_company_form(with_trial: true)
 
-      expect_to_be_on_group_usage_quotas_page
+      expect_to_be_on_gitlab_duo_usage_quotas_page
     end
   end
 
@@ -78,7 +78,7 @@ RSpec.describe 'Duo Pro trial lead submission and creation with one eligible nam
 
       submit_duo_pro_trial_selection_form
 
-      expect_to_be_on_group_usage_quotas_page
+      expect_to_be_on_gitlab_duo_usage_quotas_page
     end
   end
 end

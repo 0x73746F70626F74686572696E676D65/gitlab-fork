@@ -11,6 +11,7 @@ export const parseProvideData = (el) => {
     duoProTrialHref,
     addDuoProHref,
     duoProBulkUserAssignmentAvailable,
+    isStandalonePage,
     subscriptionName,
     subscriptionStartDate,
     subscriptionEndDate,
@@ -41,6 +42,7 @@ export const parseProvideData = (el) => {
     duoProTrialHref,
     addDuoProHref,
     isSaaS: true,
+    isStandalonePage: parseBoolean(isStandalonePage),
     isBulkAddOnAssignmentEnabled: parseBoolean(duoProBulkUserAssignmentAvailable),
     subscriptionName,
     subscriptionStartDate,
@@ -70,6 +72,9 @@ export const getCodeSuggestionsTabMetadata = ({ includeEl = false } = {}) => {
       render(createElement) {
         return createElement(CodeSuggestionsUsage);
       },
+    },
+    tracking: {
+      action: 'click_gitlab_duo_tab_on_usage_quotas',
     },
   };
 
