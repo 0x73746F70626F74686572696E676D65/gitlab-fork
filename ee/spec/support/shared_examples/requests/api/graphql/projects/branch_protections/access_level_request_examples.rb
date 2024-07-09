@@ -11,38 +11,61 @@ RSpec.shared_examples 'AccessLevel type objects contains user and group' do |acc
     describe 'query' do
       include_context 'when user tracking is disabled'
 
-      let(:fields) { all_graphql_fields_for("#{access_level_kind.to_s.classify}AccessLevel") }
+      let(:fields) { all_graphql_fields_for("#{access_level_kind.to_s.classify}AccessLevel", excluded: excluded) }
+      let(:excluded) { [] }
 
-      it 'avoids N+1 queries', :use_sql_query_cache, :aggregate_failures do
-        create(
-          "protected_branch_#{access_level_kind}_access_level",
-          protected_branch: protected_branch,
-          group: create(:project_group_link, project: protected_branch.project).group
-        )
-        create(
-          "protected_branch_#{access_level_kind}_access_level",
-          protected_branch: protected_branch,
-          user: create(:user, developer_of: project)
-        )
+      shared_examples_for 'avoids N+1 queries' do
+        it 'avoids making extra queries', :use_sql_query_cache, :aggregate_failures do
+          create(
+            "protected_branch_#{access_level_kind}_access_level",
+            protected_branch: protected_branch,
+            group: create(:project_group_link, project: protected_branch.project).group
+          )
+          create(
+            "protected_branch_#{access_level_kind}_access_level",
+            protected_branch: protected_branch,
+            user: create(:user, developer_of: project)
+          )
 
-        control = ActiveRecord::QueryRecorder.new(skip_cached: false) do
-          post_graphql(query, current_user: current_user, variables: variables)
+          control = ActiveRecord::QueryRecorder.new(skip_cached: false) do
+            post_graphql(query, current_user: current_user, variables: variables)
+          end
+
+          create(
+            "protected_branch_#{access_level_kind}_access_level",
+            protected_branch: protected_branch,
+            group: create(:project_group_link, project: protected_branch.project).group
+          )
+          create(
+            "protected_branch_#{access_level_kind}_access_level",
+            protected_branch: protected_branch,
+            user: create(:user, developer_of: project)
+          )
+
+          expect do
+            post_graphql(query, current_user: current_user, variables: variables)
+          end.not_to exceed_all_query_limit(control)
         end
+      end
 
-        create(
-          "protected_branch_#{access_level_kind}_access_level",
-          protected_branch: protected_branch,
-          group: create(:project_group_link, project: protected_branch.project).group
-        )
-        create(
-          "protected_branch_#{access_level_kind}_access_level",
-          protected_branch: protected_branch,
-          user: create(:user, developer_of: project)
-        )
+      it_behaves_like 'avoids N+1 queries'
 
-        expect do
-          post_graphql(query, current_user: current_user, variables: variables)
-        end.not_to exceed_all_query_limit(control)
+      context 'when not requesting group' do
+        let(:excluded) { %w[group] }
+
+        it_behaves_like 'avoids N+1 queries'
+
+        context 'and not requesting user' do
+          let(:excluded) { %w[group user] }
+
+          it_behaves_like 'avoids N+1 queries'
+        end
+      end
+
+      context 'when not requesting user' do
+        let(:excluded) { %w[user] }
+
+        it_behaves_like 'avoids N+1 queries'
       end
     end
 

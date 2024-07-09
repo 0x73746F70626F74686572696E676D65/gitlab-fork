@@ -65,8 +65,18 @@ module EE
           access_levels_lookahead = access_levels_node_selection(access_level_name)
 
           preloads = []
-          preloads << { group: group_preloads(access_levels_lookahead) } if access_levels_lookahead.selects?(:group)
-          preloads << { user: user_preloads(access_levels_lookahead) } if access_levels_lookahead.selects?(:user)
+
+          if access_levels_lookahead.selects?(:group)
+            preloads << { group: group_preloads(access_levels_lookahead) }
+          elsif access_levels_lookahead.selects?(:access_level_description)
+            preloads << :group
+          end
+
+          if access_levels_lookahead.selects?(:user)
+            preloads << { user: user_preloads(access_levels_lookahead) }
+          elsif access_levels_lookahead.selects?(:access_level_description)
+            preloads << :user
+          end
 
           { access_level_name => preloads }
         end
