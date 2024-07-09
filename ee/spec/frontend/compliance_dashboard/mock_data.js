@@ -177,6 +177,7 @@ export const complianceFramework = {
 const createProject = ({ id, groupPath } = {}) => ({
   id: `gid://gitlab/Project/${id}`,
   name: `Project ${id}`,
+  description: `Project description ${id}`,
   fullPath: `${groupPath}/project${id}`,
   webUrl: `${groupPath}/project${id}`,
   complianceFrameworks: {

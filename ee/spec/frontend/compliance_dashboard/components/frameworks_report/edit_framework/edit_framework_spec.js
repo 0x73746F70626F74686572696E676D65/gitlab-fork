@@ -6,6 +6,7 @@ import * as Utils from 'ee/groups/settings/compliance_frameworks/utils';
 import EditFramework from 'ee/compliance_dashboard/components/frameworks_report/edit_framework/edit_framework.vue';
 import BasicInformationSection from 'ee/compliance_dashboard/components/frameworks_report/edit_framework/components/basic_information_section.vue';
 import PoliciesSection from 'ee/compliance_dashboard/components/frameworks_report/edit_framework/components/policies_section.vue';
+import ProjectsSection from 'ee/compliance_dashboard/components/frameworks_report/edit_framework/components/projects_section.vue';
 import DeleteModal from 'ee/compliance_dashboard/components/frameworks_report/edit_framework/components/delete_modal.vue';
 import createComplianceFrameworkMutation from 'ee/compliance_dashboard/graphql/mutations/create_compliance_framework.mutation.graphql';
 import updateComplianceFrameworkMutation from 'ee/compliance_dashboard/graphql/mutations/update_compliance_framework.mutation.graphql';
@@ -59,6 +60,7 @@ describe('Edit Framework Form', () => {
       stubs: {
         ColorPicker: true,
         PoliciesSection: true,
+        ProjectsSection: true,
         DeleteModal: stubComponent(DeleteModal, {
           template: '<div></div>',
           methods: { show: showDeleteModal },
@@ -300,6 +302,20 @@ describe('Edit Framework Form', () => {
       });
       await waitForPromises();
       expect(wrapper.findComponent(PoliciesSection).exists()).toBe(false);
+    });
+  });
+
+  describe('Projects section', () => {
+    it('does not render projects section if creating new framework', async () => {
+      wrapper = createComponent(shallowMountExtended, { routeParams: {} });
+      await waitForPromises();
+      expect(wrapper.findComponent(ProjectsSection).exists()).toBe(false);
+    });
+
+    it('render projects section if editing framework', async () => {
+      wrapper = createComponent(shallowMountExtended);
+      await waitForPromises();
+      expect(wrapper.findComponent(ProjectsSection).exists()).toBe(true);
     });
   });
 });

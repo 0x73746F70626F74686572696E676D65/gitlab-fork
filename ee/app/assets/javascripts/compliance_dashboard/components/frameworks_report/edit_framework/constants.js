@@ -96,4 +96,12 @@ export const i18n = {
     dismiss: s__('ComplianceReport|Dismiss'),
     migratePipelineToPolicy: s__('ComplianceReport|Migrate pipeline to a policy'),
   },
+
+  projects: s__('ComplianceFrameworks|Projects'),
+  projectsTableFields: {
+    name: s__('ComplianceFrameworks|Project name'),
+    desc: s__('ComplianceFrameworks|Project description'),
+  },
+  projectsTotalCount: (/* count */) =>
+    s__('ComplianceFrameworks|Total projects linked to framework: %{count}'),
 };
