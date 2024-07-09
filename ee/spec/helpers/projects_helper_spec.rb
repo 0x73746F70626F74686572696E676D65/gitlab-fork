@@ -339,6 +339,31 @@ RSpec.describe ProjectsHelper, feature_category: :shared do
       allow(helper).to receive(:can?).and_return(true)
     end
 
+    context 'project with third party offers hidden' do
+      let(:expected_value) do
+        {
+          has_vulnerabilities: 'false',
+          has_jira_vulnerabilities_integration_enabled: 'true',
+          empty_state_svg_path: start_with('/assets/illustrations/empty-state/empty-secure-md'),
+          operational_configuration_path: new_project_security_policy_path(project),
+          security_dashboard_empty_svg_path: start_with('/assets/illustrations/empty-state/empty-secure-md'),
+          project_full_path: project.full_path,
+          no_vulnerabilities_svg_path: start_with('/assets/illustrations/empty-state/empty-search-md-'),
+          security_configuration_path: end_with('/configuration'),
+          can_admin_vulnerability: 'true',
+          new_vulnerability_path: end_with('/security/vulnerabilities/new'),
+          dismissal_descriptions: dismissal_descriptions_json,
+          hide_third_party_offers: 'true'
+        }
+      end
+
+      before do
+        allow(::Gitlab::CurrentSettings.current_application_settings).to receive(:hide_third_party_offers?).and_return(true)
+      end
+
+      it { is_expected.to match(expected_value) }
+    end
+
     context 'project without vulnerabilities' do
       let(:expected_value) do
         {
@@ -352,7 +377,8 @@ RSpec.describe ProjectsHelper, feature_category: :shared do
           security_configuration_path: end_with('/configuration'),
           can_admin_vulnerability: 'true',
           new_vulnerability_path: end_with('/security/vulnerabilities/new'),
-          dismissal_descriptions: dismissal_descriptions_json
+          dismissal_descriptions: dismissal_descriptions_json,
+          hide_third_party_offers: 'false'
         }
       end
 
@@ -377,7 +403,8 @@ RSpec.describe ProjectsHelper, feature_category: :shared do
           can_view_false_positive: 'false',
           security_configuration_path: kind_of(String),
           new_vulnerability_path: end_with('/security/vulnerabilities/new'),
-          dismissal_descriptions: dismissal_descriptions_json
+          dismissal_descriptions: dismissal_descriptions_json,
+          hide_third_party_offers: 'false'
         }
       end
 
