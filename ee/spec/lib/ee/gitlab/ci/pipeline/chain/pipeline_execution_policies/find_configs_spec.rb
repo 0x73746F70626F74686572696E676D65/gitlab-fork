@@ -60,6 +60,17 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::PipelineExecutionPolicies::FindConfi
       end
     end
 
+    it 'propagates partition_id to execution policy pipelines' do
+      # Assigning partition_id to validate it is being propagated correctly
+      pipeline.partition_id = ci_testing_partition_id
+
+      step.perform!
+
+      command.pipeline_execution_policies.each do |policy|
+        expect(policy.pipeline.partition_id).to eq(ci_testing_partition_id)
+      end
+    end
+
     context 'with merge_request parameter set on the command' do
       let_it_be(:merge_request) { create(:merge_request, source_project: project, target_project: project) }
       let(:command) do

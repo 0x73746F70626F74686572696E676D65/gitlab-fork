@@ -5,9 +5,11 @@
 # The jobs of the policy pipelines are merged onto the project pipeline later in the chain,
 # in the `PipelineExecutionPolicies::MergeJobs` step.
 #
-# The step needs to be executed before `Skip` step to enforce pipeline with policies regardless of `ci.skip` options.
-# It's also important that it runs before `Config::Content` step to be able to force the pipeline creation
-# with Pipeline Execution Policies if there is no `.gitlab-ci.yml` in the project.
+# The step needs to be executed:
+# - After `AssignPartition` to ensure that all policy pipelines are built using the same `partition_id`.
+# - Before `Skip` step to enforce pipeline with policies regardless of `ci.skip` options.
+# - Before `Config::Content` step to be able to force the pipeline creation
+#   with Pipeline Execution Policies if there is no `.gitlab-ci.yml` in the project.
 #
 # If there are applicable policies and they return an error, the pipeline creation will be aborted.
 # If the policy pipelines are filtered out by rules, they are ignored and the pipeline creation continues as usual.
@@ -66,7 +68,7 @@ module EE
 
               def create_pipeline(content)
                 ::Ci::CreatePipelineService
-                  .new(command.project, command.current_user, ref: command.ref)
+                  .new(command.project, command.current_user, ref: command.ref, partition_id: pipeline.partition_id)
                   .execute(command.source,
                     execution_policy_dry_run: true,
                     content: content,
