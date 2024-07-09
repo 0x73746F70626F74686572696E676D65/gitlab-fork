@@ -89,27 +89,66 @@ RSpec.describe Projects::ProtectedBranchesController, feature_category: :source_
       end
     end
 
-    context 'with blocking scan result policy' do
+    describe 'MR approval policies' do
       let(:branch_name) { protected_branch.name }
       let(:policy_configuration) do
         create(:security_orchestration_policy_configuration, project: project)
       end
 
-      include_context 'with scan result policy blocking protected branches'
+      describe 'block_branch_modification' do
+        include_context 'with scan result policy blocking protected branches'
 
-      before do
-        create(:scan_result_policy_read, :blocking_protected_branches, project: project,
-          security_orchestration_policy_configuration: policy_configuration)
+        before do
+          create(:scan_result_policy_read, :blocking_protected_branches, project: project,
+            security_orchestration_policy_configuration: policy_configuration)
+        end
+
+        it 'does not rename' do
+          expect { update_protected_branch }.not_to change { protected_branch.reload.name }
+        end
+
+        it 'responds with 403' do
+          update_protected_branch
+
+          expect(response).to have_gitlab_http_status(:forbidden)
+        end
       end
 
-      it 'does not rename' do
-        expect { update_protected_branch }.not_to change { protected_branch.reload.name }
-      end
+      describe 'prevent_pushing_and_force_pushing' do
+        include_context 'with scan result policy preventing force pushing'
 
-      it 'responds with 403' do
-        update_protected_branch
+        before do
+          create(:scan_result_policy_read, :prevent_pushing_and_force_pushing, project: project,
+            security_orchestration_policy_configuration: policy_configuration)
+        end
 
-        expect(response).to have_gitlab_http_status(:forbidden)
+        context 'when updating `allow_force_push`' do
+          let(:params) do
+            { namespace_id: project.namespace.to_param,
+              project_id: project.to_param,
+              id: protected_branch.id,
+              protected_branch: { allow_force_push: true } }
+          end
+
+          it 'responds with 403 and does not update', :aggregate_failures do
+            expect { update_protected_branch }.not_to change { protected_branch.allow_force_push }
+            expect(response).to have_gitlab_http_status(:forbidden)
+          end
+        end
+
+        context 'when updating merge access levels' do
+          let(:params) do
+            { namespace_id: project.namespace.to_param,
+              project_id: project.to_param,
+              id: protected_branch.id,
+              protected_branch: { merge_access_levels_attributes: [{ user_id: project.owner.id }] } }
+          end
+
+          it 'responds with 2xx and updates', :aggregate_failures do
+            expect { update_protected_branch }.to change { protected_branch.merge_access_levels.count }.by(1)
+            expect(response).to have_gitlab_http_status(:success)
+          end
+        end
       end
     end
   end
