@@ -72,7 +72,9 @@ export default {
     },
     toggleExpand(index) {
       if (!this.hasChildrenSpans(index)) return;
-      this.expanded = this.expanded.with(index, !this.isExpanded(index));
+      const copy = [...this.expanded];
+      copy[index] = !this.isExpanded(index);
+      this.expanded = copy;
     },
     isExpanded(index) {
       return this.expanded[index];
