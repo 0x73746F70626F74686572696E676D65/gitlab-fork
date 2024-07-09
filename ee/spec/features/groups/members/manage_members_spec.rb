@@ -25,6 +25,7 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js, feature_category
     stub_reconciliation_request(true)
     stub_subscription_request_seat_usage(true)
     stub_feature_flags(block_seat_overages: false, show_role_details_in_drawer: false)
+    create(:callout, user: user1, feature_name: :duo_chat_callout)
   end
 
   context 'with overage modal concerns' do

@@ -43,16 +43,34 @@ RSpec.describe Gitlab::Llm::Chain::Utils::ChatAuthorizer, feature_category: :duo
     end
 
     shared_examples 'chat authorization' do
-      context 'when ai chat is enabled' do
+      context 'when ai chat is available for group' do
         include_context 'with duo features enabled and ai chat available for group on SaaS'
 
         it_behaves_like 'chat is authorized'
+
+        context 'when duo features disabled for group' do
+          let(:container) { group }
+
+          include_context 'with duo features disabled and ai chat available for group on SaaS'
+
+          it_behaves_like 'chat is not authorized'
+        end
       end
 
-      context 'when ai chat is disabled' do
+      context 'when ai chat is not available for group' do
         include_context 'with duo features enabled and ai chat not available for group on SaaS'
 
-        it_behaves_like 'chat is not authorized'
+        context 'when user belongs to another group with ai chat available' do
+          it_behaves_like 'chat is authorized'
+        end
+
+        context 'when user does not belong to a group with ai chat available' do
+          before do
+            group.users.first.destroy!
+          end
+
+          it_behaves_like 'chat is not authorized'
+        end
       end
     end
 
@@ -117,7 +135,15 @@ RSpec.describe Gitlab::Llm::Chain::Utils::ChatAuthorizer, feature_category: :duo
         end
 
         context 'when resource is authorized' do
-          it_behaves_like 'chat authorization'
+          it_behaves_like 'chat is authorized'
+
+          context 'when user does not belong to a group with ai chat available' do
+            before do
+              group.users.first.destroy!
+            end
+
+            it_behaves_like 'chat is not authorized'
+          end
         end
 
         context 'when resource is not authorized' do
@@ -191,7 +217,7 @@ RSpec.describe Gitlab::Llm::Chain::Utils::ChatAuthorizer, feature_category: :duo
           let(:duo_features_enabled) { true }
 
           it "calls policy with the appropriate arguments" do
-            expect(user).to receive(:can?).with(:access_duo_chat, container)
+            expect(user).to receive(:can?).with(:access_duo_chat)
 
             authorizer.container(container: container, user: user)
           end

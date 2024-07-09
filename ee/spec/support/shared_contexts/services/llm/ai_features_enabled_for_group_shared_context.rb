@@ -69,3 +69,12 @@ RSpec.shared_context 'with duo features enabled and ai chat not available for gr
     group.namespace_settings.reload.update!(duo_features_enabled: true)
   end
 end
+
+RSpec.shared_context 'with duo features disabled and ai chat available for group on SaaS' do
+  before do
+    allow(Gitlab).to receive(:org_or_com?).and_return(true)
+    stub_ee_application_setting(should_check_namespace_plan: true)
+    stub_licensed_features(ai_chat: true)
+    group.namespace_settings.reload.update!(duo_features_enabled: false)
+  end
+end

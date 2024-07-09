@@ -4,6 +4,10 @@ RSpec.shared_examples_for 'unlimited members during trial alert' do
   include Features::InviteMembersModalHelpers
   include SubscriptionPortalHelpers
 
+  before do
+    create(:callout, user: user, feature_name: :duo_chat_callout)
+  end
+
   it 'displays alert with only Explore paid plans link on members page' do
     visit members_page_path
 
