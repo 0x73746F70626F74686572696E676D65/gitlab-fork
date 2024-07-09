@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Resolvers::UserNotesCountResolver do
+RSpec.describe Resolvers::UserNotesCountResolver, feature_category: :team_planning do
   include GraphqlHelpers
 
   describe '#resolve' do
@@ -42,6 +42,16 @@ RSpec.describe Resolvers::UserNotesCountResolver do
           end
         end
 
+        context 'when a user does not have permission to view notes' do
+          subject { batch_sync { resolve_user_notes_count(private_epic) } }
+
+          it 'generates an error' do
+            expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ResourceNotAvailable) do
+              subject
+            end
+          end
+        end
+
         context 'when a user has permission to view notes' do
           before do
             private_epic.group.add_developer(user)
@@ -52,14 +62,27 @@ RSpec.describe Resolvers::UserNotesCountResolver do
           it 'returns the number of notes for the issue' do
             expect(subject).to eq(3)
           end
-        end
 
-        context 'when a user does not have permission to view notes' do
-          subject { batch_sync { resolve_user_notes_count(private_epic) } }
+          context 'when notes are also added to epic work item side' do
+            let_it_be(:work_item) { private_epic.sync_object }
+            let_it_be(:public_notes) { create_list(:note, 2, noteable: work_item) }
+            let_it_be(:system_note) { create(:note, system: true, noteable: work_item) }
+            let_it_be(:private_notes) { create_list(:note, 3, noteable: work_item) }
 
-          it 'generates an error' do
-            expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ResourceNotAvailable) do
-              subject
+            it 'returns the number of notes for the issue' do
+              # 3 user notes from epic, 5 user notes from epic work item
+              expect(subject).to eq(3 + 5)
+            end
+
+            context 'when epic_and_work_item_notes_unification FF is disabled' do
+              before do
+                stub_feature_flags(epic_and_work_item_notes_unification: false)
+              end
+
+              it 'returns the number of notes for the issue' do
+                # 3 user notes from epic, 5 user notes from epic work item
+                expect(subject).to eq(3)
+              end
             end
           end
         end
