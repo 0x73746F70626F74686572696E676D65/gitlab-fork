@@ -34,7 +34,7 @@ module GitlabSubscriptions
         {
           days_remaining: trial_status.days_remaining,
           trial_end_date: trial_status.ends_on,
-          purchase_now_url: group_usage_quotas_path(namespace, anchor: 'code-suggestions-usage-tab')
+          purchase_now_url: group_settings_gitlab_duo_usage_index_path(namespace)
         }
       end
 

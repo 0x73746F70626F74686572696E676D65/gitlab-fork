@@ -59,6 +59,13 @@ module Features
       end
     end
 
+    def expect_to_be_on_gitlab_duo_usage_quotas_page(path: 'gitlab', name: 'gitlab')
+      expect(page).to have_current_path("/groups/#{path}/-/settings/gitlab_duo_usage")
+      within_testid('super-sidebar') do
+        expect(page).to have_link(name)
+      end
+    end
+
     def fill_in_trial_selection_form(from: 'Please select a group', group_select: true)
       select_from_listbox group.name, from: from if group_select
       choose :trial_entity_company

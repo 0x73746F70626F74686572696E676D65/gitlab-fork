@@ -16,7 +16,7 @@ RSpec.describe 'Groups > Usage Quotas > Code Suggestions tab', :js, :saas, featu
     stub_licensed_features(code_suggestions: true)
 
     sign_in(user)
-    visit group_usage_quotas_path(group, anchor: 'code-suggestions-usage-tab')
+    visit group_settings_gitlab_duo_usage_index_path(group)
     wait_for_all_requests
   end
 

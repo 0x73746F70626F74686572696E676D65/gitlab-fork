@@ -6,7 +6,7 @@
     %h2.gl-text-size-h1.gl-mb-5{ class: 'gl-w-3/4' }
       = s_('DuoProDiscover|Ship software faster and more securely with AI integrated into your entire DevSecOps lifecycle.')
     .gl-flex
-      = render Pajamas::ButtonComponent.new(href: group_usage_quotas_path(@group, anchor: 'code-suggestions-usage-tab'), category: :primary, variant: :confirm, button_options: { class: 'gl-mr-3', data: { cta_tracking: { action: 'click_buy_now', label: 'duo_pro_active_trial' } } }) do |c|
+      = render Pajamas::ButtonComponent.new(href: group_settings_gitlab_duo_usage_index_path(@group), category: :primary, variant: :confirm, button_options: { class: 'gl-mr-3', data: { cta_tracking: { action: 'click_buy_now', label: 'duo_pro_active_trial' } } }) do |c|
         = _('Buy now')
       .js-hand-raise-lead-trigger{ data: discover_duo_pro_hand_raise_lead_data(@group) }
   .container.gl-p-0

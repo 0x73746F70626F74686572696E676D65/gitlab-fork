@@ -35,6 +35,7 @@ import {
 import ErrorAlert from 'ee/vue_shared/components/error_alert/error_alert.vue';
 import { scrollToElement } from '~/lib/utils/common_utils';
 import { isKnownErrorCode } from '~/lib/utils/error_utils';
+import { InternalEvents } from '~/tracking';
 import CodeSuggestionsAddonAssignment from 'ee/usage_quotas/code_suggestions/components/code_suggestions_addon_assignment.vue';
 import AddOnBulkActionConfirmationModal from 'ee/usage_quotas/code_suggestions/components/add_on_bulk_action_confirmation_modal.vue';
 import userAddOnAssignmentBulkCreateMutation from 'ee/usage_quotas/add_on/graphql/user_add_on_assignment_bulk_create.mutation.graphql';
@@ -43,6 +44,8 @@ import { PROMO_URL } from 'jh_else_ce/lib/utils/url_utility';
 import { addSeatsText } from 'ee/usage_quotas/seats/constants';
 import { getSubscriptionPermissionsData } from 'ee/fulfillment/shared_queries/subscription_actions_reason.customer.query.graphql';
 import { LIMITED_ACCESS_KEYS } from 'ee/usage_quotas/components/constants';
+
+const trackingMixin = InternalEvents.mixin();
 
 export default {
   name: 'AddOnEligibleUserList',
@@ -67,7 +70,7 @@ export default {
     GlSkeletonLoader,
     GlTable,
   },
-  mixins: [glFeatureFlagMixin()],
+  mixins: [glFeatureFlagMixin(), trackingMixin],
   inject: {
     addDuoProHref: {},
     groupId: {},
@@ -316,6 +319,7 @@ export default {
           this.handleBulkActionError(errors[0]);
         } else {
           this.handleBulkActionSuccess();
+          this.trackEvent('bulk_enable_gitlab_duo_pro_for_seats');
         }
       } catch (e) {
         this.handleBulkActionError(e);
@@ -354,6 +358,7 @@ export default {
           this.handleBulkActionError(error);
         } else {
           this.handleBulkActionSuccess();
+          this.trackEvent('bulk_disable_gitlab_duo_pro_for_seats');
         }
       } catch (e) {
         this.handleBulkActionError(e);

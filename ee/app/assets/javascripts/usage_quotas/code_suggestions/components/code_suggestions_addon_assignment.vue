@@ -15,14 +15,18 @@ import {
   ADD_ON_ERROR_DICTIONARY,
 } from 'ee/usage_quotas/error_constants';
 import { isKnownErrorCode } from '~/lib/utils/error_utils';
+import { InternalEvents } from '~/tracking';
 import userAddOnAssignmentCreateMutation from 'ee/usage_quotas/add_on/graphql/user_add_on_assignment_create.mutation.graphql';
 import userAddOnAssignmentRemoveMutation from 'ee/usage_quotas/add_on/graphql/user_add_on_assignment_remove.mutation.graphql';
+
+const trackingMixin = InternalEvents.mixin();
 
 export default {
   name: 'CodeSuggestionsAddonAssignment',
   components: {
     GlToggle,
   },
+  mixins: [trackingMixin],
   props: {
     userId: {
       type: String,
@@ -77,6 +81,9 @@ export default {
 
       try {
         const response = this.isAssigned ? await this.unassignAddOn() : await this.assignAddOn();
+        const trackingAction = this.isAssigned
+          ? 'disable_gitlab_duo_pro_for_seat'
+          : 'enable_gitlab_duo_pro_for_seat';
 
         // Null response here means it didn't error but we're trying unassign an already unassigned user
         // https://gitlab.com/gitlab-org/gitlab/-/issues/426175 should take care of returning a response
@@ -89,6 +96,8 @@ export default {
         if (errors.length) {
           this.handleError(errors[0]);
         }
+
+        this.trackEvent(trackingAction);
       } catch (e) {
         this.handleError(e);
         Sentry.captureException(e);

@@ -36,7 +36,7 @@ RSpec.describe GitlabSubscriptions::Trials::DuoProStatusWidgetPresenter, :saas, 
           days_remaining: 60,
           trial_end_date: 60.days.from_now.to_date,
           purchase_now_url:
-            ::Gitlab::Routing.url_helpers.group_usage_quotas_path(group, anchor: 'code-suggestions-usage-tab')
+            ::Gitlab::Routing.url_helpers.group_settings_gitlab_duo_usage_index_path(group)
         }
         result = {
           duo_pro_trial_status_widget_data_attrs: duo_pro_trial_status_widget_data_attrs,

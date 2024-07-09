@@ -4,6 +4,7 @@ import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { s__, sprintf } from '~/locale';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
+import Tracking from '~/tracking';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import CodeSuggestionsAddonAssignment from 'ee/usage_quotas/code_suggestions/components/code_suggestions_addon_assignment.vue';
@@ -185,6 +186,8 @@ describe('CodeSuggestionsAddonAssignment', () => {
 
   describe('when assigning an addon', () => {
     beforeEach(() => {
+      jest.spyOn(Tracking, 'event');
+
       createComponent({
         props: { addOnAssignments: [], userId: userIdForAssignment },
       });
@@ -218,6 +221,16 @@ describe('CodeSuggestionsAddonAssignment', () => {
 
     it('does not call addon un-assigment mutation', () => {
       expect(unassignAddOnHandler).not.toHaveBeenCalled();
+    });
+
+    it('tracks the `enable_gitlab_duo_pro_for_seat` event', async () => {
+      await waitForPromises();
+
+      expect(Tracking.event).toHaveBeenCalledWith(
+        undefined,
+        'enable_gitlab_duo_pro_for_seat',
+        expect.any(Object),
+      );
     });
   });
 
@@ -298,6 +311,8 @@ describe('CodeSuggestionsAddonAssignment', () => {
 
   describe('when un-assigning an addon', () => {
     beforeEach(() => {
+      jest.spyOn(Tracking, 'event');
+
       createComponent({
         props: { addOnAssignments: [codeSuggestionsAddOn], userId: userIdForUnassignment },
       });
@@ -329,6 +344,16 @@ describe('CodeSuggestionsAddonAssignment', () => {
 
     it('does not call addon assigment mutation', () => {
       expect(assignAddOnHandler).not.toHaveBeenCalled();
+    });
+
+    it('tracks the `disable_gitlab_duo_pro_for_seat` event', async () => {
+      await waitForPromises();
+
+      expect(Tracking.event).toHaveBeenCalledWith(
+        undefined,
+        'disable_gitlab_duo_pro_for_seat',
+        expect.any(Object),
+      );
     });
   });
 
