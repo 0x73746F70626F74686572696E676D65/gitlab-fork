@@ -15,7 +15,7 @@ RSpec.shared_examples 'a framework registry sync worker' do |registry_factory, s
         allow(instance).to receive(:over_time?).and_return(false)
       end
 
-      allow(::Geo::EventWorker).to receive(:with_status).and_return(::Geo::EventWorker)
+      allow(::Geo::SyncWorker).to receive(:with_status).and_return(::Geo::SyncWorker)
     end
 
     it 'does not schedule anything when tracking database is not configured' do
@@ -23,7 +23,7 @@ RSpec.shared_examples 'a framework registry sync worker' do |registry_factory, s
       create(registry_factory)
       # rubocop:enable Rails/SaveBang
 
-      expect(::Geo::EventWorker).not_to receive(:perform_async)
+      expect(::Geo::SyncWorker).not_to receive(:perform_async)
 
       with_no_geo_database_configured do
         subject.perform
@@ -38,7 +38,7 @@ RSpec.shared_examples 'a framework registry sync worker' do |registry_factory, s
       secondary.enabled = false
       secondary.save!
 
-      expect(::Geo::EventWorker).not_to receive(:perform_async)
+      expect(::Geo::SyncWorker).not_to receive(:perform_async)
 
       subject.perform
     end
@@ -63,15 +63,15 @@ RSpec.shared_examples 'a framework registry sync worker' do |registry_factory, s
         .with(array_including('123', '456'))
         .and_return([true, true], [true, true], [false, false])
 
-      expect(::Geo::EventWorker)
+      expect(::Geo::SyncWorker)
         .to receive(:perform_async)
-        .with(registry_1.replicator.replicable_name, 'created', { 'model_record_id' => registry_1.model_record_id })
+        .with(registry_1.replicator.replicable_name, registry_1.model_record_id)
         .once
         .and_return('123')
 
-      expect(::Geo::EventWorker)
+      expect(::Geo::SyncWorker)
         .to receive(:perform_async)
-        .with(registry_2.replicator.replicable_name, 'created', { 'model_record_id' => registry_2.model_record_id })
+        .with(registry_2.replicator.replicable_name, registry_2.model_record_id)
         .once
         .and_return('456')
 
@@ -88,9 +88,9 @@ RSpec.shared_examples 'a framework registry sync worker' do |registry_factory, s
       stub_const('Geo::Scheduler::SchedulerWorker::DB_RETRIEVE_BATCH_SIZE', 2)
       update_sync_concurrent_limit(secondary, sync_concurrency_limit)
 
-      expect(Geo::EventWorker)
+      expect(Geo::SyncWorker)
         .to receive(:perform_async)
-        .with(registry_1.replicator.replicable_name, 'created', { 'model_record_id' => registry_1.model_record_id })
+        .with(registry_1.replicator.replicable_name, registry_1.model_record_id)
         .once do
           Thread.new do
             # Rails will invalidate the query cache if the update happens in the same thread
@@ -100,9 +100,9 @@ RSpec.shared_examples 'a framework registry sync worker' do |registry_factory, s
           end
         end
 
-      expect(Geo::EventWorker)
+      expect(Geo::SyncWorker)
         .to receive(:perform_async)
-        .with(registry_2.replicator.replicable_name, 'created', { 'model_record_id' => registry_2.model_record_id })
+        .with(registry_2.replicator.replicable_name, registry_2.model_record_id)
         .once
 
       subject.perform
@@ -118,7 +118,7 @@ RSpec.shared_examples 'a framework registry sync worker' do |registry_factory, s
 
       create_list(registry_factory, 10)
 
-      expect(::Geo::EventWorker).to receive(:perform_async).exactly(10).times.and_call_original
+      expect(::Geo::SyncWorker).to receive(:perform_async).exactly(10).times.and_call_original
       # For 10 downloads, we expect four database reloads:
       # 1. Load the first batch of 5.
       # 2. 4 get sent out, 1 remains. This triggers another reload, which loads in the next 5.

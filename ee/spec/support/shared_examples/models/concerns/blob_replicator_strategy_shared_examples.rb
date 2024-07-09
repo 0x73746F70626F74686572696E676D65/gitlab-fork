@@ -155,8 +155,8 @@ RSpec.shared_examples 'a blob replicator' do
 
     context "when the blob's project is in replicables for this geo node" do
       it 'invokes Geo::BlobDownloadService' do
-        expect(replicator).to receive(:in_replicables_for_current_secondary?).and_return(true)
-        service = double(:service)
+        expect(replicator).to receive(:in_replicables_for_current_secondary?).and_return(true).twice
+        service = instance_double(::Geo::BlobDownloadService)
 
         expect(service).to receive(:execute)
         expect(::Geo::BlobDownloadService).to receive(:new).with(replicator: replicator).and_return(service)
