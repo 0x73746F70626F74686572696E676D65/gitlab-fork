@@ -58,8 +58,6 @@ module Search
         node_id: zoekt_node_id,
         order_by: params[:order_by],
         sort: params[:sort],
-        multi_match_enabled: params[:multi_match_enabled],
-        chunk_count: params[:chunk_count],
         filters: zoekt_filters,
         modes: { regex: params[:regex] }
       )

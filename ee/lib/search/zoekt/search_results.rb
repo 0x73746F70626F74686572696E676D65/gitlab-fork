@@ -10,16 +10,13 @@ module Search
       DEFAULT_PER_PAGE = Gitlab::SearchResults::DEFAULT_PER_PAGE
       ZOEKT_TARGETS_CACHE_EXPIRES_IN = 10.minutes
 
-      attr_accessor :file_count
+      attr_reader :current_user, :query, :public_and_internal_projects, :order_by, :sort, :filters, :error, :modes
 
-      # Limit search results by passed projects. It allows us to search only for projects user has access to
-      attr_reader :current_user, :query, :public_and_internal_projects, :order_by, :sort, :filters, :error, :modes,
-        :projects, :node_id, :multi_match
+      # Limit search results by passed projects
+      # It allows us to search only for projects user has access to
+      attr_reader :projects, :node_id
 
-      # rubocop: disable Metrics/ParameterLists -- Might consider to refactor later
-      def initialize(
-        current_user, query, projects, node_id: nil, order_by: nil, sort: nil, multi_match_enabled: false,
-        chunk_count: nil, filters: {}, modes: {})
+      def initialize(current_user, query, projects, node_id: nil, order_by: nil, sort: nil, filters: {}, modes: {})
         @current_user = current_user
         @query = query
         @filters = filters
@@ -28,25 +25,22 @@ module Search
         @order_by = order_by
         @sort = sort
         @modes = modes
-        @multi_match = MultiMatch.new(chunk_count) if multi_match_enabled
       end
-      # rubocop: enable Metrics/ParameterLists
 
       def limit_project_ids
         @limit_project_ids ||= projects.pluck_primary_key
       end
 
-      def objects(_scope = 'blobs', page: 1, per_page: DEFAULT_PER_PAGE, preload_method: nil)
-        blobs, @file_count = blobs_and_file_count(page: page, per_page: per_page, preload_method: preload_method)
-        blobs
+      def objects(_scope, page: 1, per_page: DEFAULT_PER_PAGE, preload_method: nil)
+        blobs(page: page, per_page: per_page, preload_method: preload_method)
       end
 
-      def formatted_count(_scope = 'blobs')
+      def formatted_count(_scope)
         limited_counter_with_delimiter(blobs_count)
       end
 
       def blobs_count
-        @blobs_count ||= blobs_and_file_count[0].total_count
+        @blobs_count ||= blobs.total_count
       end
 
       # These aliases act as an adapter to the Gitlab::SearchResults
@@ -55,36 +49,32 @@ module Search
 
       def parse_zoekt_search_result(result, project)
         ref = project.default_branch_or_main
-        if multi_match
-          multi_match.blobs_for_project(result, project, ref)
-        else
-          path = result[:path]
-          basename = File.join(File.dirname(path), File.basename(path, '.*'))
-          content = result[:content]
-          project_id = project.id
+        path = result[:path]
+        basename = File.join(File.dirname(path), File.basename(path, '.*'))
+        content = result[:content]
+        project_id = project.id
 
-          ::Gitlab::Search::FoundBlob.new(
-            path: path,
-            basename: basename,
-            ref: ref,
-            startline: [result[:line] - 1, 0].max,
-            highlight_line: result[:line],
-            data: content,
-            project: project,
-            project_id: project_id
-          )
-        end
+        ::Gitlab::Search::FoundBlob.new(
+          path: path,
+          basename: basename,
+          ref: ref,
+          startline: [result[:line] - 1, 0].max,
+          highlight_line: result[:line],
+          data: content,
+          project: project,
+          project_id: project_id
+        )
       end
 
-      def aggregations(_scope = 'blobs')
+      def aggregations(_scope)
         []
       end
 
-      def highlight_map(_scope = 'blobs')
+      def highlight_map(_)
         nil
       end
 
-      def failed?(_scope = 'blobs')
+      def failed?(_scope)
         error.present?
       end
 
@@ -105,11 +95,15 @@ module Search
         count_only ? "#{scope}_results_count".to_sym : "#{scope}_#{page}_#{per_page}"
       end
 
-      def blobs_and_file_count(page: 1, per_page: DEFAULT_PER_PAGE, count_only: false, preload_method: nil)
-        return Kaminari.paginate_array([]), 0 if query.blank? || limit_project_ids.empty?
+      def blobs(page: 1, per_page: DEFAULT_PER_PAGE, count_only: false, preload_method: nil)
+        return Kaminari.paginate_array([]) if query.blank? || limit_project_ids.empty?
 
-        strong_memoize(memoize_key(:blobs_and_file_count, page: page, per_page: per_page, count_only: count_only)) do
-          search_as_found_blob(query, Repository, page: (page || 1).to_i, per_page: per_page,
+        strong_memoize(memoize_key(:blobs, page: page, per_page: per_page, count_only: count_only)) do
+          search_as_found_blob(
+            query,
+            Repository,
+            page: (page || 1).to_i,
+            per_page: per_page,
             preload_method: preload_method
           )
         end
@@ -161,21 +155,17 @@ module Search
         if response.failure?
           @blobs_count = 0
           @error = response.error_message
-          return [{}, @blobs_count, 0]
+          return [{}, @blobs_count]
         end
 
-        total_count = if multi_match
-                        response.ngram_match_count.clamp(0, ZOEKT_COUNT_LIMIT)
-                      else
-                        response.match_count.clamp(0, ZOEKT_COUNT_LIMIT)
-                      end
-
+        total_count = response.match_count.clamp(0, ZOEKT_COUNT_LIMIT)
         results = zoekt_extract_result_pages(response, per_page: per_page, page_limit: page_limit)
-        [results, total_count, response.file_count]
+
+        [results, total_count]
       rescue ::Search::Zoekt::Errors::ClientConnectionError, ::Search::Zoekt::Errors::BackoffError => e
         @blobs_count = 0
         @error = e.message
-        [{}, @blobs_count, 0]
+        [{}, @blobs_count]
       end
 
       # Extracts results from the Zoekt response
@@ -185,31 +175,30 @@ module Search
       # @param page_limit [Integer] maximum number of pages we parse
       # @return [Hash<Integer, Array<Hash>>] results hash with pages as keys (zero-based)
       def zoekt_extract_result_pages(response, per_page:, page_limit:)
-        if multi_match
-          results = multi_match.zoekt_extract_result_pages_multi_match(response, per_page, page_limit)
-        else
-          results = {}
-          i = 0
-          response.each_file do |file|
-            project_id = file[:Repository].to_i
+        results = {}
+        i = 0
 
-            cont = file[:LineMatches].each do |match|
-              current_page = i / per_page
-              break false if current_page == page_limit
+        response.each_file do |file|
+          project_id = file[:Repository].to_i
 
-              results[current_page] ||= []
-              results[current_page] << {
-                project_id: project_id,
-                content: [match[:Before], match[:Line], match[:After]].compact.map do |l|
-                  Base64.decode64(l)
-                end.join("\n"),
-                line: match[:LineNumber],
-                path: file[:FileName]
-              }
-              i += 1
-            end
-            break unless cont
+          cont = file[:LineMatches].each do |match|
+            current_page = i / per_page
+            break false if current_page == page_limit
+
+            results[current_page] ||= []
+            results[current_page] << {
+              project_id: project_id,
+              content: [match[:Before], match[:Line], match[:After]].compact.map do |l|
+                         Base64.decode64(l)
+                       end.join("\n"),
+              line: match[:LineNumber],
+              path: file[:FileName]
+            }
+
+            i += 1
           end
+
+          break unless cont
         end
 
         results
@@ -223,11 +212,10 @@ module Search
           per_page: per_page,
           project_ids: limit_project_ids,
           max_per_page: DEFAULT_PER_PAGE * 2,
-          search_mode: search_mode,
-          multi_match: multi_match.present?
+          search_mode: search_mode
         )
 
-        search_results, total_count, file_count = zoekt_cache.fetch do |page_limit|
+        search_results, total_count = zoekt_cache.fetch do |page_limit|
           zoekt_search(query, per_page: per_page, page_limit: page_limit)
         end
 
@@ -239,7 +227,7 @@ module Search
         )
 
         offset = (page - 1) * per_page
-        [Kaminari.paginate_array(items, total_count: total_count, limit: per_page, offset: offset), file_count]
+        Kaminari.paginate_array(items, total_count: total_count, limit: per_page, offset: offset)
       end
 
       def yield_each_zoekt_search_result(response, preload_method, total_count)
@@ -255,8 +243,7 @@ module Search
           project = projects[project_id]
 
           if project.nil? || project.pending_delete?
-            total_count -= multi_match ? result[:match_count_total] : 1
-
+            total_count -= 1
             next
           end
 
