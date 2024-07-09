@@ -15,19 +15,6 @@ RSpec.describe Groups::Settings::GitlabDuoUsageController, type: :request, featu
     sign_in(admin)
   end
 
-  context "when gitlab_duo_usage_menu_item feature flag is disabled" do
-    before do
-      stub_saas_features(gitlab_com_subscriptions: true)
-      stub_feature_flags(gitlab_duo_usage_menu_item: false)
-    end
-
-    it "renders 404" do
-      get_index
-
-      expect(response).to have_gitlab_http_status(:not_found)
-    end
-  end
-
   context "when show_gitlab_duo_usage_app? returns false" do
     before do
       stub_saas_features(gitlab_com_subscriptions: false)
@@ -40,7 +27,7 @@ RSpec.describe Groups::Settings::GitlabDuoUsageController, type: :request, featu
     end
   end
 
-  context "when show_gitlab_duo_usage_app? returns true and gitlab_duo_usage_menu_item feature flag is enabled" do
+  context "when show_gitlab_duo_usage_app? returns true" do
     before do
       stub_saas_features(gitlab_com_subscriptions: true)
     end

@@ -12,14 +12,11 @@ RSpec.describe Nav::GitlabDuoUsageSettingsPage, feature_category: :duo_chat do
   let(:group) { create(:group, :private) }
 
   describe '#show_gitlab_duo_usage_menu_item?' do
-    where(:is_usage_quotas_enabled, :should_show_gitlab_duo_usage_app, :ff_enabled?, :result) do
-      true  | true  | true  | true
-      true  | true  | false | false
-      true  | false | true  | false
-      false | true  | true  | false
-      false | true  | false | false
-      false | false | true  | false
-      false | false | false | false
+    where(:is_usage_quotas_enabled, :should_show_gitlab_duo_usage_app, :result) do
+      true  | true  | true
+      true  | false | false
+      false | true  | false
+      false | false | false
     end
 
     with_them do
@@ -32,7 +29,6 @@ RSpec.describe Nav::GitlabDuoUsageSettingsPage, feature_category: :duo_chat do
         end
 
         allow(group).to receive(:usage_quotas_enabled?) { is_usage_quotas_enabled }
-        stub_feature_flags(gitlab_duo_usage_menu_item: ff_enabled?)
       end
 
       it { expect(show_gitlab_duo_usage_menu_item?(group)).to be(result) }

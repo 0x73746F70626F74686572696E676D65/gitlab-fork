@@ -7,8 +7,7 @@ module Nav
 
     def show_gitlab_duo_usage_menu_item?(group)
       group.usage_quotas_enabled? &&
-        show_gitlab_duo_usage_app?(group) &&
-        ::Feature.enabled?(:gitlab_duo_usage_menu_item, group)
+        show_gitlab_duo_usage_app?(group)
     end
 
     def show_gitlab_duo_usage_app?(group)
