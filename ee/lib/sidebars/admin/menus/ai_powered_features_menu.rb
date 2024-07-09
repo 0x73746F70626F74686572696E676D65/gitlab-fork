@@ -42,11 +42,11 @@ module Sidebars
 
         def self_hosted_models_menu_item
           ::Sidebars::MenuItem.new(
-            title: s_('Admin|Custom models'),
+            title: s_('Admin|Self-hosted models'),
             link: admin_ai_self_hosted_models_path,
             active_routes: { controller: 'admin/ai/self_hosted_models' },
             item_id: :duo_pro_self_hosted_models,
-            container_html_options: { title: 'Custom models' }
+            container_html_options: { title: 'Self-hosted models' }
           )
         end
 

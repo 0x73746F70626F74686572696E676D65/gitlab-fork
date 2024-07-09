@@ -4685,9 +4685,6 @@ msgstr ""
 msgid "Admin|Credentials"
 msgstr ""
 
-msgid "Admin|Custom models"
-msgstr ""
-
 msgid "Admin|Deploy Keys"
 msgstr ""
 
@@ -4725,6 +4722,9 @@ msgid "Admin|Push Rules"
 msgstr ""
 
 msgid "Admin|Quarterly reconciliation will occur on %{qrtlyDate}"
+msgstr ""
+
+msgid "Admin|Self-hosted models"
 msgstr ""
 
 msgid "Admin|Settings"
