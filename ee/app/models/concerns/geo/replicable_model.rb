@@ -6,6 +6,7 @@ module Geo
     include Checksummable
     include HasReplicator
     include ::Gitlab::Geo::LogHelpers
+    include ::Gitlab::Utils::StrongMemoize
 
     included do
       # If this hook turns out not to apply to all Models, perhaps we should extract a `ReplicableBlobModel`
@@ -62,5 +63,6 @@ module Geo
     def in_replicables_for_current_secondary?
       self.class.replicables_for_current_secondary(self).exists?
     end
+    strong_memoize_attr :in_replicables_for_current_secondary?
   end
 end

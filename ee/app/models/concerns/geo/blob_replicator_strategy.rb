@@ -63,10 +63,6 @@ module Geo
 
     # Called by Gitlab::Geo::Replicator#consume
     def consume_event_created(**params)
-      resync
-    end
-
-    def resync
       return unless in_replicables_for_current_secondary?
 
       # Race condition mitigation for mutable types.
@@ -86,6 +82,13 @@ module Geo
 
       download
     end
+
+    def sync
+      return unless in_replicables_for_current_secondary?
+
+      ::Geo::BlobDownloadService.new(replicator: self).execute
+    end
+    alias_method :download, :sync # Backwards compatible with old docs, keep at least till 17.6
 
     def enqueue_sync
       Geo::EventWorker.perform_async(replicable_name, EVENT_CREATED, { 'model_record_id' => model_record.id })
@@ -177,12 +180,6 @@ module Geo
       # Most blobs are supposed to be immutable.
       # Override this in your specific Replicator class if needed.
       true
-    end
-
-    private
-
-    def download
-      ::Geo::BlobDownloadService.new(replicator: self).execute
     end
   end
 end

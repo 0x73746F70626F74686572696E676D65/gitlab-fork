@@ -41,10 +41,6 @@ module Geo
 
     # Called by Gitlab::Geo::Replicator#consume
     def consume_event_updated(**params)
-      resync
-    end
-
-    def resync
       return unless in_replicables_for_current_secondary?
 
       # Race condition mitigation for mutable types.
@@ -82,9 +78,11 @@ module Geo
       Geo::RepositoryRegistryRemovalService.new(self, params).execute
     end
 
-    def sync_repository
+    def sync
       Geo::FrameworkRepositorySyncService.new(self).execute
     end
+    alias_method :sync_repository, :sync # Backwards compatible with old docs, keep at least till 17.6
+    alias_method :resync, :sync # Backwards compatible with old docs, keep at least till 17.6
 
     def enqueue_sync
       reschedule_sync

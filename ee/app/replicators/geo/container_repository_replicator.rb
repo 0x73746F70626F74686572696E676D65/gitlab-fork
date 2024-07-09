@@ -59,7 +59,9 @@ module Geo
 
     # Called by Gitlab::Geo::Replicator#consume
     def consume_event_updated(**params)
-      resync
+      return unless in_replicables_for_current_secondary?
+
+      sync
     end
 
     # Called by Gitlab::Geo::Replicator#consume
@@ -72,11 +74,10 @@ module Geo
       replicate_destroy(params)
     end
 
-    def resync
-      return unless in_replicables_for_current_secondary?
-
+    def sync
       Geo::ContainerRepositorySyncService.new(model_record).execute
     end
+    alias_method :resync, :sync # Backwards compatible with old docs, keep at least till 17.6
 
     override :deleted_params
     def deleted_params
