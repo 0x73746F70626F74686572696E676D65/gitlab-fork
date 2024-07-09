@@ -58073,9 +58073,6 @@ msgstr ""
 msgid "ValueStreamAnalytics|Average number of deployments to production per day. This metric measures how often value is delivered to end users."
 msgstr ""
 
-msgid "ValueStreamAnalytics|Critical vulnerabilities over time."
-msgstr ""
-
 msgid "ValueStreamAnalytics|Dashboard"
 msgstr ""
 
@@ -58118,7 +58115,13 @@ msgstr ""
 msgid "ValueStreamAnalytics|Number of commits pushed to the default branch"
 msgstr ""
 
+msgid "ValueStreamAnalytics|Number of critical vulnerabilities identified per month."
+msgstr ""
+
 msgid "ValueStreamAnalytics|Number of issues closed by month."
+msgstr ""
+
+msgid "ValueStreamAnalytics|Number of merge requests merged by month."
 msgstr ""
 
 msgid "ValueStreamAnalytics|Number of monthly unique users with contributions in the group."
@@ -58143,9 +58146,6 @@ msgid "ValueStreamAnalytics|Shows %{selectedSubjectFilterText} for group '%{grou
 msgstr ""
 
 msgid "ValueStreamAnalytics|Tasks by type"
-msgstr ""
-
-msgid "ValueStreamAnalytics|The number of merge requests merged by month."
 msgstr ""
 
 msgid "ValueStreamAnalytics|The time it takes an organization to recover from a failure in production."

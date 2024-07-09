@@ -107,7 +107,7 @@ exports[`Metric table for the lead_time table row when the data is loaded render
 
 exports[`Metric table for the vulnerability_critical table row when the data is loaded renders the metric values 1`] = `
 "Critical vulnerabilities over time  
-    Critical vulnerabilities over time.
+    Number of critical vulnerabilities identified per month.
     
       Go to docs
       
