@@ -19,5 +19,27 @@ RSpec.describe 'Work item', :js, feature_category: :team_planning do
     end
 
     it_behaves_like 'work items rolled up dates'
+
+    context 'for epics' do
+      it 'shows the correct breadcrumbs' do
+        within_testid('breadcrumb-links') do
+          expect(page).to have_link(group.name, href: group_path(group))
+          expect(page).to have_link('Epics', href: group_epics_path(group))
+          expect(find('li:last-of-type')).to have_link(work_item.to_reference, href: work_items_path)
+        end
+      end
+    end
+
+    context 'for other work items' do
+      let_it_be(:work_item) { create(:work_item, :issue, :group_level, namespace: group) }
+
+      it 'shows the correct breadcrumbs' do
+        within_testid('breadcrumb-links') do
+          expect(page).to have_link(group.name, href: group_path(group))
+          expect(page).to have_link('Issues', href: issues_group_path(group))
+          expect(find('li:last-of-type')).to have_link(work_item.to_reference, href: work_items_path)
+        end
+      end
+    end
   end
 end
