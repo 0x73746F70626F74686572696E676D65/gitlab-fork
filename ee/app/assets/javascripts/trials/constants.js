@@ -17,7 +17,7 @@ export const TRIAL_REGISTRATION_DESCRIPTION = s__(
   'TrialRegistration|To complete registration, we need additional details from you.',
 );
 export const TRIAL_TERMS_TEXT = s__(
-  'Trial| By selecting Continue or registering through a third party, you accept the %{gitlabSubscriptionAgreement} and acknowledge the %{privacyStatement} and %{cookiePolicy}.',
+  'Trial| By selecting Continue or registering through a third party, you accept the %{gitlabSubscriptionAgreement} and acknowledge the %{privacyStatement} and %{cookiePolicy}',
 );
 export const TRIAL_GITLAB_SUBSCRIPTION_AGREEMENT = {
   text: s__('Trial|GitLab Subscription Agreement'),
@@ -28,7 +28,7 @@ export const TRIAL_PRIVACY_STATEMENT = {
   url: `${PROMO_URL}/privacy`,
 };
 export const TRIAL_COOKIE_POLICY = {
-  text: s__('Trial|Cookie Policy'),
+  text: s__('Trial|Cookie Policy.'),
   url: `${PROMO_URL}/privacy/cookies`,
 };
 export const DUO_PRO_TRIAL_VARIANT = 'duo_pro';
