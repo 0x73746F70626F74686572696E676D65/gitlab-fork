@@ -13853,6 +13853,15 @@ CREATE SEQUENCE p_ci_builds_execution_configs_id_seq
 
 ALTER SEQUENCE p_ci_builds_execution_configs_id_seq OWNED BY p_ci_builds_execution_configs.id;
 
+CREATE TABLE p_ci_finished_pipeline_ch_sync_events (
+    pipeline_id bigint NOT NULL,
+    project_namespace_id bigint NOT NULL,
+    partition bigint DEFAULT 1 NOT NULL,
+    pipeline_finished_at timestamp without time zone NOT NULL,
+    processed boolean DEFAULT false NOT NULL
+)
+PARTITION BY LIST (partition);
+
 CREATE SEQUENCE p_ci_job_annotations_id_seq
     START WITH 1
     INCREMENT BY 1
@@ -23430,6 +23439,9 @@ ALTER TABLE ONLY p_ci_builds_execution_configs
 ALTER TABLE ONLY p_ci_finished_build_ch_sync_events
     ADD CONSTRAINT p_ci_finished_build_ch_sync_events_pkey PRIMARY KEY (build_id, partition);
 
+ALTER TABLE ONLY p_ci_finished_pipeline_ch_sync_events
+    ADD CONSTRAINT p_ci_finished_pipeline_ch_sync_events_pkey PRIMARY KEY (pipeline_id, partition);
+
 ALTER TABLE ONLY p_ci_job_annotations
     ADD CONSTRAINT p_ci_job_annotations_pkey PRIMARY KEY (id, partition_id);
 
@@ -26337,6 +26349,8 @@ CREATE INDEX index_ci_daily_build_group_report_results_on_project_and_date ON ci
 CREATE INDEX index_ci_deleted_objects_on_pick_up_at ON ci_deleted_objects USING btree (pick_up_at);
 
 CREATE INDEX index_ci_finished_build_ch_sync_events_for_partitioned_query ON ONLY p_ci_finished_build_ch_sync_events USING btree (((build_id % (100)::bigint)), build_id) WHERE (processed = false);
+
+CREATE INDEX index_ci_finished_pipeline_ch_sync_events_for_partitioned_query ON ONLY p_ci_finished_pipeline_ch_sync_events USING btree (((pipeline_id % (100)::bigint)), pipeline_id) WHERE (processed = false);
 
 CREATE INDEX index_ci_freeze_periods_on_project_id ON ci_freeze_periods USING btree (project_id);
 
