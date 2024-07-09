@@ -20,6 +20,10 @@ module Gitlab
         super.reject { |_, value| value.blank? }
       end
 
+      def to_json(...)
+        to_h.to_json(...)
+      end
+
       def eql?(other)
         to_h.eql?(other.to_h)
       end
