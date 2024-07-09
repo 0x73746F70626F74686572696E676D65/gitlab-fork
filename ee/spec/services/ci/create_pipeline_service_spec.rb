@@ -160,6 +160,43 @@ RSpec.describe Ci::CreatePipelineService, '#execute', :saas, feature_category: :
     end
   end
 
+  context 'with partition_id param' do
+    let_it_be_with_reload(:user) { project.first_owner }
+
+    let(:ref_name) { 'refs/heads/master' }
+    let(:execution_policy_dry_run) { false }
+
+    subject(:execute_service) do
+      described_class.new(
+        project,
+        user,
+        source: :push,
+        before: '00000000',
+        after: project.commit.id,
+        ref: ref_name,
+        partition_id: ci_testing_partition_id
+      ).execute(
+        :push,
+        save_on_errors: true,
+        execution_policy_dry_run: execution_policy_dry_run
+      )
+    end
+
+    it 'raises error' do
+      expect { execute_service }
+        .to raise_error(ArgumentError, "Param `partition_id` is only allowed with `execution_policy_dry_run: true`")
+    end
+
+    context 'when used with execution_policy_dry_run param' do
+      let(:execution_policy_dry_run) { true }
+
+      it 'does not raise an error' do
+        expect(execute_service)
+          .to be_success
+      end
+    end
+  end
+
   def create_pipeline!
     response = service.execute(:push)
 
