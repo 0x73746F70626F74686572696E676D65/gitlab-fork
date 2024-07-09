@@ -88,7 +88,7 @@ export const initialSelectedRole = (flattenDropdownItems, member) => {
     ({ accessLevel, memberRoleId }) =>
       accessLevel === member.accessLevel.integerValue &&
       memberRoleId === (member.accessLevel.memberRoleId ?? null),
-  )?.value;
+  );
 };
 
 export const canDisableTwoFactor = (member) => {

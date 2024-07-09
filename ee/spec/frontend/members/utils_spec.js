@@ -132,14 +132,12 @@ describe('Members Utils', () => {
 
   describe('initialSelectedRole', () => {
     it('find and return correct value', () => {
-      expect(
-        initialSelectedRole(
-          [{ accessLevel: 10, memberRoleId: 9, text: 'Guest', value: 'role-custom-0' }],
-          {
-            accessLevel: { integerValue: 10, memberRoleId: 9 },
-          },
-        ),
-      ).toBe('role-custom-0');
+      const role = { accessLevel: 10, memberRoleId: 9, text: 'Guest', value: 'role-custom-0' };
+      const initialRole = initialSelectedRole([role], {
+        accessLevel: { integerValue: 10, memberRoleId: 9 },
+      });
+
+      expect(initialRole).toBe(role);
     });
   });
 

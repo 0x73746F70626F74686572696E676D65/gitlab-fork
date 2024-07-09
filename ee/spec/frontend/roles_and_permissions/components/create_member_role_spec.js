@@ -12,6 +12,7 @@ import { stubComponent } from 'helpers/stub_component';
 import memberRoleQuery from 'ee/roles_and_permissions/graphql/member_role.query.graphql';
 import { visitUrl } from '~/lib/utils/url_utility';
 import PermissionsSelector from 'ee/roles_and_permissions/components/permissions_selector.vue';
+import { BASE_ROLES } from '~/access_level/constants';
 import { mockMemberRoleQueryResponse } from '../mock_data';
 
 Vue.use(VueApollo);
@@ -87,14 +88,7 @@ describe('CreateMemberRole', () => {
     const stubs = { GlFormSelect: stubComponent(GlFormSelect, { props: ['options'] }) };
     createComponent({ stubs });
 
-    expect(findSelect().props('options')).toEqual([
-      { value: 'MINIMAL_ACCESS', text: 'Minimal Access' },
-      { value: 'GUEST', text: 'Guest' },
-      { value: 'REPORTER', text: 'Reporter' },
-      { value: 'DEVELOPER', text: 'Developer' },
-      { value: 'MAINTAINER', text: 'Maintainer' },
-      { value: 'OWNER', text: 'Owner' },
-    ]);
+    expect(findSelect().props('options')).toBe(BASE_ROLES);
   });
 
   it('navigates back to list page when cancel button is clicked', () => {

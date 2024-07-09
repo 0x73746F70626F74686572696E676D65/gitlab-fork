@@ -12,7 +12,7 @@ import {
 } from '@gitlab/ui';
 import { createAlert } from '~/alert';
 import { sprintf, s__, __ } from '~/locale';
-import { BASE_ROLES_INC_MINIMAL_ACCESS } from '~/access_level/constants';
+import { BASE_ROLES } from '~/access_level/constants';
 import { visitUrl } from '~/lib/utils/url_utility';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
@@ -219,7 +219,7 @@ export default {
       }
     },
   },
-  BASE_ROLES_INC_MINIMAL_ACCESS,
+  BASE_ROLES,
 };
 </script>
 
@@ -287,7 +287,7 @@ export default {
         v-model="memberRole.baseAccessLevel"
         width="md"
         :disabled="isEditing"
-        :options="$options.BASE_ROLES_INC_MINIMAL_ACCESS"
+        :options="$options.BASE_ROLES"
         :state="isBaseRoleValid"
       />
     </gl-form-group>
