@@ -5,6 +5,8 @@ import { createAlert } from '~/alert';
 import { InternalEvents } from '~/tracking';
 import { visitUrl, setUrlParams, getNormalizedURL } from '~/lib/utils/url_utility';
 import { logsQueryFromAttributes } from 'ee/logs/list/filter_bar/filters';
+import { TIME_RANGE_OPTIONS_VALUES } from '~/observability/constants';
+import { validatedDateRangeQuery } from '~/observability/utils';
 import { mapTraceToSpanTrees } from '../trace_utils';
 import { VIEW_TRACING_DETAILS_PAGE } from '../events';
 import TracingChart from './tracing_chart.vue';
@@ -52,7 +54,10 @@ export default {
   computed: {
     logsLink() {
       return setUrlParams(
-        logsQueryFromAttributes({ traceId: this.traceId }),
+        logsQueryFromAttributes({
+          traceId: this.traceId,
+          dateRange: validatedDateRangeQuery(TIME_RANGE_OPTIONS_VALUES.ONE_MONTH),
+        }),
         getNormalizedURL(this.logsIndexUrl),
         true,
       );
