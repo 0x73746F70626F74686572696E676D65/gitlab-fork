@@ -18,6 +18,7 @@ import getComplianceFrameworkQuery from './graphql/get_compliance_framework.quer
 import DeleteModal from './components/delete_modal.vue';
 import BasicInformationSection from './components/basic_information_section.vue';
 import PoliciesSection from './components/policies_section.vue';
+import ProjectsSection from './components/projects_section.vue';
 
 import { i18n } from './constants';
 
@@ -25,6 +26,7 @@ export default {
   components: {
     BasicInformationSection,
     PoliciesSection,
+    ProjectsSection,
 
     DeleteModal,
 
@@ -245,6 +247,8 @@ export default {
           :full-path="groupPath"
           :graphql-id="graphqlId"
         />
+
+        <projects-section v-if="!isNewFramework" :compliance-framework="formData" />
 
         <div class="gl-display-flex gl-pt-5 gl-gap-3">
           <gl-button

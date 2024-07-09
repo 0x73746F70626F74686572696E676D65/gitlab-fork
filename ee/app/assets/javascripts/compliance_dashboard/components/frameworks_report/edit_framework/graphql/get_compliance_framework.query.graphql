@@ -31,6 +31,8 @@ query getComplianceFrameworkWithPolicies(
           nodes {
             id
             name
+            description
+            webUrl
           }
         }
         scanResultPolicies {
