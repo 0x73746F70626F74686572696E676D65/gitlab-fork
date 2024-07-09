@@ -1,0 +1,228 @@
+{
+  "0": [
+    {
+      "path": "test/spec/events_spec.js",
+      "project_id": 7,
+      "chunks": [
+        {
+          "match_count_in_chunk": 2,
+          "lines": [
+            {
+              "line_number": 37,
+              "text": "      window.anotherDiv = document.createElement('div');",
+              "rich_text": "      window.anotherDiv = document.createElement('div');"
+            },
+            {
+              "line_number": 38,
+              "text": "      window.innerDiv = document.createElement('div');",
+              "rich_text": "      window.<b>inner</b>Div = document.createElement(&#39;div&#39;);"
+            },
+            {
+              "line_number": 39,
+              "text": "      window.outerDiv.appendChild(window.innerDiv);",
+              "rich_text": "      window.outerDiv.appendChild(window.<b>inner</b>Div);"
+            },
+            {
+              "line_number": 40,
+              "text": "      document.body.appendChild(window.outerDiv);",
+              "rich_text": "      document.body.appendChild(window.outerDiv);"
+            }
+          ]
+        },
+        {
+          "match_count_in_chunk": 1,
+          "lines": [
+            {
+              "line_number": 46,
+              "text": "      window.outerDiv = null;",
+              "rich_text": "      window.outerDiv = null;"
+            },
+            {
+              "line_number": 47,
+              "text": "      window.innerDiv = null;",
+              "rich_text": "      window.<b>inner</b>Div = null;"
+            },
+            {
+              "line_number": 48,
+              "text": "      Component.teardownAll();",
+              "rich_text": "      Component.teardownAll();"
+            }
+          ]
+        },
+        {
+          "match_count_in_chunk": 1,
+          "lines": [
+            {
+              "line_number": 51,
+              "text": "    it('bubbles native events between components', function () {",
+              "rich_text": "    it('bubbles native events between components', function () {"
+            },
+            {
+              "line_number": 52,
+              "text": "      var instance1 = (new Component).initialize(window.innerDiv);",
+              "rich_text": "      var instance1 = (new Component).initialize(window.<b>inner</b>Div);"
+            },
+            {
+              "line_number": 53,
+              "text": "      var instance2 = (new Component).initialize(window.outerDiv);",
+              "rich_text": "      var instance2 = (new Component).initialize(window.outerDiv);"
+            }
+          ]
+        }
+      ],
+      "match_count_total": 11,
+      "match_count": 4
+    },
+    {
+      "path": "test/spec/instance_spec.js",
+      "project_id": 7,
+      "chunks": [
+        {
+          "match_count_in_chunk": 3,
+          "lines": [
+            {
+              "line_number": 49,
+              "text": "      window.outerDiv = document.createElement('div');",
+              "rich_text": "      window.outerDiv = document.createElement('div');"
+            },
+            {
+              "line_number": 50,
+              "text": "      window.innerDiv = document.createElement('div');",
+              "rich_text": "      window.<b>inner</b>Div = document.createElement(&#39;div&#39;);"
+            },
+            {
+              "line_number": 51,
+              "text": "      window.outerDiv.className = window.innerDiv.className = \"test-node\";",
+              "rich_text": "      window.outerDiv.className = window.<b>inner</b>Div.className = &quot;test-node&quot;;"
+            },
+            {
+              "line_number": 52,
+              "text": "      window.outerDiv.appendChild(window.innerDiv);",
+              "rich_text": "      window.outerDiv.appendChild(window.<b>inner</b>Div);"
+            },
+            {
+              "line_number": 53,
+              "text": "      document.body.appendChild(window.outerDiv);",
+              "rich_text": "      document.body.appendChild(window.outerDiv);"
+            }
+          ]
+        },
+        {
+          "match_count_in_chunk": 1,
+          "lines": [
+            {
+              "line_number": 57,
+              "text": "      window.outerDiv = null;",
+              "rich_text": "      window.outerDiv = null;"
+            },
+            {
+              "line_number": 58,
+              "text": "      window.innerDiv = null;",
+              "rich_text": "      window.<b>inner</b>Div = null;"
+            },
+            {
+              "line_number": 59,
+              "text": "      Component.teardownAll();",
+              "rich_text": "      Component.teardownAll();"
+            }
+          ]
+        },
+        {
+          "match_count_in_chunk": 1,
+          "lines": [
+            {
+              "line_number": 93,
+              "text": "      expect(registry.findInstanceInfoByNode(window.outerDiv)).toBeTruthy();",
+              "rich_text": "      expect(registry.findInstanceInfoByNode(window.outerDiv)).toBeTruthy();"
+            },
+            {
+              "line_number": 94,
+              "text": "      expect(registry.findInstanceInfoByNode(window.innerDiv)).toBeTruthy();",
+              "rich_text": "      expect(registry.findInstanceInfoByNode(window.<b>inner</b>Div)).toBeTruthy();"
+            },
+            {
+              "line_number": 95,
+              "text": "    });",
+              "rich_text": "    });"
+            }
+          ]
+        }
+      ],
+      "match_count_total": 5,
+      "match_count": 5
+    },
+    {
+      "path": "test/spec/registry_spec.js",
+      "project_id": 7,
+      "chunks": [
+        {
+          "match_count_in_chunk": 2,
+          "lines": [
+            {
+              "line_number": 15,
+              "text": "      window.outerDiv = document.createElement('div');",
+              "rich_text": "      window.outerDiv = document.createElement('div');"
+            },
+            {
+              "line_number": 16,
+              "text": "      window.innerDiv = document.createElement('div');",
+              "rich_text": "      window.<b>inner</b>Div = document.createElement(&#39;div&#39;);"
+            },
+            {
+              "line_number": 17,
+              "text": "      window.outerDiv.appendChild(window.innerDiv);",
+              "rich_text": "      window.outerDiv.appendChild(window.<b>inner</b>Div);"
+            },
+            {
+              "line_number": 18,
+              "text": "      document.body.appendChild(window.outerDiv);",
+              "rich_text": "      document.body.appendChild(window.outerDiv);"
+            }
+          ]
+        },
+        {
+          "match_count_in_chunk": 1,
+          "lines": [
+            {
+              "line_number": 22,
+              "text": "      window.outerDiv = null;",
+              "rich_text": "      window.outerDiv = null;"
+            },
+            {
+              "line_number": 23,
+              "text": "      window.innerDiv = null;",
+              "rich_text": "      window.<b>inner</b>Div = null;"
+            },
+            {
+              "line_number": 24,
+              "text": "      Component.teardownAll();",
+              "rich_text": "      Component.teardownAll();"
+            }
+          ]
+        },
+        {
+          "match_count_in_chunk": 1,
+          "lines": [
+            {
+              "line_number": 100,
+              "text": "      //pass phoney node, find nothing",
+              "rich_text": "      //pass phoney node, find nothing"
+            },
+            {
+              "line_number": 101,
+              "text": "      expect(registry.findInstanceInfoByNode(window.innerDiv).length).toBeFalsy();",
+              "rich_text": "      expect(registry.findInstanceInfoByNode(window.<b>inner</b>Div).length).toBeFalsy();"
+            },
+            {
+              "line_number": 102,
+              "text": "    });",
+              "rich_text": "    });"
+            }
+          ]
+        }
+      ],
+      "match_count_total": 4,
+      "match_count": 4
+    }
+  ]
+}
