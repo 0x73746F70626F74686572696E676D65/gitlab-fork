@@ -35,7 +35,7 @@ RSpec.describe Sidebars::Admin::Menus::AiPoweredFeaturesMenu, feature_category: 
 
       it 'renders a sub item' do
         expect(sub_item.link).to eq('/admin/ai/self_hosted_models')
-        expect(sub_item.title).to eq('Custom models')
+        expect(sub_item.title).to eq('Self-hosted models')
         expect(sub_item.active_routes).to eq({ controller: 'admin/ai/self_hosted_models' })
       end
     end
