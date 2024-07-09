@@ -15,6 +15,8 @@ module EE
         end
 
         def alters_allow_force_push?(protected_branch)
+          return false unless params.key?(:allow_force_push)
+
           protected_branch.allow_force_push != params[:allow_force_push]
         end
 
