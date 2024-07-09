@@ -65,12 +65,8 @@ class DependencyEntity < Grape::Entity
     end
   end
 
-  class ProjectEntity < Grape::Entity
-    expose :full_path, :name
-  end
-
   expose :name, :packager, :version
-  expose :location, using: LocationEntity, if: ->(_) { !using_aggregations? }
+  expose :location, using: LocationEntity, if: ->(_) { !group? }
   expose :vulnerabilities, using: VulnerabilityEntity, if: ->(_) { render_vulnerabilities? }
   expose :licenses, using: LicenseEntity, if: ->(_) { can_read_licenses? } do |object|
     object[:licenses].presence || [::Gitlab::LicenseScanning::PackageLicenses::UNKNOWN_LICENSE]
@@ -78,7 +74,6 @@ class DependencyEntity < Grape::Entity
   expose :occurrence_count, if: ->(_) { group? } do |object|
     object.respond_to?(:occurrence_count) ? object.occurrence_count : 1
   end
-  expose :project, using: ProjectEntity, if: ->(_) { group? && !using_aggregations? }
   expose :project_count, if: ->(_) { group? } do |object|
     object.respond_to?(:project_count) ? object.project_count : 1
   end
@@ -124,11 +119,5 @@ class DependencyEntity < Grape::Entity
   def project_level_sbom_occurrences_enabled?
     project = request.try(:project)
     project.present? && Feature.enabled?(:project_level_sbom_occurrences, project)
-  end
-
-  def using_aggregations?
-    return false unless group?
-
-    Feature.enabled?(:rewrite_sbom_occurrences_query, request.group)
   end
 end

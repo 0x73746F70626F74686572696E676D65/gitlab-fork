@@ -1,9 +1,0 @@
----
-name: rewrite_sbom_occurrences_query
-feature_issue_url: https://gitlab.com/groups/gitlab-org/-/epics/12371
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/145704
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/442672
-milestone: '17.0'
-group: group::threat insights
-type: gitlab_com_derisk
-default_enabled: false
