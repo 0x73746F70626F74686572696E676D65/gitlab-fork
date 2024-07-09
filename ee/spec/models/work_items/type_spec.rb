@@ -21,14 +21,14 @@ RSpec.describe WorkItems::Type, feature_category: :team_planning do
 
     shared_examples 'work_item_type returning only licensed widgets' do
       let(:feature) { feature_widget.first }
-      let(:widgets) { feature_widget.last }
+      let(:widget_classes) { feature_widget.last }
 
       subject(:returned_widgets) { work_item_type.widgets(parent) }
 
       context 'when feature is available' do
         it 'returns the associated licensesd widget' do
-          widgets.each do |widget|
-            expect(returned_widgets).to include(widget)
+          widget_classes.each do |widget|
+            expect(returned_widgets.map(&:widget_class)).to include(widget)
           end
         end
       end
@@ -37,8 +37,8 @@ RSpec.describe WorkItems::Type, feature_category: :team_planning do
         let(:disabled_features) { [feature] }
 
         it 'does not return the unlincensed widgets' do
-          widgets.each do |widget|
-            expect(returned_widgets).not_to include(widget)
+          widget_classes.each do |widget|
+            expect(returned_widgets.map(&:widget_class)).not_to include(widget)
           end
         end
       end

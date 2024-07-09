@@ -10,16 +10,16 @@ module EE
           ::Types::WorkItems::WidgetDefinitions::LabelsType
         ].freeze
 
+        EE_TYPE_MAPPING = {
+          ::WorkItems::Widgets::Labels => ::Types::WorkItems::WidgetDefinitions::LabelsType
+        }.freeze
+
         class_methods do
           extend ::Gitlab::Utils::Override
 
           override :resolve_type
           def resolve_type(object, context)
-            if object == ::WorkItems::Widgets::Labels
-              ::Types::WorkItems::WidgetDefinitions::LabelsType
-            else
-              super
-            end
+            EE_TYPE_MAPPING[object.widget_class] || super
           end
         end
 

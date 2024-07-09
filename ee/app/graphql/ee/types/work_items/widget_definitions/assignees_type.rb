@@ -14,7 +14,7 @@ module EE
           end
 
           def allows_multiple_assignees
-            object.allows_multiple_assignees?(resource_parent)
+            object.widget_class.allows_multiple_assignees?(resource_parent)
           end
         end
       end

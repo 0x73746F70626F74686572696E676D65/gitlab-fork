@@ -58,14 +58,6 @@ module EE
       end
     end
 
-    def widgets
-      strong_memoize(:widgets) do
-        work_item_type.widgets(resource_parent).map do |widget_class|
-          widget_class.new(self)
-        end
-      end
-    end
-
     def average_progress_of_children
       children = work_item_children
       child_count = children.count
