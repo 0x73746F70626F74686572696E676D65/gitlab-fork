@@ -103,7 +103,9 @@ describe('TracingDetails', () => {
       expect(header.exists()).toBe(true);
       expect(header.props('incomplete')).toBe(mockTree.incomplete);
       expect(header.props('trace')).toEqual(mockTrace);
-      expect(header.props('logsLink')).toBe(`${LOGS_INDEX_URL}?traceId=test-trace-id&search=`);
+      expect(header.props('logsLink')).toBe(
+        `${LOGS_INDEX_URL}?traceId=test-trace-id&search=&date_range=30d`,
+      );
     });
 
     describe('details drawer', () => {

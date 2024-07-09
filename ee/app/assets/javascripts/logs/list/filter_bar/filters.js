@@ -131,6 +131,7 @@ export function logsQueryFromAttributes({
   severityNumber,
   fingerprint,
   timestamp,
+  dateRange,
 }) {
   const attributes = {
     traceId: traceId ? [{ value: traceId, operator: '=' }] : undefined,
@@ -139,14 +140,14 @@ export function logsQueryFromAttributes({
     severityNumber: severityNumber ? [{ value: severityNumber, operator: '=' }] : undefined,
     fingerprint: fingerprint ? [{ value: fingerprint, operator: '=' }] : undefined,
   };
-  const dateRange = timestamp
+  const dateRangeValue = timestamp
     ? {
         timestamp,
       }
-    : undefined;
+    : dateRange;
   return filterObjToQuery({
     attributes,
-    dateRange,
+    dateRange: dateRangeValue,
   });
 }
 

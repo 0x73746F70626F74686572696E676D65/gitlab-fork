@@ -245,6 +245,23 @@ describe('utils', () => {
       });
     });
 
+    it('returns an object with daterange filter when daterange is provided', () => {
+      const result = logsQueryFromAttributes({ dateRange: { value: '30d' } });
+      expect(result).toMatchObject({
+        date_range: '30d',
+      });
+    });
+
+    it('returns an object with timestamp filter if both timestamp and daterange are provided', () => {
+      const result = logsQueryFromAttributes({
+        timestamp: '2023-04-01T12:00:00Z',
+        dateRange: { value: '30d' },
+      });
+      expect(result).toMatchObject({
+        timestamp: '2023-04-01T12:00:00Z',
+      });
+    });
+
     it('returns an object with multiple filters when multiple arguments are provided', () => {
       const result = logsQueryFromAttributes({
         traceId: 'abc123',
