@@ -8990,6 +8990,27 @@ CREATE SEQUENCE conversational_development_index_metrics_id_seq
 
 ALTER SEQUENCE conversational_development_index_metrics_id_seq OWNED BY conversational_development_index_metrics.id;
 
+CREATE TABLE country_access_logs (
+    id bigint NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    access_count_reset_at timestamp with time zone,
+    first_access_at timestamp with time zone,
+    last_access_at timestamp with time zone,
+    user_id bigint NOT NULL,
+    access_count integer DEFAULT 0 NOT NULL,
+    country_code smallint NOT NULL
+);
+
+CREATE SEQUENCE country_access_logs_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE country_access_logs_id_seq OWNED BY country_access_logs.id;
+
 CREATE TABLE coverage_fuzzing_corpuses (
     id bigint NOT NULL,
     project_id bigint NOT NULL,
@@ -20660,6 +20681,8 @@ ALTER TABLE ONLY content_blocked_states ALTER COLUMN id SET DEFAULT nextval('con
 
 ALTER TABLE ONLY conversational_development_index_metrics ALTER COLUMN id SET DEFAULT nextval('conversational_development_index_metrics_id_seq'::regclass);
 
+ALTER TABLE ONLY country_access_logs ALTER COLUMN id SET DEFAULT nextval('country_access_logs_id_seq'::regclass);
+
 ALTER TABLE ONLY coverage_fuzzing_corpuses ALTER COLUMN id SET DEFAULT nextval('coverage_fuzzing_corpuses_id_seq'::regclass);
 
 ALTER TABLE ONLY csv_issue_imports ALTER COLUMN id SET DEFAULT nextval('csv_issue_imports_id_seq'::regclass);
@@ -22692,6 +22715,9 @@ ALTER TABLE ONLY content_blocked_states
 
 ALTER TABLE ONLY conversational_development_index_metrics
     ADD CONSTRAINT conversational_development_index_metrics_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY country_access_logs
+    ADD CONSTRAINT country_access_logs_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY coverage_fuzzing_corpuses
     ADD CONSTRAINT coverage_fuzzing_corpuses_pkey PRIMARY KEY (id);
@@ -26763,6 +26789,8 @@ CREATE INDEX index_container_repository_states_on_verification_state ON containe
 CREATE INDEX index_container_repository_states_pending_verification ON container_repository_states USING btree (verified_at NULLS FIRST) WHERE (verification_state = 0);
 
 CREATE UNIQUE INDEX index_content_blocked_states_on_container_id_commit_sha_path ON content_blocked_states USING btree (container_identifier, commit_sha, path);
+
+CREATE UNIQUE INDEX index_country_access_logs_on_user_id_and_country_code ON country_access_logs USING btree (user_id, country_code);
 
 CREATE UNIQUE INDEX index_coverage_fuzzing_corpuses_on_package_id ON coverage_fuzzing_corpuses USING btree (package_id);
 

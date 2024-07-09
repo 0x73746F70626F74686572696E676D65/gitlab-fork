@@ -128,6 +128,8 @@ module EE
         class_name: 'RemoteDevelopment::RemoteDevelopmentNamespaceClusterAgentMapping',
         inverse_of: :user
 
+      has_many :country_access_logs, class_name: 'Users::CountryAccessLog', inverse_of: :user
+
       scope :auditors, -> { where('auditor IS true') }
       scope :managed_by, ->(group) { where(managing_group: group) }
 
