@@ -11,6 +11,7 @@ query dependenciesGetGroupProjects(
       first: $first
       sbomComponentId: $sbomComponentId
       includeSubgroups: true
+      includeArchived: false
       sort: SIMILARITY
     ) {
       nodes {
