@@ -291,3 +291,53 @@ pipeline_execution_policy:
     enabled: true
     content: {}
     policy_scope: {}
+ci_component_sources_policy:
+  - name: Allow publishing of CI Components to catalog
+    description: This policy enforces an allowlist of projects and groups that can publish CI components
+    enabled: true
+    allowed_sources:
+      projects:
+        - path: 'project-path'
+      namespaces:
+        - path: 'namespace-path'
+    policy_scope: {}
+  - name: Two - Allow publishing of CI Components to catalog
+    description: Two - This policy enforces an allowlist of projects and groups that can publish CI components
+    enabled: true
+    allowed_sources:
+      projects:
+        - path: 'project-path'
+        - path: 'another-project-path'
+      namespaces:
+        - path: 'namespace-path'
+        - path: 'another-namespace-path'
+    policy_scope: {}
+  - name: Three - Allow publishing of CI Components to catalog
+    description: Three - This policy enforces an allowlist of projects and groups that can publish CI components
+    enabled: true
+    allowed_sources:
+      projects:
+        - path: 'project-path'
+    policy_scope: {}
+  - name: Four - Allow publishing of CI Components to catalog
+    description: Four - This policy enforces an allowlist of projects and groups that can publish CI components
+    enabled: true
+    allowed_source:
+      namespaces:
+        - path: 'namespace-path'
+    policy_scope: {}
+  - name: Five - Allow publishing of CI Components to catalog
+    description: Five - This policy enforces an allowlist of projects and groups that can publish CI components
+    enabled: true
+    allowed_sources: {}
+    policy_scope: {}
+  - name: Over limit - Allow publishing of CI Components to catalog
+    description: Over limit - This policy enforces an allowlist of projects and groups that can publish CI components
+    enabled: true
+    allowed_sources: {}
+    policy_scope: {}
+  - name: Allow any publishing of CI Components to catalog
+    description: Disabled policy that enforces an allowlist of projects and groups that can publish CI components
+    enabled: false
+    allowed_sources: {}
+    policy_scope: {}

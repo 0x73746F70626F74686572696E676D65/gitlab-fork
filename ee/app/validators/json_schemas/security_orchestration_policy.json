@@ -23,9 +23,130 @@
       "required": [
         "pipeline_execution_policy"
       ]
+    },
+    {
+      "required": [
+        "ci_component_source_policy"
+      ]
     }
   ],
   "properties": {
+    "ci_component_source_policy": {
+      "type": "array",
+      "description": "Allows the publishing of components from specific sources to the catalog.",
+      "additionalItems": false,
+      "maxItems": 5,
+      "items": {
+        "required": [
+          "name",
+          "enabled",
+          "allowed_sources",
+          "policy_scope"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "description": "Name of the policy.",
+            "minLength": 1,
+            "maxLength": 255,
+            "type": "string"
+          },
+          "description": {
+            "description": "Specifies the longer description of the policy.",
+            "type": "string"
+          },
+          "allowed_sources": {
+            "description": "Specifies the projects or groups that can publish components.",
+            "type": "object",
+            "properties": {
+              "projects": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "path": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "namespaces": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "path": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "path"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "policy_scope": {
+            "type": "object",
+            "properties": {
+              "compliance_frameworks": {
+                "description": "Specifies for which compliance frameworks this policy should be applied.",
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              },
+              "projects": {
+                "type": "object",
+                "description": "Specifies to which projects this policy should be applied.",
+                "properties": {
+                  "including": {
+                    "type": "array",
+                    "description": "Specifies projects where this policy should be applied to.",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "description": "Specifies the ID of the project."
+                        }
+                      }
+                    }
+                  },
+                  "excluding": {
+                    "type": "array",
+                    "description": "Specifies projects where this policy should not be applied to.",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "description": "Specifies the ID of the project."
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "enabled": {
+            "description": "Whether to enforce this policy or not.",
+            "type": "boolean"
+          }
+        }
+      }
+    },
     "pipeline_execution_policy": {
       "type": "array",
       "description": "Declares custom pipeline configuration for a policy.",

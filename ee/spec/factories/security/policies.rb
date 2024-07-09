@@ -81,6 +81,42 @@ FactoryBot.define do
     end
   end
 
+  factory :ci_component_sources_policy,
+    class: Struct.new(:name, :description, :enabled, :allowed_sources, :policy_scope) do
+    skip_create
+
+    initialize_with do
+      name = attributes[:name]
+      description = attributes[:description]
+      enabled = attributes[:enabled]
+      allowed_sources = attributes[:allowed_sources]
+      policy_scope = attributes[:policy_scope]
+
+      new(name, description, enabled, allowed_sources, policy_scope).to_h
+    end
+
+    sequence(:name) { |n| "ci-component-sources-policy-#{n}" }
+    description { 'This policy enforces an allowlist of groups and projects that can publish CI/CD components' }
+    enabled { true }
+    allowed_sources { {} }
+    policy_scope { {} }
+
+    trait :with_policy_scope do
+      policy_scope do
+        {
+          compliance_frameworks: [
+            { id: 1 },
+            { id: 2 }
+          ],
+          projects: {
+            including: [],
+            excluding: []
+          }
+        }
+      end
+    end
+  end
+
   factory :pipeline_execution_policy,
     class: Struct.new(:name, :description, :enabled, :pipeline_config_strategy, :content, :policy_scope) do
     skip_create
@@ -243,7 +279,8 @@ FactoryBot.define do
   end
 
   factory :orchestration_policy_yaml,
-    class: Struct.new(:scan_execution_policy, :scan_result_policy, :approval_policy, :pipeline_execution_policy) do
+    class: Struct.new(:scan_execution_policy, :scan_result_policy, :approval_policy, :pipeline_execution_policy,
+      :ci_component_sources_policy) do
     skip_create
 
     initialize_with do
@@ -251,13 +288,15 @@ FactoryBot.define do
       scan_result_policy = attributes[:scan_result_policy]
       approval_policy = attributes[:approval_policy]
       pipeline_execution_policy = attributes[:pipeline_execution_policy]
+      ci_component_sources_policy = attributes[:ci_component_sources_policy]
 
       YAML.dump(
         new(
           scan_execution_policy,
           scan_result_policy,
           approval_policy,
-          pipeline_execution_policy
+          pipeline_execution_policy,
+          ci_component_sources_policy
         ).to_h.compact.deep_stringify_keys
       )
     end

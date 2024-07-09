@@ -48,7 +48,9 @@ module EE::SecurityOrchestrationHelper
       max_active_scan_result_policies_reached: max_active_scan_result_policies_reached?(container).to_s,
       max_scan_result_policies_allowed: scan_result_policies_limit,
       max_scan_execution_policies_allowed: Security::ScanExecutionPolicy::POLICY_LIMIT,
-      custom_ci_toggle_enabled: custom_ci_toggle_enabled?(container).to_s
+      custom_ci_toggle_enabled: custom_ci_toggle_enabled?(container).to_s,
+      max_ci_component_sources_policies_allowed: Security::CiComponentSourcesPolicy::POLICY_LIMIT,
+      max_ci_component_sources_policies_reached: max_active_ci_component_sources_policies_reached?(container).to_s
     }
 
     if pipeline_execution_policy_enabled?(container)
@@ -108,6 +110,17 @@ module EE::SecurityOrchestrationHelper
     container
       &.security_orchestration_policy_configuration
       &.active_scan_execution_policies
+      &.length || 0
+  end
+
+  def max_active_ci_component_sources_policies_reached?(container)
+    active_ci_component_sources_policy_count(container) >= Security::CiComponentSourcesPolicy::POLICY_LIMIT
+  end
+
+  def active_ci_component_sources_policy_count(container)
+    container
+      &.security_orchestration_policy_configuration
+      &.active_ci_component_sources_policies
       &.length || 0
   end
 

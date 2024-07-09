@@ -6,6 +6,7 @@ module Security
     include Security::ScanExecutionPolicy
     include Security::ScanResultPolicy
     include Security::PipelineExecutionPolicy
+    include Security::CiComponentSourcesPolicy
     include EachBatch
     include Gitlab::Utils::StrongMemoize
     include IgnorableColumns
