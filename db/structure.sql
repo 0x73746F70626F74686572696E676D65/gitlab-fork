@@ -18332,6 +18332,7 @@ CREATE TABLE uploads (
     mount_point character varying,
     secret character varying,
     version integer DEFAULT 1 NOT NULL,
+    uploaded_by_user_id bigint,
     CONSTRAINT check_5e9547379c CHECK ((store IS NOT NULL))
 );
 
@@ -29290,6 +29291,8 @@ CREATE INDEX index_uploads_on_model_id_model_type_uploader_created_at ON uploads
 
 CREATE INDEX index_uploads_on_store ON uploads USING btree (store);
 
+CREATE INDEX index_uploads_on_uploaded_by_user_id ON uploads USING btree (uploaded_by_user_id);
+
 CREATE INDEX index_uploads_on_uploader_and_path ON uploads USING btree (uploader, path);
 
 CREATE INDEX index_user_achievements_on_achievement_id_revoked_by_is_null ON user_achievements USING btree (achievement_id, ((revoked_by_user_id IS NULL)));
@@ -32787,6 +32790,9 @@ ALTER TABLE ONLY ci_trigger_requests
 
 ALTER TABLE ONLY customer_relations_contacts
     ADD CONSTRAINT fk_b91ddd9345 FOREIGN KEY (group_id) REFERENCES namespaces(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY uploads
+    ADD CONSTRAINT fk_b94f059d73 FOREIGN KEY (uploaded_by_user_id) REFERENCES users(id) ON DELETE SET NULL;
 
 ALTER TABLE ONLY deployments
     ADD CONSTRAINT fk_b9a3851b82 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
