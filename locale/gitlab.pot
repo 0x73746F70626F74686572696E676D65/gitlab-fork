@@ -10019,6 +10019,9 @@ msgstr ""
 msgid "CI/CD configuration file"
 msgstr ""
 
+msgid "CI/CD job token permissions for '%{projectName}' were successfully updated."
+msgstr ""
+
 msgid "CI/CD limits"
 msgstr ""
 
@@ -10078,6 +10081,12 @@ msgstr ""
 msgid "CICD|Add an existing project to the scope"
 msgstr ""
 
+msgid "CICD|Additional permissions"
+msgstr ""
+
+msgid "CICD|Allow Git push requests to the repository"
+msgstr ""
+
 msgid "CICD|Authorized groups and projects"
 msgstr ""
 
@@ -10085,6 +10094,9 @@ msgid "CICD|Auto DevOps"
 msgstr ""
 
 msgid "CICD|Automatic deployment to staging, manual deployment to production"
+msgstr ""
+
+msgid "CICD|CI/CD job token can be used to authenticate a Git push to this repository, using the permissions of the user that started the job."
 msgstr ""
 
 msgid "CICD|Continuous deployment to production"
@@ -10112,6 +10124,9 @@ msgid "CICD|Enable feature to limit job token access to the following projects."
 msgstr ""
 
 msgid "CICD|Ensure only groups and projects with members authorized to access sensitive project data are added to the allowlist."
+msgstr ""
+
+msgid "CICD|Grant additional access permissions to this project's CI/CD job tokens."
 msgstr ""
 
 msgid "CICD|Jobs"
@@ -14974,10 +14989,10 @@ msgstr ""
 msgid "Contributor analytics"
 msgstr ""
 
-msgid "Control whether CI/CD job tokens can be used to authenticate with this project."
+msgid "Control whether to display customer experience improvement content and third-party offers in GitLab."
 msgstr ""
 
-msgid "Control whether to display customer experience improvement content and third-party offers in GitLab."
+msgid "Control which CI/CD job tokens can be used to authenticate with this project."
 msgstr ""
 
 msgid "Converts item to %{type}. Widgets not supported in new type are removed."
@@ -53725,6 +53740,9 @@ msgid "There was a problem fetching recent projects."
 msgstr ""
 
 msgid "There was a problem fetching releases."
+msgstr ""
+
+msgid "There was a problem fetching the CI/CD job token permissions."
 msgstr ""
 
 msgid "There was a problem fetching the job token scope value"
