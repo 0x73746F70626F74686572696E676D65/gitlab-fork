@@ -18654,6 +18654,24 @@ msgstr ""
 msgid "Device name"
 msgstr ""
 
+msgid "DeviceAuth|Authorize"
+msgstr ""
+
+msgid "DeviceAuth|Authorize device to access to your GitLab account."
+msgstr ""
+
+msgid "DeviceAuth|Confirm"
+msgstr ""
+
+msgid "DeviceAuth|Please make sure that you intended to authorize this device."
+msgstr ""
+
+msgid "DeviceAuth|Scopes associated with this request:"
+msgstr ""
+
+msgid "DeviceAuth|You are an administrator, which means authorizing access will allow it to interact with GitLab as an administrator as well."
+msgstr ""
+
 msgid "Devices (optional)"
 msgstr ""
 
