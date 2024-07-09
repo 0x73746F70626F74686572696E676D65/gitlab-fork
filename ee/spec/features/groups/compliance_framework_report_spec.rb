@@ -99,6 +99,56 @@ RSpec.describe 'Groups > Compliance framework', :js, feature_category: :complian
           expect(page).not_to have_content(compliance_framework_to_delete.name)
         end
       end
+
+      context 'in projects tab of compliance center' do
+        let_it_be(:compliance_framework_for_bulk_action1) do
+          create(:compliance_framework,
+            namespace: group, name: 'bulk_action_1')
+        end
+
+        it 'can bulk apply compliance frameworks to projects', :aggregate_failures do
+          visit group_security_compliance_dashboard_path(group, vueroute: :projects)
+          wait_for_requests
+          find_by_testid('select-all-projects-checkbox').click
+          find_by_testid('choose-bulk-action').click
+          find_by_testid('listbox-item-apply').click
+          find_by_testid('choose-framework').click
+          find_by_testid("listbox-item-#{global_id_of(compliance_framework_for_bulk_action1)}").click
+          click_button('Apply')
+          wait_for_requests
+
+          expect(page).not_to have_content(compliance_framework_a.name) # Projects can have only one framework currently
+          expect(page).not_to have_content(compliance_framework_b.name) # Projects can have only one framework currently
+          expect(associated_compliance_framework_label(project_1.name))
+            .to include(compliance_framework_for_bulk_action1.name)
+          expect(associated_compliance_framework_label(project_2.name))
+            .to include(compliance_framework_for_bulk_action1.name)
+          expect(associated_compliance_framework_label(project_3.name))
+            .to include(compliance_framework_for_bulk_action1.name)
+        end
+
+        context 'with bulk delete' do
+          before do
+            create(:compliance_framework_project_setting, project: project_2,
+              compliance_management_framework: compliance_framework_for_bulk_action1)
+          end
+
+          it 'can remove compliance framework from both projects' do
+            visit group_security_compliance_dashboard_path(group, vueroute: :projects)
+            wait_for_requests
+            find_by_testid('select-all-projects-checkbox').click
+            find_by_testid('choose-bulk-action').click
+            find_by_testid('listbox-item-remove').click
+            click_button('Remove')
+            wait_for_requests
+            expect(page).not_to have_css('[data-testid="compliance-framework-label"]')
+
+            visit(project_path(project_2))
+            wait_for_requests
+            expect(page).not_to have_content(compliance_framework_for_bulk_action1.name)
+          end
+        end
+      end
     end
 
     context 'with compliance dashboard feature disabled' do
@@ -135,6 +185,16 @@ RSpec.describe 'Groups > Compliance framework', :js, feature_category: :complian
     click_button('Delete framework')
     within_modal do
       click_button('Delete framework')
+    end
+  end
+
+  def global_id_of(compliance_framework)
+    "gid://gitlab/ComplianceManagement::Framework/#{compliance_framework.id}"
+  end
+
+  def associated_compliance_framework_label(project_name)
+    within(find('tr', text: project_name)) do
+      find_by_testid('compliance-framework-label').text
     end
   end
 end

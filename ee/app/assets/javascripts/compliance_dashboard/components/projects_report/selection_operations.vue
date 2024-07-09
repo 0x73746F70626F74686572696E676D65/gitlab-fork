@@ -164,6 +164,7 @@ export default {
       <framework-selection-box
         v-if="selectedOperation === $options.operations.APPLY_OPERATION"
         v-model="selectedFramework"
+        data-testid="choose-framework"
         :disabled="!hasSelection"
         :root-ancestor-path="rootAncestorPath"
         :is-framework-creating-enabled="isFrameworkCreatingEnabled"
