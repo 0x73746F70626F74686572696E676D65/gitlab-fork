@@ -110,3 +110,5 @@ export const CUSTOM_STRATEGY_OPTIONS_KEYS = Object.keys(CUSTOM_STRATEGY_OPTIONS)
 export const CUSTOM_STRATEGY_OPTIONS_LISTBOX_ITEMS = Object.entries(CUSTOM_STRATEGY_OPTIONS).map(
   ([value, text]) => ({ value, text }),
 );
+
+export const PROJECTS_COUNT_PERFORMANCE_LIMIT = 1000;
