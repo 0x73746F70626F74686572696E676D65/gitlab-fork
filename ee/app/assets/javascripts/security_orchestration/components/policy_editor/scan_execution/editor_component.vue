@@ -4,6 +4,7 @@ import { joinPaths, visitUrl, setUrlFragment } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import ScanFilterSelector from 'ee/security_orchestration/components/policy_editor/scan_filter_selector.vue';
+import getGroupProjectsCount from 'ee/security_orchestration/graphql/queries/get_group_project_count.query.graphql';
 import { isGroup } from 'ee/security_orchestration/components/utils';
 import {
   EDITOR_MODE_RULE,
@@ -20,6 +21,7 @@ import { assignSecurityPolicyProject, modifyPolicy, parseError } from '../utils'
 import RuleSection from './rule/rule_section.vue';
 import ScanAction from './action/scan_action.vue';
 import ActionSection from './action/action_section.vue';
+import OverloadWarningModal from './overload_warning_modal.vue';
 import {
   buildScannerAction,
   buildDefaultPipeLineRule,
@@ -36,7 +38,9 @@ import {
   ERROR_MESSAGE_MAP,
   CUSTOM_ACTION_KEY,
   SCAN_EXECUTION_ACTIONS_LISTBOX_ITEMS,
+  SCAN_EXECUTION_RULES_SCHEDULE_KEY,
   EXECUTE_YAML_ACTION,
+  PROJECTS_COUNT_PERFORMANCE_LIMIT,
 } from './constants';
 
 export default {
@@ -60,6 +64,25 @@ export default {
       'SecurityOrchestration|Scan execution policies can only be created by project owners.',
     ),
   },
+  apollo: {
+    projectsCount: {
+      query: getGroupProjectsCount,
+      variables() {
+        return {
+          fullPath: this.namespacePath,
+        };
+      },
+      update(data) {
+        return data.group?.projects?.count || 0;
+      },
+      skip() {
+        return !isGroup(this.namespaceType) || !this.hasScheduledRule;
+      },
+      error() {
+        this.projectsCount = 0;
+      },
+    },
+  },
   components: {
     ScanFilterSelector,
     ActionSection,
@@ -68,6 +91,7 @@ export default {
     GlEmptyState,
     ScanAction,
     EditorLayout,
+    OverloadWarningModal,
     RuleSection,
   },
   mixins: [glFeatureFlagsMixin()],
@@ -108,6 +132,9 @@ export default {
 
     return {
       errorSources: [],
+      projectsCount: 0,
+      showPerformanceWarningModal: false,
+      dismissPerformanceWarningModal: false,
       isCreatingMR: false,
       isRemovingPolicy: false,
       newlyCreatedPolicyProject: null,
@@ -123,6 +150,17 @@ export default {
     };
   },
   computed: {
+    projectsPerformanceLimitReached() {
+      return this.projectsCount > PROJECTS_COUNT_PERFORMANCE_LIMIT;
+    },
+    hasScheduledRule() {
+      return this.policy?.rules?.some(({ type }) => type === SCAN_EXECUTION_RULES_SCHEDULE_KEY);
+    },
+    hasPerformanceRisk() {
+      return (
+        this.projectsPerformanceLimitReached && this.hasScheduledRule && isGroup(this.namespaceType)
+      );
+    },
     originalName() {
       return this.existingPolicy?.name;
     },
@@ -143,6 +181,14 @@ export default {
     addRule() {
       this.policy.rules.push(buildDefaultPipeLineRule());
       this.updateYamlEditorValue(this.policy);
+    },
+    cancelPolicySubmit() {
+      this.showPerformanceWarningModal = false;
+    },
+    confirmPolicySubmit() {
+      this.showPerformanceWarningModal = false;
+      this.dismissPerformanceWarningModal = true;
+      this.handleModifyPolicy();
     },
     removeActionOrRule(type, index) {
       this.policy[type].splice(index, 1);
@@ -187,6 +233,11 @@ export default {
       return this.newlyCreatedPolicyProject || this.assignedPolicyProject;
     },
     async handleModifyPolicy(act) {
+      if (this.hasPerformanceRisk && !this.dismissPerformanceWarningModal) {
+        this.showPerformanceWarningModal = true;
+        return;
+      }
+
       const action =
         act ||
         (this.isEditing
@@ -344,6 +395,14 @@ export default {
           </div>
         </template>
       </dim-disable-container>
+    </template>
+
+    <template #modal>
+      <overload-warning-modal
+        :visible="showPerformanceWarningModal"
+        @cancel-submit="cancelPolicySubmit"
+        @confirm-submit="confirmPolicySubmit"
+      />
     </template>
   </editor-layout>
 

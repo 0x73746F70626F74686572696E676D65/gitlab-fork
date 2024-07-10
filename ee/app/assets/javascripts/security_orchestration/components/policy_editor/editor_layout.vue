@@ -240,6 +240,7 @@ export default {
       </div>
       <div class="gl-display-flex gl-flex-direction-column gl-lg-flex-direction-row">
         <section class="gl-w-full gl-mr-7">
+          <slot name="modal"></slot>
           <div v-if="shouldShowRuleEditor" data-testid="rule-editor">
             <gl-alert v-if="hasParsingError" class="gl-mb-5" variant="warning" :dismissible="false">
               {{ parsingError }}

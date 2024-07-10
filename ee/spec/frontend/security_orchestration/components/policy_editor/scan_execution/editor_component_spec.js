@@ -1,14 +1,18 @@
+import Vue, { nextTick } from 'vue';
+import VueApollo from 'vue-apollo';
 import { GlEmptyState } from '@gitlab/ui';
 import { uniqueId } from 'lodash';
-import { nextTick } from 'vue';
 import EditorComponent from 'ee/security_orchestration/components/policy_editor/scan_execution/editor_component.vue';
 import ActionSection from 'ee/security_orchestration/components/policy_editor/scan_execution/action/action_section.vue';
 import RuleSection from 'ee/security_orchestration/components/policy_editor/scan_execution/rule/rule_section.vue';
 import ActionBuilder from 'ee/security_orchestration/components/policy_editor/scan_execution/action/scan_action.vue';
+import OverloadWarningModal from 'ee/security_orchestration/components/policy_editor/scan_execution/overload_warning_modal.vue';
 import ScanFilterSelector from 'ee/security_orchestration/components/policy_editor/scan_filter_selector.vue';
 import waitForPromises from 'helpers/wait_for_promises';
+import createMockApollo from 'helpers/mock_apollo_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import EditorLayout from 'ee/security_orchestration/components/policy_editor/editor_layout.vue';
+import getGroupProjectsCount from 'ee/security_orchestration/graphql/queries/get_group_project_count.query.graphql';
 import {
   SCAN_EXECUTION_DEFAULT_POLICY_WITH_SCOPE,
   SCAN_EXECUTION_DEFAULT_POLICY,
@@ -18,6 +22,7 @@ import {
 import {
   DEFAULT_SCAN_EXECUTION_POLICY_WITH_SCOPE,
   buildScannerAction,
+  buildDefaultScheduleRule,
   fromYaml,
 } from 'ee/security_orchestration/components/policy_editor/scan_execution/lib';
 import {
@@ -31,7 +36,10 @@ import {
 import { visitUrl } from '~/lib/utils/url_utility';
 
 import { modifyPolicy } from 'ee/security_orchestration/components/policy_editor/utils';
-import { SECURITY_POLICY_ACTIONS } from 'ee/security_orchestration/components/policy_editor/constants';
+import {
+  EDITOR_MODE_YAML,
+  SECURITY_POLICY_ACTIONS,
+} from 'ee/security_orchestration/components/policy_editor/constants';
 import {
   DEFAULT_SCANNER,
   SCAN_EXECUTION_PIPELINE_RULE,
@@ -65,8 +73,32 @@ describe('EditorComponent', () => {
   const policyEditorEmptyStateSvgPath = 'path/to/svg';
   const scanPolicyDocumentationPath = 'path/to/docs';
 
-  const factory = ({ propsData = {}, provide = {}, glFeatures = {} } = {}) => {
+  const mockCountResponse = (count = 0) =>
+    jest.fn().mockResolvedValue({
+      data: {
+        group: {
+          id: '1',
+          projects: {
+            count,
+          },
+        },
+      },
+    });
+
+  const createMockApolloProvider = (handler) => {
+    Vue.use(VueApollo);
+
+    return createMockApollo([[getGroupProjectsCount, handler]]);
+  };
+
+  const factory = ({
+    propsData = {},
+    provide = {},
+    glFeatures = {},
+    handler = mockCountResponse(),
+  } = {}) => {
     wrapper = shallowMountExtended(EditorComponent, {
+      apolloProvider: createMockApolloProvider(handler),
       propsData: {
         assignedPolicyProject: DEFAULT_ASSIGNED_POLICY_PROJECT,
         ...propsData,
@@ -106,6 +138,11 @@ describe('EditorComponent', () => {
   const findScanFilterSelector = () => wrapper.findComponent(ScanFilterSelector);
   const findActionSection = () => wrapper.findComponent(ActionSection);
   const findAllActionSections = () => wrapper.findAllComponents(ActionSection);
+  const findOverloadWarningModal = () => wrapper.findComponent(OverloadWarningModal);
+
+  const selectScheduleRule = async () => {
+    await findRuleSection().vm.$emit('changed', buildDefaultScheduleRule());
+  };
 
   beforeEach(() => {
     uniqueId.mockImplementation(jest.fn((prefix) => `${prefix}0`));
@@ -422,6 +459,137 @@ enabled: true`;
       await findScanFilterSelector().vm.$emit('select', EXECUTE_YAML_ACTION);
 
       expect(findAllActionSections()).toHaveLength(2);
+    });
+  });
+
+  describe('performance warning modal', () => {
+    describe('group', () => {
+      describe('performance threshold not reached', () => {
+        beforeEach(() => {
+          factory();
+        });
+
+        it('saves policy when performance threshold is not reached', async () => {
+          findPolicyEditorLayout().vm.$emit('save-policy');
+          await waitForPromises();
+
+          expect(findOverloadWarningModal().props('visible')).toBe(false);
+          expect(modifyPolicy).toHaveBeenCalled();
+        });
+
+        it('saves policy when performance threshold is not reached and schedule rule is selected', async () => {
+          await selectScheduleRule();
+
+          findPolicyEditorLayout().vm.$emit('save-policy');
+          await waitForPromises();
+
+          expect(findOverloadWarningModal().props('visible')).toBe(false);
+          expect(modifyPolicy).toHaveBeenCalled();
+        });
+      });
+
+      it('does not show the warning when performance threshold is reached but no schedule rules were selected', async () => {
+        factory({
+          handler: mockCountResponse(1001),
+        });
+        await waitForPromises();
+
+        findPolicyEditorLayout().vm.$emit('save-policy');
+        await waitForPromises();
+
+        expect(findOverloadWarningModal().props('visible')).toBe(false);
+        expect(modifyPolicy).toHaveBeenCalled();
+      });
+
+      describe('performance threshold reached', () => {
+        beforeEach(async () => {
+          factory({
+            handler: mockCountResponse(1001),
+          });
+
+          await waitForPromises();
+        });
+
+        it('shows the warning when performance threshold is reached but schedule rules were selected', async () => {
+          await selectScheduleRule();
+          await waitForPromises();
+
+          findPolicyEditorLayout().vm.$emit('save-policy');
+          await waitForPromises();
+
+          expect(findOverloadWarningModal().props('visible')).toBe(true);
+          expect(modifyPolicy).toHaveBeenCalledTimes(0);
+        });
+
+        it('dismisses the warning without saving the policy', async () => {
+          await selectScheduleRule();
+          await waitForPromises();
+
+          findPolicyEditorLayout().vm.$emit('save-policy');
+          await waitForPromises();
+
+          expect(findOverloadWarningModal().props('visible')).toBe(true);
+          expect(modifyPolicy).toHaveBeenCalledTimes(0);
+
+          await findOverloadWarningModal().vm.$emit('cancel-submit');
+
+          expect(findOverloadWarningModal().props('visible')).toBe(false);
+          expect(modifyPolicy).toHaveBeenCalledTimes(0);
+        });
+
+        it('dismisses the warning and save the policy', async () => {
+          await selectScheduleRule();
+          await waitForPromises();
+
+          findPolicyEditorLayout().vm.$emit('save-policy');
+          await waitForPromises();
+
+          expect(findOverloadWarningModal().props('visible')).toBe(true);
+          expect(modifyPolicy).toHaveBeenCalledTimes(0);
+
+          await findOverloadWarningModal().vm.$emit('confirm-submit');
+          await waitForPromises();
+
+          expect(findOverloadWarningModal().props('visible')).toBe(false);
+          expect(modifyPolicy).toHaveBeenCalledTimes(1);
+        });
+
+        it('also shows warning modal in yaml mode', async () => {
+          await selectScheduleRule();
+          await waitForPromises();
+
+          await findPolicyEditorLayout().vm.$emit('update-editor-mode', EDITOR_MODE_YAML);
+          findPolicyEditorLayout().vm.$emit('save-policy');
+          await waitForPromises();
+
+          expect(findOverloadWarningModal().props('visible')).toBe(true);
+          expect(modifyPolicy).toHaveBeenCalledTimes(0);
+        });
+      });
+    });
+
+    describe('project', () => {
+      beforeEach(async () => {
+        factory({
+          provide: {
+            namespaceType: NAMESPACE_TYPES.PROJECT,
+          },
+          handler: mockCountResponse(1001),
+        });
+
+        await waitForPromises();
+      });
+
+      it('does not show the warning when performance threshold is reached but schedule rules were selected for a project', async () => {
+        await selectScheduleRule();
+        await waitForPromises();
+
+        findPolicyEditorLayout().vm.$emit('save-policy');
+        await waitForPromises();
+
+        expect(findOverloadWarningModal().props('visible')).toBe(false);
+        expect(modifyPolicy).toHaveBeenCalledTimes(1);
+      });
     });
   });
 });
