@@ -48,12 +48,15 @@ module API
         requires 'group_access', type: Integer, values: Gitlab::Access.all_values,
           desc: 'Access level for members of the LDAP group'
         requires 'provider', type: String, desc: 'LDAP provider for the LDAP group link'
+        optional 'member_role_id', type: Integer, desc: 'The ID of the Member Role for members of the LDAP group'
         exactly_one_of :cn, :filter
       end
       post ":id/ldap_group_links" do
         group = find_group(params[:id])
         authorize! :admin_group, group
         break not_found! if params[:filter] && !::License.feature_available?(:ldap_group_sync_filter)
+
+        params.delete(:member_role_id) unless group.custom_roles_enabled?
 
         ldap_group_link = group.ldap_group_links.new(declared_params(include_missing: false))
 

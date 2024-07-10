@@ -5,22 +5,23 @@ require 'spec_helper'
 RSpec.describe API::LdapGroupLinks, api: true, feature_category: :system_access do
   include ApiHelpers
 
-  let(:owner) { create(:user) }
-  let(:user) { create(:user) }
-  let(:admin) { create(:admin) }
+  let_it_be(:owner) { create(:user) }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:admin) { create(:admin) }
 
-  let!(:group_with_ldap_links) do
-    group = create(:group)
-    group.ldap_group_links.create! cn: 'ldap-group1', group_access: Gitlab::Access::MAINTAINER, provider: 'ldap1'
-    group.ldap_group_links.create! cn: 'ldap-group2', group_access: Gitlab::Access::MAINTAINER, provider: 'ldap2'
-    group.ldap_group_links.create! cn: 'ldap-group3', group_access: Gitlab::Access::MAINTAINER, provider: 'ldap2'
-    group.ldap_group_links.create! filter: '(uid=mary)', group_access: Gitlab::Access::DEVELOPER, provider: 'ldap2'
-    group
-  end
+  let_it_be(:group_with_ldap_links) { create(:group) }
+  let_it_be(:group_with_no_ldap_links) { create(:group) }
 
-  let(:group_with_no_ldap_links) { create(:group) }
+  let_it_be(:member_role) { create(:member_role, :guest, namespace: group_with_ldap_links) }
 
-  before do
+  before_all do
+    group_with_ldap_links.ldap_group_links.create! cn: 'ldap-group1', group_access: Gitlab::Access::MAINTAINER, provider: 'ldap1'
+    group_with_ldap_links.ldap_group_links.create! cn: 'ldap-group2', group_access: Gitlab::Access::MAINTAINER, provider: 'ldap2'
+    group_with_ldap_links.ldap_group_links.create! cn: 'ldap-group3', group_access: Gitlab::Access::MAINTAINER, provider: 'ldap2'
+    group_with_ldap_links.ldap_group_links.create! cn: 'ldap-group4', group_access: Gitlab::Access::GUEST, member_role_id: member_role.id, provider: 'ldap2'
+    group_with_ldap_links.ldap_group_links.create! filter: '(uid=mary)', group_access: Gitlab::Access::DEVELOPER, provider: 'ldap2'
+    group_with_ldap_links.ldap_group_links.create! filter: '(uid=john)', group_access: Gitlab::Access::GUEST, member_role_id: member_role.id, provider: 'ldap2'
+
     group_with_ldap_links.add_owner owner
     group_with_ldap_links.add_member user, Gitlab::Access::DEVELOPER
     group_with_no_ldap_links.add_owner owner
@@ -50,11 +51,34 @@ RSpec.describe API::LdapGroupLinks, api: true, feature_category: :system_access 
         expect(response).to have_gitlab_http_status(:ok)
         expect(json_response).to(
           match([
-            a_hash_including('cn' => 'ldap-group1', 'provider' => 'ldap1'),
-                  a_hash_including('cn' => 'ldap-group2', 'provider' => 'ldap2'),
-                  a_hash_including('cn' => 'ldap-group3', 'provider' => 'ldap2'),
-                  a_hash_including('cn' => nil, 'provider' => 'ldap2')
+            a_hash_including('cn' => 'ldap-group1', 'group_access' => 40, 'provider' => 'ldap1'),
+            a_hash_including('cn' => 'ldap-group2', 'group_access' => 40, 'provider' => 'ldap2'),
+            a_hash_including('cn' => 'ldap-group3', 'group_access' => 40, 'provider' => 'ldap2'),
+            a_hash_including('cn' => 'ldap-group4', 'group_access' => 10, 'provider' => 'ldap2'),
+            a_hash_including('cn' => nil, 'group_access' => 30, 'provider' => 'ldap2'),
+            a_hash_including('cn' => nil, 'group_access' => 10, 'provider' => 'ldap2')
           ]))
+      end
+
+      context "when custom roles is enabled" do
+        before do
+          stub_licensed_features(custom_roles: true)
+        end
+
+        it "returns ldap group links with their member_roles" do
+          get api("/groups/#{group_with_ldap_links.id}/ldap_group_links", owner)
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response).to(
+            match([
+              a_hash_including('cn' => 'ldap-group1', 'group_access' => 40, 'provider' => 'ldap1'),
+              a_hash_including('cn' => 'ldap-group2', 'group_access' => 40, 'provider' => 'ldap2'),
+              a_hash_including('cn' => 'ldap-group3', 'group_access' => 40, 'provider' => 'ldap2'),
+              a_hash_including('cn' => 'ldap-group4', 'group_access' => 10, 'member_role_id' => member_role.id, 'provider' => 'ldap2'),
+              a_hash_including('cn' => nil, 'group_access' => 30, 'provider' => 'ldap2'),
+              a_hash_including('cn' => nil, 'group_access' => 10, 'member_role_id' => member_role.id, 'provider' => 'ldap2')
+            ]))
+        end
       end
 
       it "returns error if no ldap group links found" do
@@ -90,6 +114,7 @@ RSpec.describe API::LdapGroupLinks, api: true, feature_category: :system_access 
       context "when owner of the group" do
         it "returns ok and add ldap group link" do
           params_test = params.merge({ group_access: GroupMember::GUEST, provider: 'ldap3' })
+
           expect do
             post api("/groups/#{group_with_ldap_links.id}/ldap_group_links", owner), params: params_test
           end.to change { group_with_ldap_links.ldap_group_links.count }.by(1)
@@ -136,16 +161,82 @@ RSpec.describe API::LdapGroupLinks, api: true, feature_category: :system_access 
       it_behaves_like 'creates LDAP group link' do
         let(:params) { { cn: 'ldap-group3' } }
       end
+
+      context 'and with a member_role' do
+        let(:params) { { cn: 'ldap-group3', member_role_id: member_role.id } }
+        let(:params_test) { params.merge({ group_access: GroupMember::GUEST, provider: 'ldap3' }) }
+
+        context 'when custom roles is enabled' do
+          before do
+            stub_licensed_features(custom_roles: true)
+          end
+
+          it_behaves_like 'creates LDAP group link'
+
+          it 'returns ldap group link with the member_role' do
+            post api("/groups/#{group_with_ldap_links.id}/ldap_group_links", owner), params: params_test
+
+            expect(json_response['member_role_id']).to eq(params_test[:member_role_id])
+          end
+        end
+
+        context 'when custom roles is disabled' do
+          before do
+            stub_licensed_features(custom_roles: false)
+          end
+
+          it_behaves_like 'creates LDAP group link'
+
+          it 'returns ldap group link without the member_role' do
+            post api("/groups/#{group_with_ldap_links.id}/ldap_group_links", owner), params: params_test
+
+            expect(json_response['member_role_id']).to eq(nil)
+          end
+        end
+      end
     end
 
     context "adding a group link via filter" do
-      context "feature is available" do
+      context "when ldap_group_sync_filter feature is available" do
         before do
           stub_licensed_features(ldap_group_sync_filter: true)
         end
 
         it_behaves_like 'creates LDAP group link' do
           let(:params) { { filter: '(uid=mary)' } }
+        end
+
+        context 'and with a member_role' do
+          let(:params) { { filter: '(uid=john)', member_role_id: member_role.id } }
+          let(:params_test) { params.merge({ group_access: GroupMember::GUEST, provider: 'ldap3' }) }
+
+          context 'when custom roles is enabled' do
+            before do
+              stub_licensed_features(ldap_group_sync_filter: true, custom_roles: true)
+            end
+
+            it_behaves_like 'creates LDAP group link'
+
+            it 'returns ldap group link with the member_role' do
+              post api("/groups/#{group_with_ldap_links.id}/ldap_group_links", owner), params: params_test
+
+              expect(json_response['member_role_id']).to eq(params_test[:member_role_id])
+            end
+          end
+
+          context 'when custom roles is disabled' do
+            before do
+              stub_licensed_features(ldap_group_sync_filter: true, custom_roles: false)
+            end
+
+            it_behaves_like 'creates LDAP group link'
+
+            it 'returns ldap group link without the member_role' do
+              post api("/groups/#{group_with_ldap_links.id}/ldap_group_links", owner), params: params_test
+
+              expect(json_response['member_role_id']).to eq(nil)
+            end
+          end
         end
       end
 
