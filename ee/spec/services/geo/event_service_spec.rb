@@ -8,9 +8,9 @@ RSpec.describe Geo::EventService, feature_category: :geo_replication do
   let_it_be(:primary) { create(:geo_node, :primary) }
   let_it_be(:secondary) { create(:geo_node) }
 
-  let(:model_record) { create(:package_file, :npm) }
+  let_it_be(:model_record) { create(:package_file, :npm) }
 
-  subject { described_class.new('package_file', 'created', { 'model_record_id' => model_record.id }) }
+  subject(:service) { described_class.new('package_file', 'created', { 'model_record_id' => model_record.id }) }
 
   describe '#execute' do
     before do
@@ -22,7 +22,7 @@ RSpec.describe Geo::EventService, feature_category: :geo_replication do
     end
 
     it 'executes the consume part of the replication' do
-      subject.execute
+      service.execute
 
       expect(model_record.file.exists?).to be_truthy
     end
