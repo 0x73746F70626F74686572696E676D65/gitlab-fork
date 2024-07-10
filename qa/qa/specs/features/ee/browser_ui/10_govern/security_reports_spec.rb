@@ -268,7 +268,11 @@ module QA
         page.filter_report_type(filter_report)
         yield
 
-        page.clear_filter_token('tool')
+        if page.has_element?("filtered-search-term", wait: 1)
+          page.clear_filter_token('tool')
+        else
+          page.filter_report_type(filter_report)
+        end
       end
 
       def push_security_reports
