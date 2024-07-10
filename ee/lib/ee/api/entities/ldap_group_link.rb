@@ -10,6 +10,9 @@ module EE
         expose :filter, documentation: { type: 'string', example: 'id >= 500' }, if: ->(_, _) do
           License.feature_available?(:ldap_group_sync_filter)
         end
+        expose :member_role_id, documentation: { type: 'integer', example: 12 }, if: ->(ldap_group_link, _) do
+          ldap_group_link.group.custom_roles_enabled?
+        end
       end
     end
   end
